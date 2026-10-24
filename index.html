@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>초등 공부 왕(King)</title>
+<style>
+:root{--s1:#bfe3f5;--s2:#eaf6fb;--ink:#1d2a33;--drop:#2f9e6e;--pad:#fff;--pt:#1d2a33;--line:#c9d6dd;--btn:#2f5d7c;--bad:#c0392b;--gr:#6b8f4e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--s2:#1b3344;--ink:#e8f1f6;--pad:#22313b;--pt:#e8f1f6;--line:#3a4d59;--btn:#4a86ad}}
+:root[data-theme="dark"]{--s2:#1b3344;--ink:#e8f1f6;--pad:#22313b;--pt:#e8f1f6;--line:#3a4d59;--btn:#4a86ad}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{height:100%;margin:0;background:var(--s2);color:var(--ink);font-family:"Jua","Noto Sans KR",system-ui,sans-serif;overflow:hidden}
+#app{height:100%;display:flex;flex-direction:column;max-width:480px;margin:0 auto}
+#top{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;font-size:13px;gap:6px}
+#info{flex:1;min-width:0;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#combo{color:#e8590c;font-weight:700}
+#area{position:relative;flex:1;min-height:0;overflow:hidden;border-bottom:6px solid var(--gr);transition:background .5s}
+.drop{position:absolute;top:0;padding:5px 11px;background:var(--drop);color:#fff;border-radius:4px 20px 20px 20px;font-size:calc(17px*var(--fs,1));font-weight:700;white-space:normal;width:max-content;max-width:calc(100% - 8px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.drop.t{outline:3px solid #f2c94c}
+.drop.hit{background:#f2b705;color:#222;transition:opacity .3s,transform .3s;opacity:0}
+.drop.miss{background:var(--bad);transition:opacity .3s;opacity:0}
+.drop.v{border-radius:12px;padding:6px 14px}
+.vt{font-family:ui-monospace,Menlo,Consolas,monospace;text-align:right;line-height:1.2;font-size:calc(19px*var(--fs,1))}
+.l2{display:flex;justify-content:space-between;gap:10px;border-bottom:2px solid #fff;padding-bottom:1px}
+.dv{display:flex;align-items:flex-end}
+.dd{border-top:2px solid #fff;border-left:2px solid #fff;padding:0 6px;margin-left:5px}
+.say{position:absolute;left:50%;top:38%;transform:translateX(-50%);font-size:26px;font-weight:700;color:#e8590c;text-shadow:0 2px 0 #fff;animation:up 1s forwards;pointer-events:none;white-space:nowrap}
+@keyframes up{to{transform:translate(-50%,-50px);opacity:0}}
+.cas{display:flex;flex-direction:column-reverse;align-items:center;gap:2px;--bh:11px}
+.cas.sm{--bh:7px}
+.row{display:grid;grid-template-columns:repeat(12,1fr);gap:2px;width:min(92%,330px)}
+.sm .row{width:min(92%,300px)}
+.b,.g{height:var(--bh)}
+.b{border-radius:2px;background:var(--c);box-shadow:inset 0 -3px 0 var(--d)}
+.b.e{background:var(--line);box-shadow:none;opacity:.5}
+.b.pp{animation:pop .35s}
+@keyframes pop{from{transform:translateY(-14px) scale(1.4);opacity:0}}
+.s1{--c:#c4623a;--d:#a24c2a}.s2{--c:#e0893a;--d:#b8691f}.s3{--c:#7fae3a;--d:#5b8526}.s4{--c:#2fa6a0;--d:#1f7f7a}.s5{--c:#4a86d8;--d:#3563a8}.s6{--c:#8e6bd1;--d:#6a4aa8}.s7{--c:#d65f9b;--d:#a8437a}.s8{--c:#d94b4b;--d:#a63333}.s9{--c:#9aa7b4;--d:#6f7c89}.s10{--c:#f2b705;--d:#c48f00}
+#castle{display:block;height:112px;padding:2px 96px 0 6px;background:var(--s2)}
+#castle svg{width:100%;height:100%;display:block}
+#ctl{display:flex;gap:8px;padding:4px 10px 0;background:var(--s2)}
+#disp{flex:1;font-size:28px;text-align:center;background:var(--pad);color:var(--pt);border-radius:10px;padding:4px;min-height:44px;border:2px solid var(--line)}
+#disp.bad{border-color:var(--bad);animation:sh .25s}
+@keyframes sh{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+#pbtn{background:var(--btn);color:#fff;border:0;border-radius:10px;padding:0 12px;font:inherit;font-size:14px}
+#pbtn:disabled{opacity:.4}
+#pad{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:6px 10px 10px;background:var(--s2)}
+#pad button{height:44px;font:inherit;font-size:22px;border-radius:10px;border:1px solid var(--line);background:var(--pad);color:var(--pt)}
+#pad button:active{transform:scale(.95)}
+#pad .ok{background:#e8590c;color:#fff;border:0;grid-column:span 3}
+#ov{position:fixed;inset:0;background:rgba(10,20,40,.82);display:flex;flex-direction:column;align-items:center;color:#fff;text-align:center;gap:10px;z-index:9;padding:16px;overflow-y:auto}
+#ov.h{display:none}
+#ov>:first-child{margin-top:auto}#ov>:last-child{margin-bottom:auto}
+#ov h1{margin:0;font-size:30px}
+#ov h1.gold{font-size:34px;background:linear-gradient(90deg,#f2b705,#fff3b0,#f2b705);-webkit-background-clip:text;background-clip:text;color:transparent;animation:glow 1.5s infinite alternate}
+@keyframes glow{to{filter:drop-shadow(0 0 10px #f2b705)}}
+#ov p{margin:0;font-size:16px;line-height:1.5}
+#btns{display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px}
+#btns button{font:inherit;font-size:18px;padding:11px 20px;border:0;border-radius:14px;background:#e8590c;color:#fff}
+.cf{position:fixed;top:-30px;font-size:24px;animation:fall linear infinite;pointer-events:none;z-index:10}
+@keyframes fall{to{transform:translateY(115vh) rotate(360deg)}}
+#castle{position:relative}
+#mon{position:absolute;right:56px;bottom:2px;width:44px;height:44px;display:none;transition:bottom .3s;z-index:3}
+#mon.walk{animation:walkin 1.6s ease-out}
+#mon.hit{animation:lunge .8s}
+.mm{position:absolute;inset:0;font-size:38px;line-height:44px;text-align:center;animation:hop .35s infinite alternate}
+.hm{position:absolute;left:-26px;top:-4px;font-size:28px;transform-origin:85% 85%;transform:rotate(-40deg)}
+#mon.hit .hm{animation:swing .8s}
+@keyframes hop{to{transform:translateY(-4px)}}
+@keyframes walkin{from{transform:translateX(52px) scale(.3);opacity:0}30%{opacity:1}to{transform:translateX(0) scale(1);opacity:1}}
+@keyframes leave{from{transform:translateX(0) scale(1);opacity:1}to{transform:translateX(52px) scale(.3);opacity:0}}
+#mon.leave{animation:leave 1.2s ease-in forwards}
+#door{position:absolute;right:8px;bottom:2px;width:36px;height:48px;background:#1b1209;border:3px solid #6b4a2f;border-bottom:0;border-radius:18px 18px 0 0;overflow:hidden;z-index:2}
+#door i{position:absolute;inset:0;background:#8a5a33;transform-origin:left;transition:transform .4s;box-shadow:inset -3px 0 0 #6b4a2f}
+#door i::after{content:'';position:absolute;right:6px;top:55%;width:5px;height:5px;border-radius:50%;background:#f2c94c}
+#door.open i{transform:scaleX(.15)}
+@keyframes lunge{0%,100%{transform:translateX(0)}30%,70%{transform:translateX(calc(var(--dx,60px)*-1))}}
+@keyframes swing{0%,30%{transform:rotate(-40deg)}45%,60%{transform:rotate(70deg)}100%{transform:rotate(-40deg)}}
+#ta{display:none;background:#c0392b;color:#fff;text-align:center;font-weight:700;padding:4px 10px;font-size:14px}
+#ta b{letter-spacing:1px}#ta span{font-size:18px}
+#ta i{display:block;height:5px;background:#fff;margin-top:3px;border-radius:3px;transform-origin:left}
+#ta.urgent{animation:blink .4s infinite alternate}
+@keyframes blink{to{background:#6e1d14}}
+.tab{position:absolute;left:50%;top:16%;font-size:32px;font-weight:900;color:#c0392b;text-shadow:0 2px 0 #fff,0 0 12px #fff;animation:tab 1.8s forwards;pointer-events:none;white-space:nowrap;z-index:6}
+@keyframes tab{0%{transform:translateX(-50%) scale(.4);opacity:0}15%{transform:translateX(-50%) scale(1.2);opacity:1}30%,80%{transform:translateX(-50%) scale(1);opacity:1}100%{transform:translateX(-50%);opacity:0}}
+.b.cr{animation:shake .4s}
+@keyframes shake{25%{transform:translate(-3px,2px) rotate(-6deg)}75%{transform:translate(3px,-2px) rotate(6deg)}}
+#mn{background:none;border:1px solid var(--line);color:var(--ink);border-radius:8px;font-size:15px;padding:2px 8px}
+#mis{letter-spacing:1px}
+@keyframes gn{50%{transform:scale(1.18);background:#e8590c}}
+#pbtn.gn{animation:gn .6s}
+#ch{display:none;grid-template-columns:1fr 1fr;gap:6px;padding:6px 10px 10px;background:var(--s2)}
+#ch button:nth-child(5){grid-column:span 2}
+#ch button{min-height:42px;line-height:1.15;padding:4px 6px;font:inherit;font-size:17px;border-radius:12px;border:1px solid var(--line);background:var(--pad);color:var(--pt)}
+#ch button.x{opacity:.4;text-decoration:line-through}
+#ch button:active{transform:scale(.97);background:#f2c94c}
+#disp.q{font-size:22px}
+/* 벽돌 성 */
+.k .f{fill:var(--c)}.k.tw .f{fill:#1b1209}.k.tg .f{fill:#2a190d}
+.k path{fill:none;stroke:var(--d);stroke-width:.7}.k.tw path,.k.tg path{stroke:#3a2a1a}
+.k:nth-child(3n) .f{fill-opacity:.9}.k:nth-child(5n) .f{fill-opacity:.82}
+.k.pp{animation:kpop .45s}@keyframes kpop{from{opacity:0;transform:translateY(-10px)}}
+.k.cr{animation:kshake .38s}@keyframes kshake{25%{transform:translate(-2px,1px)}75%{transform:translate(2px,-1px)}}
+.flag .fp{stroke:#6b4a2f;stroke-width:1.6}
+.flag .fc{fill:#e63946;stroke:#fff;stroke-width:.4;transform-box:fill-box;transform-origin:left center;animation:wave 1.1s ease-in-out infinite alternate}
+.flag.plant{animation:plant 1s ease-out}
+@keyframes plant{0%{transform:translateY(-45px);opacity:0}60%{transform:translateY(4px);opacity:1}100%{transform:none}}
+@keyframes wave{to{transform:scaleX(.82) skewY(6deg)}}
+.bigc{width:min(94%,360px);height:200px;margin:2px auto}.bigc svg,.mini svg{width:100%;height:100%;display:block}
+.sky{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:360px}.mini{width:30%;height:66px}
+/* 성 윤곽: 아직 쌓지 않은 칸은 연한 그림자로 보임 */
+#castle .k.e .f{fill:var(--line);fill-opacity:.95}
+#castle .k.e path{stroke:var(--s2);stroke-opacity:.9}
+#castle .k.e.tw .f,#castle .k.e.tg .f{fill:var(--line);fill-opacity:1}
+#castle .k.e.tw path,#castle .k.e.tg path{stroke:var(--s2)}
+#castle .k.pp .f{animation:kfill .5s}@keyframes kfill{from{fill:#fff8c4}}
+.kingbox{width:130px;height:162px;margin:2px auto}.kingbox.big{width:210px;height:262px}.kingbox svg{width:100%;height:100%;display:block}
+.rk{display:inline-block;margin:2px 0;padding:3px 12px;border-radius:14px;background:#f2b705;color:#3a2a00;font-weight:800}
+.ratebox{margin:10px auto 0;padding:10px 12px;border-radius:14px;background:#fff3b0;color:#3a2a00;max-width:300px;font-weight:700}
+.ratebox button{font:inherit;font-size:15px;margin:8px 4px 0;padding:8px 14px;border:0;border-radius:12px;background:#e8590c;color:#fff}.ratebox button.g{background:#8a8a8a}
+.toast{position:fixed;left:50%;bottom:calc(60px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:rgba(20,20,20,.88);color:#fff;padding:9px 18px;border-radius:20px;font-size:15px;z-index:30;pointer-events:none}
+.stamps{display:flex;gap:5px;justify-content:center;margin:6px 0}.stamps div{width:38px;height:46px;border-radius:9px;background:#ffffff22;border:2px dashed #ffffff55;font-size:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff}.stamps div b{font-size:20px;line-height:1.1}.stamps div.on{background:#f2b705;border:2px solid #fff3b0;color:#3a2a00}
+.qbig{font-size:30px;font-weight:800;margin:6px 0;word-break:break-all}.qans{font-size:26px;font-weight:800;color:#ffd84a;margin:6px 0;word-break:break-all}
+#cb{position:absolute;inset:0;z-index:6;display:none;flex-direction:column;background:radial-gradient(#3b7a58,#2a5c41);border:6px solid #8b5a2b;border-radius:6px;box-shadow:inset 0 0 30px rgba(0,0,0,.4)}#cb.on{display:flex}
+#cbq{flex:none;display:flex;align-items:flex-start;flex-wrap:wrap;gap:5px;padding:5px;max-height:42%;overflow:auto;justify-content:center;border-bottom:2px dashed #ffffff44}
+#cbq .cq{background:#ffffff22;color:#fff;border:1px dashed #fff8;border-radius:10px;padding:3px 9px;font-weight:700;font-size:calc(16px*var(--fs,1))}#cbq .cq.t{border:2px solid #f2c94c;background:#f2c94c33}
+#cv{flex:1;min-height:0;width:100%;touch-action:none;cursor:crosshair}
+#cbt{flex:none;display:flex;gap:4px;padding:4px;justify-content:center;flex-wrap:wrap}#cbt button{font:inherit;font-size:13px;padding:4px 9px;border-radius:8px;border:0;background:#ffffff33;color:#fff}#cbt button.sel{background:#f2b705;color:#222}
+</style>
+</head>
+<body>
+<div id="app">
+ <div id="top"><span id="info"></span><span id="combo"></span><span id="mis"></span><span id="bricks"></span><button id="mn">☰</button></div>
+ <div id="ta"><b>⚠️ TIME ATTACK!</b> 공격까지 <span id="tt">0</span>초<i id="tb"></i></div>
+ <div id="area"></div>
+ <div id="castle" class="cas"></div>
+ <div id="ctl"><div id="disp">&nbsp;</div><button id="pbtn"></button></div>
+ <div id="pad"></div>
+ <div id="ch"></div>
+</div>
+<div id="ov"><h1></h1><p></p><div id="oc"></div><div id="btns"></div></div>
+<script>
+const PAUSE=60,PSTART=10;
+const NAMES={math:['','한 자리 덧셈·뺄셈, 세 수 계산, 빈칸(□) 문제 조금','두 자리 ± 한 자리, 몇십 ± 몇십, 세 수 계산','두 자리 ± 두 자리, 구구단, 세 수 계산','세 자리 ± 한·두 자리, 구구단과 나눗셈, 길이 단위','세 자리 ± 세 자리, 두 자리 × 한 자리, 두 자리 ÷ 한 자리, 길이 단위','세 자리 × 한 자리, 세 자리 ÷ 한 자리, 두 자리 × 두 자리, 단위','두 자리 × 두 자리, 세 자리 ÷ 한 자리, 간단한 혼합 계산, 단위','세 자리 × 두 자리, 세 자리 ÷ 두 자리, 단위','세 자리 곱셈·나눗셈, 세 자리 ± 세 자리, 혼합 계산, 단위','총정리 + 세 자리 × 두 자리, 세 자리 ÷ 세 자리'],
+eng:['','색깔·숫자·도형·인사·대명사·의문사·간단한 명령어','동물·곤충·과일·채소·장난감·간식','가족·사람·몸·학용품·음식·집 안 물건','학교·교실·동작·감정·옷·도구','12달·요일·날씨·직업·시간·교통·길','하루 일과·장소·과목·취미·반대말','나라·건강·감정·생각·동사·환경·문화','초등 단어 전체 (영어 보고 뜻 고르기)','초등 단어 전체 (뜻 보고 영어 고르기)','be동사·의문사·전치사·관사·시제·비교급 빈칸 채우기'],
+han:['','9급 입문 한자·한자어','8급 한자·한자어','7급 한자·한자어','6급 한자·한자어','5급 한자·한자어','4급 한자·한자어','3급 한자·한자어','2급 한자·한자어','1급 한자·한자어','종합 도전 (전 급수)']};
+const SNOTE={math:'각 단계에는 단위 문제와 □ 빈칸 문제가 조금 섞여 나와요',eng:'영어→한글, 한글→영어가 섞여 나와요 (보기 5개, 두 번 틀리면 틀린 것으로 처리)',han:'한자→훈음, 훈음→한자, 한자어→독음 등이 섞여 나와요 (보기 5개, 두 번 틀리면 틀린 것으로 처리)'};
+let NAME=NAMES.math,mode='math';
+const SKY=['',['#bfe3f5','#eaf6fb'],['#ffd9b0','#fff1e0'],['#d4efb8','#f0fae3'],['#b5ece6','#e6faf8'],['#bcd4f5','#e8f0fc'],['#d9c8f5','#f1eaff'],['#f7c4dc','#fdeaf3'],['#f6bcbc','#fde8e8'],['#cfd8e0','#eef2f5'],['#ffe28a','#fff6d6']];
+const SPEED=[0,13,14,16,17,18,19,21,22,23,24],GAP=[0,3.6,4,4.5,4.8,5,5.5,6,6.5,7,7.5];
+// 성 설계도 (아래→위, #=벽돌)
+const done=[0,0,0,0,0,0];
+let stage=1,TOTAL=30,drops=[],spawned,built,okc,mon,monT,smashes,missed,strikes,pq,gain,combo,best,cur='',paused,pLeft,last,nextSpawn,run=false;
+const $=id=>document.getElementById(id),area=$('area'),disp=$('disp'),ov=$('ov'),pbtn=$('pbtn'),castle=$('castle');
+// ---- 문제 만들기 ----
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),dg=d=>d==1?rnd(1,9):rnd(10**(d-1),10**d-1),pick=a=>a[rnd(0,a.length-1)];
+const add=d=>{const a=dg(d),b=dg(d);return[a+' + '+b,a+b]};
+const sub=d=>{let a=dg(d),b=dg(d);if(a<b)[a,b]=[b,a];return[a+' − '+b,a-b]};
+const mulr=(a,b)=>Math.random()<.5?[a+' × '+b,a*b]:[b+' × '+a,a*b];
+const div=(lo,hi)=>{const b=rnd(2,9),v=rnd(Math.ceil(lo/b),Math.floor(hi/b));return[b*v+' ÷ '+b,v]};
+const add3=()=>{const a=dg(3),b=pick([dg(1),dg(2)]);return Math.random()<.5?[a+' + '+b,a+b]:[b+' + '+a,a+b]};
+const sub3=()=>{const a=dg(3),b=pick([dg(1),dg(2)]);return[a+' − '+b,a-b]};
+const num=()=>Math.random()<.5?dg(1):dg(2);
+function ex4(){let c=num(),q=''+c;for(let i=0;i<3;i++){let o=Math.random()<.5?'+':'−',x=num();if(o=='−'&&x>c)o='+';c+=o=='+'?x:-x;q+=' '+o+' '+x}return[q,c]}
+function unit(L){const[B,S,f]=pick([['m','cm',100],['km','m',1000],['kg','g',1000],['L','mL',1000]]);
+ const A=rnd(1,5),p=Math.random()<.5,r=t=>Math.round(t/f*1e6)/1e6,op=p?' + ':' − ',tt=x=>p?A*f+x:A*f-x;let x=rnd(1,f-1);
+ if(L==1)return Math.random()<.5?[A+' '+B+' = ? '+S,A*f]:[A*f+' '+S+' = ? '+B,A];
+ if(L==2)return[A+' '+B+' '+x+' '+S+' = ? '+S,A*f+x];
+ if(L==3)return[A+' '+B+op+x+' '+S+' = ? '+S,tt(x)];
+ if(L==4){x=rnd(1,9)*f/10;return[A+' '+B+op+x+' '+S+' = ? '+B,r(tt(x))]}
+ if(L==5){const st=f==100?1:10;x=rnd(1,Math.floor((f-1)/st))*st;return[A+' '+B+op+x+' '+S+' = ? '+B,r(tt(x))]}
+ const big=Math.random()<.5;
+ if(Math.random()<.5)return[A+' '+B+op+x+' '+S+' = ? '+(big?B:S),big?r(tt(x)):tt(x)];
+ const y=rnd(1,f-1),t=A*f+x-y;return[A+' '+B+' + '+x+' '+S+' − '+y+' '+S+' = ? '+(big?B:S),big?r(t):t]}
+function ex5(){for(;;){const a=rnd(2,12),b=rnd(2,12),c=rnd(10,99),d=rnd(2,9),e=rnd(2,12);
+ const q=pick([`${a} × ${b} + ${c} − ${d}`,`${c} + ${a} × ${d} − ${d*e} ÷ ${d}`,`(${c} + ${a}) × ${d} − ${b}`,`${a*b} ÷ ${a} + ${c} × ${d}`,`${c} × ${d} − ${a} × ${b}`,`${a} × ${b} × ${d} − ${c} + ${e}`]);
+ const v=eval(q.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-'));if(Number.isInteger(v)&&v>=0)return[q,v]}}
+const d21=()=>div(10,99),d31=()=>div(100,999);
+// ---- 사칙연산: 초등 1~6학년 단계별 (단항식 = 수 두 개의 계산, 다항식 = 3개 이상의 수/괄호 계산) ----
+const fmN=x=>String(Math.round(x*1000)/1000);
+const calc=q=>{try{return Math.round(Function('"use strict";return ('+q.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-')+')')()*1000)/1000}catch(e){return NaN}};
+const okI=v=>Number.isInteger(v)&&v>=0,okD=v=>Number.isFinite(v)&&v>=0&&Math.abs(v*100-Math.round(v*100))<1e-6;
+function gx(fn,ok){for(let i=0;i<120;i++){const q=fn(),v=calc(q);if(ok(v))return[q,v]}return['1 + 1',2]}
+const A=(a1,a2,b1,b2)=>{const a=rnd(a1,a2),b=rnd(b1,b2);return[a+' + '+b,a+b]};
+const S=(a1,a2,b1,b2)=>{let a=rnd(a1,a2),b=rnd(b1,b2);if(a<b)[a,b]=[b,a];return[a+' − '+b,a-b]};
+const Mu=(a1,a2,b1,b2)=>mulr(rnd(a1,a2),rnd(b1,b2));
+const rd=v=>Math.round(v*1000)/1000;
+const DA=(sc,lo,hi)=>{const a=rnd(lo,hi)/sc,b=rnd(lo,hi)/sc;return[fmN(a)+' + '+fmN(b),rd(a+b)]};
+const DS=(sc,lo,hi)=>{let a=rnd(lo,hi)/sc,b=rnd(lo,hi)/sc;if(a<b)[a,b]=[b,a];return[fmN(a)+' − '+fmN(b),rd(a-b)]};
+const DMi=()=>{const a=rnd(11,99)/10,b=rnd(2,9);return Math.random()<.5?[fmN(a)+' × '+b,rd(a*b)]:[b+' × '+fmN(a),rd(a*b)]};
+const DMd=()=>{const a=rnd(2,99)/10,b=rnd(2,9)/10;return[fmN(a)+' × '+fmN(b),rd(a*b)]};
+const DDi=()=>{const b=rnd(2,9),q=rnd(11,99)/10;return[fmN(rd(q*b))+' ÷ '+b,q]};
+const DDd=()=>{const b=rnd(2,9)/10,q=rnd(2,60);return[fmN(rd(q*b))+' ÷ '+fmN(b),q]};
+const d32=()=>{const b=rnd(11,45),q=rnd(Math.ceil(100/b),Math.floor(999/b));return[b*q+' ÷ '+b,q]};
+const tri=(mx,lo,hi)=>()=>gx(()=>{const a=rnd(lo,hi),b=rnd(lo,hi),c=rnd(lo,hi),q=Math.random()<.5?a+' + '+b+' + '+c:a+' + '+b+' − '+c;return calc(q)>mx?'(-1)':q},okI);
+const tens=()=>{const a=rnd(1,9)*10,b=rnd(1,9)*10;return Math.random()<.5&&a+b<=100?[a+' + '+b,a+b]:a>=b?[a+' − '+b,a-b]:[b+' − '+a,b-a]};
+const IM=()=>gx(()=>{const a=rnd(2,20),b=rnd(2,12),c=rnd(2,12),d=rnd(1,9),q=rnd(2,9);return pick([`${a} + ${b} × ${c}`,`${a} × ${b} − ${c}`,`${b*c} ÷ ${c} + ${a}`,`(${a} + ${b}) × ${c}`,`${a} × (${b} + ${c})`,`${(b+c)*q} ÷ (${b} + ${c})`,`(${a+d} − ${d}) × ${c}`,`${a+c} − ${b} × ${d}`])},okI);
+const PP=()=>pick([()=>{const k=rnd(2,9),d=rnd(1,9),c=d+k,q=rnd(2,12),sm=k*q,a=rnd(1,sm-1);return['('+a+' + '+(sm-a)+') ÷ ('+c+' − '+d+')',q]},
+ ()=>gx(()=>{const a=rnd(2,15),b=rnd(2,15),c=rnd(3,20),d=rnd(1,c-1);return `(${a} + ${b}) × (${c} − ${d})`},okI),
+ ()=>gx(()=>{const a=rnd(2,12),b=rnd(2,12),c=rnd(2,12),d=rnd(2,12);return Math.random()<.5?`${a} × ${b} + ${c} × ${d}`:`${a} × ${b} − ${c} × ${d}`},okI)])();
+const LM=()=>pick([()=>{const e=rnd(2,6),m=rnd(2,9),sm=e*m,a=rnd(1,sm-1),d=rnd(1,8),c=d+rnd(2,9);return['('+a+' + '+(sm-a)+') × ('+c+' − '+d+') ÷ '+e,m*(c-d)]},
+ ()=>gx(()=>{const a=rnd(5,30),b=rnd(2,9),c=rnd(2,9),d=rnd(2,9),e=rnd(2,9);return pick([`${a} + ${b} × ${c} − ${d}`,`${a} × ${b} − ${c*d} ÷ ${d}`,`${a} + ${b*c} ÷ ${c} × ${e}`,`${a*e} ÷ ${e} + ${b} × ${c} − ${d}`])},okI)])();
+const DP=()=>gx(()=>{const a=rnd(5,99)/10,b=rnd(2,50)/10,c=rnd(2,9),d=rnd(1,c-1);return pick([`${fmN(a)} + ${fmN(b)} × ${c}`,`(${fmN(a)} + ${fmN(b)}) × ${c}`,`(${fmN(a)} + ${fmN(b)}) × (${c} − ${d})`,`${fmN(a)} × ${c} − ${fmN(b)}`,`${c} × (${fmN(a)} − ${fmN(Math.min(a,b))})`])},okD);
+const SQ=(lo1,hi1,lo2,hi2)=>()=>{const a=rnd(lo1,hi1),b=rnd(lo2,hi2);return Math.random()<.5?['□ + '+b+' = '+(a+b),a]:[a+' + □ = '+(a+b),b]};
+const SQS=(lo1,hi1,lo2,hi2)=>()=>{let a=rnd(lo1,hi1),b=rnd(lo2,hi2);if(a<b)[a,b]=[b,a];return Math.random()<.5?[a+' − □ = '+(a-b),b]:['□ − '+b+' = '+(a-b),a]};
+const SQM=(lo1,hi1,lo2,hi2)=>()=>{const a=rnd(lo1,hi1),b=rnd(lo2,hi2);return Math.random()<.5?['□ × '+b+' = '+(a*b),a]:[a+' × □ = '+(a*b),b]};
+const SQD=(bLo,bHi,qLo,qHi)=>()=>{const b=rnd(bLo,bHi),q=rnd(qLo,qHi);return Math.random()<.5?[b*q+' ÷ □ = '+q,b]:['□ ÷ '+b+' = '+q,b*q]};
+const SQX=()=>{const a=rnd(2,12),b=rnd(2,9),c=rnd(1,30);return pick([['□ × '+b+' + '+c+' = '+(a*b+c),a],['(□ + '+c+') × '+b+' = '+((a+c)*b),a],[(a*b+c)+' − □ × '+b+' = '+c,a]])};
+const SQY=()=>{const a=rnd(2,60),b=rnd(2,9)/10;return['□ × '+fmN(b)+' = '+fmN(rd(a*b)),a]};
+const UL=[0,0,0,0,1,1,1,2,2,2,2];
+const un=()=>unit(UL[stage]);
+const IMe=()=>gx(()=>{const a=rnd(2,12),b=rnd(2,9),c=rnd(2,9);return pick([`${a} + ${b} × ${c}`,`${a} × ${b} − ${c}`,`${b*c} ÷ ${c} + ${a}`,`(${a} + ${b}) × ${c}`,`${a+b+c} − ${b} × ${c}`])},okI);
+const d33=()=>{const b=rnd(100,333),q=rnd(2,Math.floor(999/b));return[b*q+' ÷ '+b,q]};
+const G=[0,
+  [()=>A(1,9,1,9),()=>S(10,18,2,9),tri(20,1,9)],
+  [()=>A(10,89,1,9),()=>S(11,99,1,9),tens,tri(100,10,60)],
+  [()=>A(11,60,11,39),()=>S(21,99,11,60),()=>Mu(2,9,2,9),()=>Mu(2,9,2,9),tri(100,10,50)],
+  [add3,sub3,()=>div(4,81),()=>Mu(2,9,2,9),()=>A(11,99,11,99),un],
+  [()=>A(101,499,101,399),()=>S(201,999,101,500),()=>Mu(11,99,2,9),d21,un],
+  [()=>Mu(101,300,2,9),()=>Mu(101,300,2,9),d31,d31,()=>Mu(11,30,11,30),un],
+  [()=>Mu(11,60,11,40),d31,IMe,IMe,un],
+  [()=>Mu(101,300,11,30),()=>Mu(101,300,11,30),d32,d32,un],
+  [()=>Mu(101,500,11,50),d32,()=>A(101,899,101,899),()=>S(201,999,101,899),IMe,un],
+  0];
+G[10]=[()=>pick(G[pick([5,6,7,8,9])])(),()=>Mu(101,500,11,60),d33,d33,un];
+// □ 빈칸 문제는 전체의 약 10%만 섞어서 출제 (나머지는 계산해서 답을 구하는 문제)
+const SQP=.1,GQ=[0,[SQ(1,9,1,9),SQS(10,18,2,9)],[SQ(10,89,1,9),SQS(11,99,1,9)],[SQ(11,60,11,39),SQS(21,99,11,60),SQM(2,9,2,9)],[SQ(101,499,101,399),SQM(2,9,2,9),SQD(2,9,2,9)],[SQM(11,50,2,9),SQD(2,9,11,50)],[SQM(101,300,2,9),SQD(2,9,11,99)],[SQM(11,30,11,30),SQD(3,9,20,99)],[SQM(101,300,2,9),SQD(2,9,50,110)],[SQ(101,899,101,899),SQM(11,30,11,30)],[SQM(101,300,11,30),SQD(11,45,3,20)]];
+// ---- 배경음악: 코드로 만든 곡 (시작 화면 / 사칙연산 / 영어 / 한자 / 클리어 팡파르) ----
+let musOn=true,curTrack=null,unlocked=false,MA=null,MM=null,NB=null,mt=null,fg=null,fanT=0;
+try{if(localStorage.getItem('castleMus')==='0')musOn=false}catch(e){}
+const B=(...b)=>[].concat(...b),fr=m=>440*Math.pow(2,(m-69)/12);
+const bs=(r,f)=>[r,0,0,0,f||r+7,0,0,0],b8=r=>[r,0,r,0,r,0,r,0],op=(r,f)=>[r,0,f,0,r,0,f,0],ap=(a,b,c)=>[a,b,c,b,a,b,c,b],st=c=>[0,c,0,c,0,c,0,c],e8=r=>[r,r,r,r,r,r,r,r];
+const TRK={
+ // 시작 화면: 경쾌하고 밝은 중간 템포 (도 장조, 112bpm)
+ start:{bpm:112,lt:'square',lv:.075,lpl:1,bt:'triangle',bv:.2,bpl:1,at:'triangle',av:.075,apl:1,dv:.5,dr:'k.hhs.hh',
+  L:B([84,-1,79,-1,76,79,84,-1],[81,-1,77,-1,81,84,81,-1],[79,-1,83,-1,86,83,79,-1],[84,-1,-1,0,79,81,83,-1],[81,-1,84,-1,88,84,81,-1],[84,-1,81,-1,77,81,84,-1],[83,-1,86,-1,83,79,83,86],[84,-1,-1,-1,-1,-1,0,0]),
+  Bs:B(op(48,55),op(53,60),op(55,62),op(48,55),op(45,52),op(53,60),op(55,62),op(48,55)),
+  A:B(st([64,67,72]),st([65,69,72]),st([62,67,71]),st([64,67,72]),st([64,69,72]),st([65,69,72]),st([62,67,71]),st([64,67,72]))},
+ // 사칙연산: 또박또박 빠른 아르페지오, 집중하는 느낌 (라 장조, 124bpm)
+ math:{bpm:124,lt:'square',lv:.075,lpl:1,bt:'triangle',bv:.2,bpl:0,at:'sine',av:.05,apl:1,dv:.55,dr:'khshkhsh',
+  L:B(ap(78,81,86),ap(79,83,86),ap(76,81,85),[78,81,86,-1,85,-1,81,-1],[86,-1,85,-1,81,-1,78,-1],ap(78,83,86),ap(79,83,86),[81,-1,85,-1,88,-1,-1,0]),
+  Bs:B(b8(50),b8(55),b8(57),b8(50),b8(50),b8(59),b8(55),b8(57)),
+  A:B([0,62,0,66,0,69,0,66],[0,59,0,62,0,67,0,62],[0,57,0,61,0,64,0,61],[0,62,0,66,0,69,0,66],[0,62,0,66,0,69,0,66],[0,59,0,62,0,66,0,62],[0,59,0,62,0,67,0,62],[0,57,0,61,0,64,0,61])},
+ // 영어: 통통 튀는 팝 느낌 (솔 장조, 112bpm)
+ eng:{bpm:112,lt:'triangle',lv:.17,lpl:0,bt:'triangle',bv:.2,bpl:1,at:'square',av:.045,apl:1,dv:.5,dr:'k.hhs.hh',
+  L:B([71,74,79,-1,78,-1,76,-1],[74,76,74,71,72,-1,69,-1],[72,76,79,-1,81,-1,79,-1],[78,76,74,72,71,-1,-1,0],[79,-1,78,79,81,-1,79,-1],[76,-1,79,-1,84,-1,81,-1],[78,-1,81,-1,79,-1,78,-1],[79,-1,-1,-1,-1,-1,0,0]),
+  Bs:B(op(43,50),op(40,47),op(48,55),op(50,57),op(43,50),op(48,55),op(50,57),op(43,50)),
+  A:B(st([62,67,71]),st([59,64,67]),st([60,64,67]),st([62,66,69]),st([62,67,71]),st([60,64,67]),st([62,66,69]),st([62,67,71]))},
+ // 한자: 오음음계의 느긋한 가락, 현을 뜯는 소리와 장구 (라 오음음계, 84bpm)
+ han:{bpm:84,lt:'triangle',lv:.2,lpl:1,bt:'sine',bv:.17,bpl:0,at:'triangle',av:.08,apl:1,dv:.4,dr:'k...k.s.',
+  L:B([69,-1,74,-1,76,-1,74,69],[71,-1,69,-1,66,-1,69,-1],[66,69,71,-1,74,-1,71,-1],[69,-1,66,-1,62,-1,-1,0],[74,-1,76,-1,78,-1,76,74],[71,-1,74,-1,76,-1,74,-1],[78,-1,76,-1,74,-1,71,69],[62,-1,-1,-1,-1,-1,0,0]),
+  Bs:B(bs(50,57),bs(50,57),bs(50,57),bs(50,57),bs(50,57),bs(50,57),bs(50,57),bs(50,57)),
+  A:B([0,0,57,0,0,0,62,0],[0,0,59,0,0,0,57,0],[0,0,62,0,0,0,59,0],[0,0,57,0,0,0,50,0],[0,0,62,0,0,0,66,0],[0,0,59,0,0,0,62,0],[0,0,66,0,0,0,62,0],[0,0,50,0,0,0,0,0])},
+ // 괴물 등장: 긴박하고 급한 추격 음악 (가단조, 172bpm)
+ battle:{bpm:172,lt:'square',lv:.085,lpl:1,bt:'sawtooth',bv:.15,bpl:1,at:'sawtooth',av:.05,apl:1,dv:.7,dr:'kkshkksh',
+  L:B([81,81,0,81,84,0,83,81],[77,77,0,77,81,0,80,77],[79,79,0,79,83,0,82,79],[80,80,0,80,83,0,84,83],[84,81,84,88,84,81,84,81],[81,77,81,84,81,77,81,77],[83,80,83,86,83,80,83,80],[84,83,84,83,80,0,80,0]),
+  Bs:B(e8(45),e8(41),e8(43),e8(40),e8(45),e8(41),e8(40),[40,40,40,40,44,44,47,47]),
+  A:B(st([69,72,76]),st([65,69,72]),st([67,71,74]),st([68,71,76]),st([69,72,76]),st([65,69,72]),st([68,71,76]),st([68,71,76]))}};
+// 클리어 팡파르 (한 번 연주)
+const FAN={bpm:150,L:B([72,0,72,0,72,0,76,-1],[79,-1,-1,0,76,0,79,-1],[84,-1,-1,-1,-1,-1,0,0],[83,0,81,0,79,0,77,0],[76,0,79,0,84,-1,-1,-1]),
+ Bs:B([48,0,48,0,55,0,48,0],[48,0,48,0,55,0,48,0],[48,-1,-1,-1,55,-1,-1,-1],[43,0,45,0,47,0,50,0],[48,-1,-1,-1,-1,-1,-1,-1]),
+ A:B(st([60,64,67]),st([60,64,67]),[0,[64,67,72],0,0,0,0,0,0],st([59,62,67]),[0,[64,67,72],-1,-1,-1,-1,-1,-1])};
+const FINF={bpm:140,L:B(FAN.L,[88,-1,86,-1,84,-1,79,-1],[84,0,86,0,88,0,91,-1],[96,-1,-1,-1,-1,-1,-1,-1]),
+ Bs:B(FAN.Bs,[48,0,48,0,55,0,53,0],[48,0,52,0,55,0,59,0],[48,-1,-1,-1,-1,-1,-1,-1]),
+ A:B(FAN.A,st([60,64,67]),st([60,65,69]),[0,[64,67,72,76],-1,-1,-1,-1,-1,-1])};
+const evs=a=>{const o={};for(let i=0;i<a.length;i++){const v=a[i];if(v===0||v===-1)continue;let d=1;while(a[i+d]===-1)d++;o[i]={m:v,d}}return o};
+function mCtx(){if(!MA){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;MA=new C();MM=MA.createGain();MM.gain.value=.42;MM.connect(MA.destination);NB=MA.createBuffer(1,MA.sampleRate,MA.sampleRate);const d=NB.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}if(MA.state=='suspended'&&MA.resume)MA.resume();return MA}
+function tone(t,f,d,type,vol,pl,out){const o=MA.createOscillator(),g=MA.createGain();o.type=type;o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.012);
+ if(pl)g.gain.exponentialRampToValueAtTime(.0001,t+Math.min(d,.7));else{g.gain.setValueAtTime(vol,t+Math.max(.02,d-.07));g.gain.exponentialRampToValueAtTime(.0001,t+d)}
+ o.connect(g);g.connect(out||MM);o.start(t);o.stop(t+Math.max(d,.1)+.05)}
+function nz(t,d,vol,hp,out){const s=MA.createBufferSource(),g=MA.createGain(),f=MA.createBiquadFilter();s.buffer=NB;f.type='highpass';f.frequency.value=hp;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(f);f.connect(g);g.connect(out||MM);s.start(t);s.stop(t+d+.02)}
+function kick(t,vol,out){const o=MA.createOscillator(),g=MA.createGain();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(42,t+.12);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+.22);o.connect(g);g.connect(out||MM);o.start(t);o.stop(t+.25)}
+function drum(c,t,v,out){if(c=='k')kick(t,v*.9,out);else if(c=='s'){nz(t,.13,v*.5,1500,out);tone(t,190,.08,'triangle',v*.25,1,out)}else if(c=='h')nz(t,.04,v*.22,6000,out)}
+function playStep(m,i,t,sd){const T=m.tr;
+ const l=T.E.L[i];if(l)tone(t,fr(l.m),l.d*sd,T.lt,T.lv,T.lpl);
+ const b=T.E.Bs[i];if(b)tone(t,fr(b.m),b.d*sd*.95,T.bt,T.bv,T.bpl);
+ const a=T.E.A[i];if(a)(Array.isArray(a.m)?a.m:[a.m]).forEach(n=>tone(t,fr(n),Math.min(a.d*sd,.5),T.at,T.av,T.apl));
+ drum(T.dr[i%T.dr.length],t,T.dv)}
+function pump(m){const sd=60/m.tr.bpm/2;while(m.next<MA.currentTime+.16){playStep(m,m.step,m.next,sd);m.step=(m.step+1)%m.len;m.next+=sd}}
+function musPlay(){if(!musOn||!curTrack||!unlocked||document.hidden||fg)return;const A=mCtx();if(!A)return;if(mt&&mt.name===curTrack)return;musStop();
+ const T=TRK[curTrack];if(!T.E)T.E={L:evs(T.L),Bs:evs(T.Bs),A:evs(T.A)};mt={name:curTrack,tr:T,len:T.L.length,step:0,next:A.currentTime+.08,timer:0};mt.timer=setInterval(()=>pump(mt),30)}
+function musStop(){if(mt&&mt.timer)clearInterval(mt.timer);mt=null}
+function setTrack(n){if(curTrack===n){musPlay();return}curTrack=n;musStop();musPlay()}
+function stopFanfare(){if(fanT)clearTimeout(fanT);fanT=0;if(fg&&MA){try{fg.gain.cancelScheduledValues(MA.currentTime);fg.gain.setValueAtTime(0,MA.currentTime)}catch(e){}}fg=null}
+function fanfare(fin){if(!musOn||!unlocked)return 0;const A=mCtx();if(!A)return 0;musStop();stopFanfare();
+ const T=fin?FINF:FAN,sd=60/T.bpm/2,E={L:evs(T.L),Bs:evs(T.Bs),A:evs(T.A)},g=A.createGain();g.gain.value=1;g.connect(MM);fg=g;const t0=A.currentTime+.1;
+ Object.entries(E.L).forEach(([i,e])=>{const t=t0+i*sd;tone(t,fr(e.m),e.d*sd,'square',.1,0,g);tone(t,fr(e.m)/2,e.d*sd,'sawtooth',.05,0,g)});
+ Object.entries(E.Bs).forEach(([i,e])=>tone(t0+i*sd,fr(e.m),e.d*sd*.95,'triangle',.22,0,g));
+ Object.entries(E.A).forEach(([i,e])=>(Array.isArray(e.m)?e.m:[e.m]).forEach(n=>tone(t0+i*sd,fr(n),Math.min(e.d*sd,.9),'sawtooth',.045,0,g)));
+ const n=T.L.length,dur=n*sd;for(let i=0;i<n;i+=4)kick(t0+i*sd,.5,g);nz(t0+dur-sd*7,1.2,.25,3000,g);
+ fanT=setTimeout(()=>{fanT=0;fg=null;if(!run){curTrack=null;setTrack('start')}},(dur+.6)*1000);return dur}
+function toggleMus(){musOn=!musOn;try{localStorage.setItem('castleMus',musOn?'1':'0')}catch(e){}if(musOn)musPlay();else{musStop();stopFanfare()}}
+['pointerdown','touchstart','keydown'].forEach(e=>document.addEventListener(e,()=>{if(!unlocked){unlocked=true;mCtx();musPlay()}},{passive:true}));
+document.addEventListener('visibilitychange',()=>{if(document.hidden){musStop();if(MA&&MA.suspend)MA.suspend()}else{if(MA&&MA.resume)MA.resume();musPlay()}});
+function toggleSnd(){snd=!snd;try{localStorage.setItem('castleSnd',snd?'1':'0')}catch(e){}if(snd)beep(660,.12)}
+function optMenu(back,msg){showOv('⚙️ 옵션',(msg?'<b style="color:#ffd84a">'+msg+'</b>':'게임 설정을 바꿔요')+(hasUnsaved()?'<br><small>⚠️ 저장하지 않은 클리어가 있어요</small>':''),'',[['💾 저장하기',()=>{saveGame();optMenu(back,'💾 저장했어요!')},'클리어한 단계를 저장해요'],['📂 저장 기록 보기',()=>recordScr(()=>optMenu(back))],].concat(DEV?[['🛠️ 개발자 모드: 켜짐 (눌러서 끄기)',()=>{setDev(false);optMenu(back,'🛠️ 개발자 모드를 껐어요')}]]:[]).concat([['🗑️ 저장 기록 지우기',()=>wipeScr(mg=>optMenu(back,mg))],['🔠 글자 크기 · '+FN[fsi],()=>fontMenu(()=>optMenu(back))],[snd?'🔊 효과음: 켜짐 (눌러서 끄기)':'🔇 효과음: 꺼짐 (눌러서 켜기)',()=>{toggleSnd();optMenu(back)}],[musOn?'🎵 배경음악: 켜짐 (눌러서 끄기)':'🎵 배경음악: 꺼짐 (눌러서 켜기)',()=>{toggleMus();optMenu(back)}],['← 돌아가기',back]]))}
+// ---- 영어·한자 (보기 5개 고르기) ----
+const D=t=>t.split(',').map(x=>x.split('|'));
+const EW=[0,D("red|빨강,blue|파랑,yellow|노랑,green|초록,black|검정,white|하양,pink|분홍,one|하나,two|둘,three|셋,four|넷,five|다섯,six|여섯,seven|일곱,eight|여덟,nine|아홉,ten|열,hello|안녕,goodbye|잘 가,yes|네,no|아니요"),
+D("dog|개,cat|고양이,bird|새,fish|물고기,rabbit|토끼,tiger|호랑이,lion|사자,elephant|코끼리,monkey|원숭이,horse|말,cow|소,pig|돼지,duck|오리,bear|곰,apple|사과,banana|바나나,grape|포도,orange|오렌지,ball|공,doll|인형,car|자동차,robot|로봇"),
+D("mom|엄마,dad|아빠,sister|여자 형제,brother|남자 형제,grandfather|할아버지,grandmother|할머니,baby|아기,family|가족,head|머리,eye|눈,nose|코,mouth|입,ear|귀,hand|손,foot|발,pencil|연필,eraser|지우개,book|책,bag|가방,desk|책상,chair|의자,milk|우유,bread|빵,rice|밥,egg|달걀,cake|케이크"),
+D("friend|친구,teacher|선생님,student|학생,boy|소년,girl|소녀,school|학교,classroom|교실,notebook|공책,ruler|자,scissors|가위,window|창문,door|문,run|달리다,jump|뛰다,swim|수영하다,eat|먹다,drink|마시다,sleep|자다,read|읽다,write|쓰다,happy|행복한,sad|슬픈,hungry|배고픈,sleepy|졸린,hat|모자,shoes|신발,shirt|셔츠,dress|원피스"),
+D("Monday|월요일,Tuesday|화요일,Wednesday|수요일,Thursday|목요일,Friday|금요일,Saturday|토요일,Sunday|일요일,spring|봄,summer|여름,fall|가을,winter|겨울,sunny|맑은,rainy|비 오는,cloudy|흐린,snowy|눈 오는,windy|바람 부는,doctor|의사,nurse|간호사,police officer|경찰관,farmer|농부,cook|요리사,singer|가수,pilot|조종사,firefighter|소방관,bus|버스,train|기차,subway|지하철,airplane|비행기,bike|자전거"),
+D("get up|일어나다,wash|씻다,brush|(이를) 닦다,study|공부하다,go to bed|잠자리에 들다,breakfast|아침 식사,lunch|점심 식사,dinner|저녁 식사,library|도서관,hospital|병원,park|공원,market|시장,bank|은행,zoo|동물원,museum|박물관,restaurant|식당,turn left|왼쪽으로 돌다,turn right|오른쪽으로 돌다,go straight|곧장 가다,math|수학,science|과학,music|음악,art|미술,hobby|취미,soccer|축구,draw|그리다,sing|노래하다,big|큰,small|작은,hot|뜨거운,cold|차가운,fast|빠른,slow|느린"),
+D("Korea|한국,America|미국,China|중국,Japan|일본,England|영국,Canada|캐나다,headache|두통,toothache|치통,fever|발열,cough|기침,catch a cold|감기에 걸리다,stomachache|복통,healthy|건강한,sick|아픈,tall|키가 큰,short|(키가) 작은,heavy|무거운,light|가벼운,expensive|비싼,cheap|싼,beautiful|아름다운,dangerous|위험한,important|중요한,difficult|어려운,easy|쉬운,environment|환경,recycle|재활용하다,future|미래,travel|여행하다,invite|초대하다,borrow|빌리다,decide|결정하다,festival|축제,holiday|휴일"),
+0,0,
+D("I ___ a student.|am|is|are,She ___ my friend.|is|am|are,They ___ happy.|are|is|am,___ is your name?|What|Where|Who,___ are you from?|Where|What|When,I have two ___.|dogs|dog|a dog,The book is ___ the desk.|on|in|at,He ___ soccer every day.|plays|play|playing,Can you ___ English?|speak|speaks|speaking,This is ___ apple.|an|a|the,I ___ breakfast at seven.|eat|eats|eating,___ is he? He is my father.|Who|What|Where,How ___ are you? I am ten.|old|many|much,We ___ to school by bus.|go|goes|going,There ___ a cat under the table.|is|are|am,My birthday is ___ May.|in|on|at,I ___ milk every morning.|drink|drinks|drinking,___ do you live? In Seoul.|Where|Who|What,My name ___ Minho.|is|am|are,We ___ students.|are|is|am,___ is that? It is my teacher.|Who|Where|How,I ___ to music.|listen|listens|listening,I can ___ fast.|run|runs|running,There are three ___ in the box.|apples|apple|an apple,___ do you like? I like pizza.|What|Where|Who,It is ___ today.|sunny|sun|sunning,He ___ a doctor.|is|am|are,I go to school ___ Monday.|on|in|at,She ___ TV every night.|watches|watch|watching,___ old is she? She is nine.|How|What|Who,I ___ to the park yesterday.|went|go|goes,My brother is ___ than me.|taller|tall|tallest,She is the ___ girl in my class.|tallest|taller|tall,What did you ___ last weekend?|do|did|does,I ___ visit my grandmother tomorrow.|will|did|was,He ___ a cold last week.|had|has|have,I ___ my homework yesterday.|did|do|does,Turn ___ at the corner.|left|leave|lefts,What time ___ you get up?|do|does|is,She ___ English very well.|speaks|speak|speaking,Let's ___ to the library.|go|goes|going,How much ___ this bag?|is|are|am,I ___ a headache. I am sick.|have|has|am")];
+const HZ=[0,D("一|한 일,二|두 이,三|석 삼,四|넉 사,五|다섯 오,六|여섯 륙,七|일곱 칠,八|여덟 팔,九|아홉 구,十|열 십,日|날 일,月|달 월,火|불 화,水|물 수,木|나무 목,金|쇠 금,土|흙 토,山|메 산,大|큰 대,小|작을 소,中|가운데 중,人|사람 인,火山|화산,山水|산수,大小|대소,日月|일월,中小|중소,九月|구월,十中八九|십중팔구,三日|삼일"),
+D("南|남녘 남,北|북녘 북,東|동녘 동,西|서녘 서,女|계집 녀,母|어미 모,父|아비 부,兄|형 형,弟|아우 제,王|임금 왕,民|백성 민,生|날 생,先|먼저 선,學|배울 학,校|학교 교,敎|가르칠 교,室|집 실,門|문 문,國|나라 국,韓|나라 한,軍|군사 군,年|해 년,萬|일만 만,白|흰 백,靑|푸를 청,外|바깥 외,長|긴 장,寸|마디 촌,學校|학교,敎室|교실,國民|국민,韓國|한국,先生|선생,父母|부모,兄弟|형제,外國|외국,南北|남북,東西|동서,靑年|청년,軍人|군인,長女|장녀,母女|모녀"),
+D("家|집 가,歌|노래 가,江|강 강,工|장인 공,男|사내 남,內|안 내,冬|겨울 동,力|힘 력,老|늙을 로,林|수풀 림,立|설 립,名|이름 명,文|글월 문,百|일백 백,上|윗 상,夕|저녁 석,手|손 수,心|마음 심,安|편안 안,語|말씀 어,子|아들 자,自|스스로 자,字|글자 자,千|일천 천,天|하늘 천,川|내 천,春|봄 춘,夏|여름 하,秋|가을 추,下|아래 하,海|바다 해,花|꽃 화,話|말씀 화,休|쉴 휴,後|뒤 후,前|앞 전,家族|가족,工場|공장,自然|자연,名山|명산,文字|문자,食事|식사,農事|농사,平安|평안,天地|천지,春夏秋冬|춘하추동,海外|해외,左右|좌우,出入|출입,午前|오전,人口|인구,休日|휴일,安心|안심,電話|전화,敎育|교육"),
+D("角|뿔 각,界|지경 계,計|셀 계,高|높을 고,公|공평할 공,光|빛 광,球|공 구,今|이제 금,急|급할 급,短|짧을 단,代|대신할 대,圖|그림 도,讀|읽을 독,童|아이 동,路|길 로,理|다스릴 리,明|밝을 명,目|눈 목,美|아름다울 미,半|반 반,發|필 발,放|놓을 방,病|병 병,服|옷 복,本|근본 본,部|떼 부,分|나눌 분,社|모일 사,書|글 서,石|돌 석,雪|눈 설,線|줄 선,習|익힐 습,身|몸 신,信|믿을 신,愛|사랑 애,野|들 야,夜|밤 야,藥|약 약,風|바람 풍,會|모일 회,讀書|독서,運動|운동,音樂|음악,圖書|도서,發明|발명,光線|광선,愛國|애국,野外|야외,衣服|의복,家庭|가정,注意|주의,會社|회사,朝夕|조석,理由|이유"),
+D("價|값 가,客|손 객,格|격식 격,決|결단할 결,結|맺을 결,敬|공경 경,告|고할 고,課|공부할 과,過|지날 과,觀|볼 관,關|관계할 관,廣|넓을 광,具|갖출 구,舊|옛 구,局|판 국,基|터 기,己|몸 기,念|생각 념,能|능할 능,團|둥글 단,當|마땅 당,德|큰 덕,到|이를 도,獨|홀로 독,良|어질 량,旅|나그네 려,歷|지낼 력,練|익힐 련,流|흐를 류,類|무리 류,馬|말 마,末|끝 말,望|바랄 망,買|살 매,賣|팔 매,無|없을 무,倍|곱 배,變|변할 변,兵|병사 병,福|복 복,結果|결과,熱氣|열기,買賣|매매,無事|무사,完全|완전,約束|약속,兒童|아동,他人|타인,品質|품질,責任|책임,初等|초등,停止|정지,洗手|세수"),
+D("假|거짓 가,街|거리 가,刻|새길 각,看|볼 간,甘|달 감,減|덜 감,敢|감히 감,康|편안할 강,講|욀 강,個|낱 개,巨|클 거,居|살 거,檢|검사할 검,儉|검소할 검,擊|칠 격,犬|개 견,堅|굳을 견,缺|이지러질 결,慶|경사 경,競|다툴 경,境|지경 경,鏡|거울 경,孤|외로울 고,穀|곡식 곡,困|곤할 곤,骨|뼈 골,郡|고을 군,勸|권할 권,權|권세 권,歸|돌아갈 귀,均|고를 균,勤|부지런할 근,奇|기이할 기,寄|부칠 기,機|틀 기,技|재주 기,器|그릇 기,努|힘쓸 노,斷|끊을 단,毒|독 독,豆|콩 두,燈|등 등,卵|알 란,檢査|검사,勤勉|근면,努力|노력,困難|곤란,勸告|권고,機會|기회,器具|기구,斷水|단수,得失|득실,燈火|등화,暖流|난류,論理|논리"),
+D("距|상거할 거,拒|막을 거,乾|하늘 건,傑|뛰어날 걸,肩|어깨 견,絹|비단 견,契|맺을 계,戒|경계할 계,繼|이을 계,鷄|닭 계,枯|마를 고,稿|원고 고,鼓|북 고,顧|돌아볼 고,谷|골 곡,哭|울 곡,恭|공손할 공,供|이바지할 공,貢|바칠 공,寡|적을 과,官|벼슬 관,管|대롱 관,貫|꿸 관,慣|익숙할 관,狂|미칠 광,鑛|쇳돌 광,塊|흙덩이 괴,怪|괴이할 괴,構|얽을 구,救|구원할 구,管理|관리,慣習|관습,救命|구명,構成|구성,貫通|관통,顧客|고객,恭敬|공경,供給|공급,鑛山|광산,怪物|괴물"),
+D("簡|대쪽 간,刊|새길 간,肝|간 간,懇|간절할 간,鑑|거울 감,鋼|강철 강,綱|벼리 강,剛|굳셀 강,蓋|덮을 개,介|끼일 개,概|대개 개,皆|다 개,隔|사이 뜰 격,兼|겸할 겸,謙|겸손할 겸,耕|밭 갈 경,硬|굳을 경,啓|열 계,桂|계수나무 계,棺|널 관,寬|너그러울 관,簡單|간단,刊行|간행,懇切|간절,鋼鐵|강철,概念|개념,皆勤|개근,兼備|겸비,謙遜|겸손,耕作|경작,隔離|격리"),
+D("苛|가혹할 가,柯|가지 가,艱|어려울 간,姦|간음할 간,渴|목마를 갈,褐|갈색 갈,葛|칡 갈,憾|섭섭할 감,柑|귤 감,疆|지경 강,薑|생강 강,鎧|갑옷 개,坑|구덩이 갱,恪|삼갈 각,殼|껍질 각,苛酷|가혹,艱難|간난,渴望|갈망,褐色|갈색,葛藤|갈등,遺憾|유감,柑橘|감귤,坑道|갱도"),0];
+const EWX=[0,D("brown|갈색,purple|보라색,gray|회색,eleven|열하나,twelve|열둘,thirteen|열셋,fourteen|열넷,fifteen|열다섯,sixteen|열여섯,seventeen|열일곱,eighteen|열여덟,nineteen|열아홉,twenty|스물,zero|영,hi|안녕하세요,bye|안녕히 가세요,thank you|고마워요,sorry|미안해요,please|부탁해요,good morning|좋은 아침,good night|잘 자,welcome|환영해요,I|나,you|너,we|우리,he|그,she|그녀,it|그것,this|이것,that|저것,name|이름,fine|좋은,nice|멋진,great|훌륭한,listen|듣다,look|보다,open|열다,close|닫다,stop|멈추다,again|다시,come|오다,go|가다"),
+D("snake|뱀,mouse|쥐,sheep|양,goat|염소,frog|개구리,turtle|거북이,giraffe|기린,zebra|얼룩말,penguin|펭귄,dolphin|돌고래,whale|고래,shark|상어,butterfly|나비,bee|벌,ant|개미,spider|거미,chicken|닭,wolf|늑대,fox|여우,deer|사슴,strawberry|딸기,watermelon|수박,peach|복숭아,pear|서양 배,lemon|레몬,melon|멜론,cherry|체리,tomato|토마토,carrot|당근,potato|감자,onion|양파,kite|연,balloon|풍선,teddy bear|곰 인형,block|블록,puzzle|퍼즐,drum|드럼,cookie|쿠키,candy|사탕,ice cream|아이스크림,juice|주스,pizza|피자,hamburger|햄버거"),
+D("uncle|삼촌,aunt|이모·고모,cousin|사촌,parents|부모님,son|아들,daughter|딸,face|얼굴,arm|팔,leg|다리,finger|손가락,hair|머리카락,neck|목,shoulder|어깨,knee|무릎,back|등,tooth|이(치아),stomach|배(몸),crayon|크레파스,pen|펜,paper|종이,glue|풀,tape|테이프,color pencil|색연필,water|물,tea|차,soup|수프,noodle|국수,meat|고기,sandwich|샌드위치,salad|샐러드,butter|버터,salt|소금,sugar|설탕,jam|잼,room|방,house|집,bed|침대,table|탁자,TV|텔레비전,phone|전화기,key|열쇠,cup|컵,spoon|숟가락,fork|포크,knife|칼,dish|접시,bowl|그릇,bottle|병,bathroom|화장실,kitchen|부엌,sofa|소파,lamp|전등"),
+D("pencil case|필통,board|칠판,clock|시계,map|지도,picture|그림,gym|체육관,playground|놀이터,lesson|수업,homework|숙제,test|시험,class|반,question|질문,answer|답,walk|걷다,dance|춤추다,play|놀다,cry|울다,laugh|웃다,smile|미소 짓다,clap|박수 치다,throw|던지다,catch|잡다,kick|차다,fly|날다,climb|오르다,ride|타다,help|돕다,give|주다,take|가져가다,make|만들다,wait|기다리다,angry|화난,tired|피곤한,scared|무서워하는,excited|신이 난,surprised|놀란,busy|바쁜,kind|친절한,funny|웃기는,brave|용감한,shy|수줍은,quiet|조용한,loud|시끄러운,socks|양말,pants|바지,jacket|재킷,coat|코트,cap|야구 모자,glasses|안경,gloves|장갑,scarf|목도리,boots|부츠,skirt|치마,shorts|반바지,T-shirt|티셔츠,umbrella|우산"),
+D("January|1월,February|2월,March|3월,April|4월,May|5월,June|6월,July|7월,August|8월,September|9월,October|10월,November|11월,December|12월,rain|비,snow|눈(하늘에서 내리는),wind|바람,cloud|구름,sun|태양,moon|달,star|별,sky|하늘,rainbow|무지개,storm|폭풍,cool|시원한,warm|따뜻한,morning|아침,afternoon|오후,evening|저녁,night|밤,today|오늘,tomorrow|내일,yesterday|어제,week|주,month|한 달,year|해(연도),weekend|주말,dentist|치과의사,scientist|과학자,artist|화가,baker|제빵사,driver|운전기사,fisherman|어부,soldier|군인,writer|작가,actor|배우,dancer|무용가,vet|수의사,king|왕,queen|여왕,programmer|프로그래머,taxi|택시,boat|보트,ship|선박,truck|트럭,helicopter|헬리콥터,motorcycle|오토바이,north|북쪽,south|남쪽,east|동쪽,west|서쪽"),
+D("wake up|잠에서 깨다,take a shower|샤워하다,get dressed|옷을 입다,go to school|학교에 가다,come home|집에 오다,watch TV|TV를 보다,do homework|숙제를 하다,have breakfast|아침을 먹다,play games|게임을 하다,listen to music|음악을 듣다,take a bath|목욕하다,post office|우체국,bakery|빵집,pharmacy|약국,supermarket|슈퍼마켓,bookstore|서점,police station|경찰서,fire station|소방서,airport|공항,station|역,theater|극장,church|교회,street|거리,corner|모퉁이,traffic light|신호등,next to|~ 옆에,in front of|~ 앞에,behind|~ 뒤에,between|~ 사이에,near|가까운,far|먼,on|~ 위에,under|~ 아래에,English|영어,Korean|국어,social studies|사회,P.E.|체육,history|역사,swimming|수영,reading|독서,cooking|요리,dancing|춤,hiking|등산,fishing|낚시,camping|캠핑,baseball|야구,basketball|농구,tennis|테니스,badminton|배드민턴,table tennis|탁구,volleyball|배구,taekwondo|태권도,piano|피아노,violin|바이올린,guitar|기타,clean|깨끗한,dirty|더러운,full|가득 찬,empty|빈,strong|강한,weak|약한,sweet|달콤한,sour|신,salty|짠,spicy|매운,delicious|맛있는"),
+D("France|프랑스,Germany|독일,Italy|이탈리아,Spain|스페인,Australia|호주,India|인도,Russia|러시아,Brazil|브라질,Egypt|이집트,Mexico|멕시코,Thailand|태국,Vietnam|베트남,runny nose|콧물,sore throat|목 아픔,backache|등이 아픔,medicine|약,temperature|체온,rest|쉬다,exercise|운동하다,bright|밝은,dark|어두운,popular|인기 있는,special|특별한,famous|유명한,polite|예의 바른,careful|조심하는,lazy|게으른,honest|정직한,smart|똑똑한,friendly|상냥한,bigger|더 큰,smaller|더 작은,faster|더 빠른,better|더 좋은,worse|더 나쁜,best|가장 좋은,learn|배우다,teach|가르치다,visit|방문하다,enjoy|즐기다,practice|연습하다,choose|고르다,carry|나르다,bring|가져오다,send|보내다,receive|받다,build|짓다,protect|보호하다,save|구하다,change|바꾸다,keep|지키다,forget|잊다,remember|기억하다,hope|바라다,believe|믿다,nature|자연,earth|지구,forest|숲,river|강,mountain|산,ocean|바다,garbage|쓰레기,pollution|오염,Chuseok|추석,Seollal|설날,Christmas|크리스마스,birthday|생일,party|파티,present|선물")];
+const HZX=[0,D("一月|일월,二月|이월,三月|삼월,四月|사월,五月|오월,七月|칠월,八月|팔월,大人|대인,小人|소인,大山|대산,水中|수중,土木|토목,山中|산중,五十|오십,七十|칠십,三三五五|삼삼오오,月火水木金土日|월화수목금토일"),
+D("大韓民國|대한민국,王國|왕국,女王|여왕,國軍|국군,校長|교장,校門|교문,學年|학년,萬年|만년,白人|백인,白金|백금,靑山|청산,外人|외인,室外|실외,生日|생일,生水|생수,母國|모국,韓人|한인,民生|민생,軍民|군민,北韓|북한,南韓|남한,大學|대학,大門|대문,中學|중학,三寸|삼촌,四寸|사촌,外三寸|외삼촌,先王|선왕"),
+D("間|사이 간,車|수레 거·차,空|빌 공,記|기록할 기,氣|기운 기,旗|기 기,農|농사 농,答|대답 답,道|길 도,同|한가지 동,洞|골 동,動|움직일 동,登|오를 등,來|올 래,里|마을 리,每|매양 매,面|낯 면,命|목숨 명,問|물을 문,物|물건 물,方|모 방,夫|지아비 부,不|아닐 불,事|일 사,算|셈 산,色|빛 색,姓|성 성,世|인간 세,少|적을 소,所|바 소,數|셈 수,市|저자 시,時|때 시,食|밥 식,植|심을 식,然|그럴 연,午|낮 오,右|오른 우,有|있을 유,育|기를 육,邑|고을 읍,入|들 입,場|마당 장,全|온전 전,電|번개 전,正|바를 정,祖|할아비 조,足|발 족,左|왼 좌,主|임금 주,住|살 주,重|무거울 중,地|땅 지,紙|종이 지,直|곧을 직,草|풀 초,村|마을 촌,出|날 출,便|편할 편,平|평평할 평,漢|한수 한,活|살 활,孝|효도 효,口|입 구,空氣|공기,記事|기사,農夫|농부,同生|동생,洞里|동리,動物|동물,來日|내일,每日|매일,每年|매년,問答|문답,算數|산수,色紙|색지,世上|세상,所有|소유,數學|수학,市場|시장,時間|시간,食口|식구,植物|식물,午後|오후,右手|우수,有名|유명,入學|입학,入口|입구,場所|장소,全國|전국,正直|정직,祖國|조국,主人|주인,住所|주소,重大|중대,地下|지하,直立|직립,村長|촌장,出口|출구,便紙|편지,平地|평지,漢字|한자"),
+D("各|각각 각,感|느낄 감,強|강할 강,開|열 개,京|서울 경,古|예 고,苦|쓸 고,功|공 공,共|한가지 공,科|과목 과,果|실과 과,交|사귈 교,區|구분할 구,郡|고을 군,近|가까울 근,根|뿌리 근,級|등급 급,多|많을 다,堂|집 당,對|대할 대,待|기다릴 대,度|법도 도,頭|머리 두,等|무리 등,樂|즐길 락,例|법식 례,禮|예도 례,綠|푸를 록,李|오얏 리,利|이할 리,聞|들을 문,米|쌀 미,朴|성 박,反|돌이킬 반,班|나눌 반,番|차례 번,別|다를 별,死|죽을 사,使|하여금 사,席|자리 석,成|이룰 성,省|살필 성,消|사라질 소,速|빠를 속,孫|손자 손,樹|나무 수,術|재주 술,勝|이길 승,始|비로소 시,式|법 식,神|귀신 신,新|새 신,失|잃을 실,弱|약할 약,洋|큰바다 양,陽|볕 양,言|말씀 언,業|업 업,永|길 영,英|꽃부리 영,溫|따뜻할 온,用|쓸 용,勇|날랠 용,運|옮길 운,園|동산 원,遠|멀 원,由|말미암을 유,油|기름 유,銀|은 은,音|소리 음,飮|마실 음,衣|옷 의,意|뜻 의,醫|의원 의,者|놈 자,作|지을 작,昨|어제 작,章|글 장,才|재주 재,在|있을 재,戰|싸움 전,庭|뜰 정,定|정할 정,第|차례 제,題|제목 제,朝|아침 조,族|겨레 족,注|부을 주,晝|낮 주,集|모을 집,窓|창 창,淸|맑을 청,體|몸 체,表|겉 표,幸|다행 행,現|나타날 현,形|모양 형,和|화할 화,黃|누를 황,各自|각자,共同|공동,科學|과학,反對|반대,感動|감동,開學|개학,古今|고금,近代|근대,多少|다소,樂園|낙원,速度|속도,孫女|손녀,樹木|수목,勝利|승리,始作|시작,新聞|신문,失手|실수,言語|언어,永遠|영원,英語|영어,溫度|온도,勇氣|용기,醫學|의학,昨年|작년,題目|제목,窓門|창문,現在|현재,黃金|황금"),
+D("見|볼 견,奉|받들 봉,比|견줄 비,費|쓸 비,鼻|코 비,氷|얼음 빙,士|선비 사,仕|섬길 사,史|사기 사,思|생각 사,査|조사할 사,産|낳을 산,相|서로 상,商|장사 상,賞|상줄 상,序|차례 서,仙|신선 선,船|배 선,善|착할 선,選|가릴 선,鮮|고울 선,說|말씀 설,性|성품 성,洗|씻을 세,歲|해 세,束|묶을 속,首|머리 수,宿|잘 숙,順|순할 순,示|보일 시,識|알 식,臣|신하 신,實|열매 실,兒|아이 아,惡|악할 악,案|책상 안,約|맺을 약,養|기를 양,魚|고기 어,漁|고기 잡을 어,億|억 억,熱|더울 열,葉|잎 엽,屋|집 옥,完|완전할 완,要|요긴할 요,曜|빛날 요,浴|목욕할 욕,友|벗 우,雨|비 우,雲|구름 운,元|으뜸 원,院|집 원,偉|클 위,以|써 이,任|맡길 임,材|재목 재,財|재물 재,災|재앙 재,再|두 재,爭|다툴 쟁,貯|쌓을 저,的|과녁 적,赤|붉을 적,典|법 전,傳|전할 전,展|펼 전,切|끊을 절,節|마디 절,店|가게 점,停|머무를 정,情|뜻 정,調|고를 조,操|잡을 조,卒|마칠 졸,種|씨 종,終|마칠 종,罪|허물 죄,州|고을 주,週|주일 주,見學|견학,決定|결정,敬老|경로,課題|과제,觀光|관광,關心|관심,廣場|광장,基本|기본,能力|능력,團體|단체,當然|당연,獨立|독립,良心|양심,旅行|여행,歷史|역사,流行|유행,變化|변화,兵士|병사,商店|상점,說明|설명,實力|실력,友情|우정,雨天|우천,雲海|운해,善惡|선악,以上|이상"),
+D("階|섬돌 계,季|계절 계,經|지날 경,警|깨우칠 경,庫|곳집 고,孔|구멍 공,攻|칠 공,官|벼슬 관,究|연구할 구,句|글귀 구,君|임금 군,群|무리 군,屈|굽힐 굴,宮|집 궁,卷|책 권,規|법 규,極|극진할 극,紀|벼리 기,暖|따뜻할 난,難|어려울 난,納|들일 납,怒|성낼 노,單|홑 단,段|층계 단,端|끝 단,達|통달할 달,擔|멜 담,黨|무리 당,帶|띠 대,隊|무리 대,導|인도할 도,督|감독할 독,銅|구리 동,斗|말 두,得|얻을 득,羅|벌일 라,亂|어지러울 란,覽|볼 람,略|간략할 략,兩|두 량,糧|양식 량,慮|생각할 려,麗|고울 려,連|이을 련,烈|매울 렬,錄|기록할 록,論|논할 론,龍|용 룡,柳|버들 류,留|머무를 류,律|법칙 률,離|떠날 리,妹|누이 매,脈|줄기 맥,眠|잘 면,勉|힘쓸 면,鳴|울 명,模|본뜰 모,妙|묘할 묘,墓|무덤 묘,舞|춤출 무,務|힘쓸 무,武|호반 무,未|아닐 미,味|맛 미,密|빽빽할 밀,博|넓을 박,防|막을 방,房|방 방,訪|찾을 방,拜|절 배,背|등 배,配|나눌 배,伐|칠 벌,罰|벌 벌,壁|벽 벽,邊|가 변,保|지킬 보,報|갚을 보,寶|보배 보,步|걸음 보,復|회복할 복,府|마을 부,婦|며느리 부,副|버금 부,富|부유할 부,負|질 부,粉|가루 분,佛|부처 불,備|갖출 비,悲|슬플 비,非|아닐 비,飛|날 비,貧|가난할 빈,階段|계단,季節|계절,警察|경찰,攻擊|공격,君子|군자,規則|규칙,段階|단계,達成|달성,隊長|대장,兩手|양수,防止|방지,訪問|방문,配達|배달,背景|배경,報告|보고,寶物|보물,步行|보행,副業|부업,富者|부자,貧富|빈부,非常|비상,婦女|부녀,宮中|궁중"),
+D("賀|하례할 하,恨|한 한,割|벨 할,含|머금을 함,陷|빠질 함,恒|항상 항,項|항목 항,該|마땅 해,響|울릴 향,玄|검을 현,穴|구멍 혈,脅|위협할 협,豪|호걸 호,魂|넋 혼,洪|넓을 홍,悔|뉘우칠 회,懷|품을 회,劃|그을 획,獲|얻을 획,橫|가로 횡,稀|드물 희,尖|뾰족할 첨,添|더할 첨,晴|갤 청,替|바꿀 체,逮|잡을 체,抄|뽑을 초,礎|주춧돌 초,秒|분초 초,超|뛰어넘을 초,觸|닿을 촉,促|재촉할 촉,燭|촛불 촉,聰|귀 밝을 총,催|재촉할 최,抽|뽑을 추,醜|추할 추,畜|가축 축,逐|쫓을 축,縮|줄일 축,蓄|모을 축,衝|찌를 충,臭|냄새 취,醉|취할 취,趣|뜻 취,測|헤아릴 측,側|곁 측,值|값 치,恥|부끄러울 치,稚|어릴 치,侵|침노할 침,枕|베개 침,浸|잠길 침,墮|떨어질 타,妥|온당할 타,惰|게으를 타,濁|흐릴 탁,誕|낳을 탄,奪|빼앗을 탈,貪|탐할 탐,割引|할인,含有|함유,項目|항목,該當|해당,脅迫|협박,豪傑|호걸,洪水|홍수,後悔|후회,橫斷|횡단,尖端|첨단,添加|첨가,晴天|청천,代替|대체,秒針|초침,超過|초과,促進|촉진,縮小|축소,衝突|충돌,測定|측정,誕生|탄생"),
+D("佳|아름다울 가,閣|집 각,脚|다리 각,諫|간할 간,濃|짙을 농,尿|오줌 뇨,屯|진 칠 둔,坤|땅 곤,昆|맏 곤,昏|어두울 혼,魁|으뜸 괴,掘|팔 굴,窟|굴 굴,弓|활 궁,拳|주먹 권,軌|바퀴 자국 궤,叫|부르짖을 규,糾|얽힐 규,劍|칼 검,謁|뵐 알,菌|버섯 균,斤|도끼 근,僅|겨우 근,謹|삼갈 근,錦|비단 금,琴|거문고 금,禽|새 금,肯|즐길 긍,企|꾀할 기,祈|빌 기,騎|말 탈 기,棄|버릴 기,幾|몇 기,飢|주릴 기,忌|꺼릴 기,駕|멍에 가,稼|심을 가,艦|싸움배 함,殿|큰집 전,彼|저 피,疲|피곤할 피,佳作|가작,脚光|각광,濃度|농도,拳銃|권총,弓術|궁술,祈願|기원,棄權|기권,飢餓|기아,企業|기업,騎士|기사,菌類|균류,劍術|검술,艦隊|함대,疲困|피곤,諫言|간언,肯定|긍정,謹愼|근신,昏迷|혼미,彼岸|피안,殿閣|전각"),
+D("呵|꾸짖을 가,竿|낚싯대 간,澗|산골물 간,糠|겨 강,崗|언덕 강,岡|산등성이 강,腔|속 빌 강,瑟|큰 거문고 슬,琵|비파 비,琶|비파 파,瑞|상서 서,璽|도장 새,璧|구슬 벽,瑤|구슬 요,瓊|구슬 경,琢|쫄 탁,瑕|티 하,瑾|아름다운 옥 근,蠶|누에 잠,蟬|매미 선,蛾|나방 아,蝶|나비 접,蜂|벌 봉,蟻|개미 의,蠅|파리 승,蛙|개구리 와,蛛|거미 주,螢|개똥벌레 형,蝸|달팽이 와,蟾|두꺼비 섬,完璧|완벽,瑞氣|서기,玉璽|옥새,養蠶|양잠,胡蝶|호접,琵琶|비파,螢雪|형설,蜂起|봉기,蠶食|잠식,瑕疵|하자,竿頭|간두,呵責|가책,腔腸|강장")];
+const EWY=[0,D("sky blue|하늘색,silver|은색,gold|금색,navy|남색,thirty|서른,forty|마흔,fifty|쉰,sixty|예순,seventy|일흔,eighty|여든,ninety|아흔,hundred|백,first|첫째,second|둘째,third|셋째,fourth|넷째,fifth|다섯째,circle|원,square|네모,triangle|세모,heart|하트,line|선,dot|점,stand|서다,sit|앉다,touch|만지다,point|가리키다,show|보여 주다,color|색칠하다,cut|자르다,paste|붙이다,raise|들다,say|말하다,repeat|따라 하다,finish|끝내다,ready|준비된,good afternoon|좋은 오후,good evening|좋은 저녁,see you|또 만나요,how are you|어떻게 지내요,excuse me|실례합니다,thanks|고마워,you're welcome|천만에요,nice to meet you|만나서 반가워요,who|누구,what|무엇,where|어디,when|언제,why|왜,how|어떻게,here|여기,there|저기,up|위로,down|아래로,in|안,out|밖,alphabet|알파벳,letter|글자,word|단어,sound|소리,song|노래,game|게임,story|이야기"),
+D("ladybug|무당벌레,bat|박쥐,owl|부엉이,eagle|독수리,parrot|앵무새,swan|백조,crow|까마귀,pigeon|비둘기,seal|물개,octopus|문어,crab|게,jellyfish|해파리,snail|달팽이,worm|지렁이,kangaroo|캥거루,koala|코알라,panda|판다,camel|낙타,hippo|하마,rhino|코뿔소,leopard|표범,gorilla|고릴라,squirrel|다람쥐,hamster|햄스터,puppy|강아지,kitten|새끼 고양이,chick|병아리,donkey|당나귀,kiwi|키위,mango|망고,pineapple|파인애플,plum|자두,coconut|코코넛,corn|옥수수,cabbage|양배추,cucumber|오이,pumpkin|호박,mushroom|버섯,pepper|고추,garlic|마늘,bean|콩,pea|완두콩,radish|무,spinach|시금치,lettuce|상추,broccoli|브로콜리,swing|그네,slide|미끄럼틀,seesaw|시소,jump rope|줄넘기,yo-yo|요요,top|팽이,card|카드,chocolate|초콜릿,pancake|팬케이크,sausage|소시지,french fries|감자튀김,popcorn|팝콘,jelly|젤리,pie|파이,honey|꿀,donut|도넛,soda|탄산음료,snack|간식,lunch box|도시락,tail|꼬리,wing|날개,paw|발바닥,horn|뿔,fur|털,feather|깃털"),
+D("twin|쌍둥이,neighbor|이웃,guest|손님,man|남자,woman|여자,child|어린이,children|아이들,people|사람들,lip|입술,tongue|혀,chin|턱,forehead|이마,eyebrow|눈썹,elbow|팔꿈치,wrist|손목,ankle|발목,toe|발가락,thumb|엄지,bone|뼈,skin|피부,blood|피,brain|뇌,lung|폐,marker|매직펜,stapler|스테이플러,compass|컴퍼스,calculator|계산기,textbook|교과서,dictionary|사전,folder|폴더,envelope|봉투,stamp|우표,sticker|스티커,locker|사물함,chalk|분필,paintbrush|붓,paint|물감,rice cake|떡,ramen|라면,dumpling|만두,toast|토스트,cereal|시리얼,yogurt|요구르트,ham|햄,bacon|베이컨,steak|스테이크,spaghetti|스파게티,curry|카레,fried rice|볶음밥,gimbap|김밥,tteokbokki|떡볶이,sushi|초밥,coffee|커피,cola|콜라,ice|얼음,flour|밀가루,oil|기름,vinegar|식초,sauce|소스,ketchup|케첩,roof|지붕,wall|벽,floor|바닥,garden|정원,garage|차고,stairs|계단,mirror|거울,towel|수건,soap|비누,toothbrush|칫솔,toothpaste|치약,pillow|베개,blanket|담요,curtain|커튼,fridge|냉장고,oven|오븐,stove|가스레인지,washing machine|세탁기"),
+D("principal|교장 선생님,classmate|반 친구,lunchtime|점심시간,recess|쉬는 시간,field trip|현장 학습,sports day|운동회,art class|미술 수업,bell|종,hallway|복도,cafeteria|급식실,school bag|책가방,uniform|교복,hop|깡충 뛰다,crawl|기다,roll|구르다,spin|빙글 돌다,bend|구부리다,stretch|쭉 펴다,push|밀다,pull|당기다,lift|들어 올리다,drop|떨어뜨리다,hold|잡고 있다,pick up|줍다,put on|입다,take off|벗다,turn on|켜다,turn off|끄다,call|부르다,shout|소리치다,whisper|속삭이다,speak|말하다 (연설),talk|이야기하다,ask|묻다,tell|말해 주다,think|생각하다,know|알다,understand|이해하다,glad|기쁜,upset|속상한,nervous|긴장한,worried|걱정하는,bored|지루해하는,proud|자랑스러운,lonely|외로운,afraid|두려운,jealous|질투하는,curious|호기심 많은,calm|침착한,cheerful|명랑한,thirsty|목마른,sweater|스웨터,hoodie|후드티,vest|조끼,raincoat|비옷,pajamas|잠옷,sneakers|운동화,sandals|샌들,slippers|슬리퍼,belt|허리띠,tie|넥타이,ribbon|리본,bracelet|팔찌,necklace|목걸이,ring|반지,watch|손목시계,wallet|지갑,backpack|배낭,mask|마스크,swimsuit|수영복,jeans|청바지,projector|프로젝터,whiteboard|화이트보드,globe|지구본,poster|포스터,bookshelf|책꽂이,trash can|쓰레기통,broom|빗자루,mop|걸레,bucket|양동이,calendar|달력,keyboard|키보드,screen|화면,speaker|스피커,headphones|헤드폰,camera|카메라,tablet|태블릿,team|팀,player|선수,coach|코치,score|점수"),
+D("engineer|기술자,lawyer|변호사,judge|판사,reporter|기자,photographer|사진사,mechanic|정비사,plumber|배관공,carpenter|목수,builder|건축 노동자,barber|이발사,hairdresser|미용사,florist|꽃집 주인,butcher|정육점 주인,postman|우체부,librarian|사서,tour guide|관광 안내원,clerk|점원,cashier|계산원,waiter|웨이터,chef|주방장,musician|음악가,magician|마술사,clown|광대,model|모델,astronaut|우주비행사,president|대통령,prince|왕자,princess|공주,knight|기사(중세),pirate|해적,alien|외계인,ghost|유령,dragon|용,giant|거인,fairy|요정,foggy|안개 낀,thunder|천둥,lightning|번개,flood|홍수,drought|가뭄,typhoon|태풍,earthquake|지진,degree|(온도) 도,season|계절,weather|날씨,forecast|일기 예보,minute|분,hour|시간,half|반,quarter|15분,noon|정오,midnight|자정,dawn|새벽,sunrise|해돋이,sunset|해넘이,daily|매일의,weekly|매주의,monthly|매달의,early|이른,late|늦은,always|항상,usually|보통,often|자주,sometimes|가끔,never|결코 ~않다,road|도로,bridge|(강 위의) 다리,tunnel|터널,crosswalk|횡단보도,sidewalk|인도,parking lot|주차장,gas station|주유소,bus stop|버스 정류장,ticket|표,passenger|승객,seat belt|안전벨트,helmet|헬멧,wheel|바퀴,engine|엔진,fire engine|소방차,ambulance|구급차,police car|경찰차,scooter|킥보드,skateboard|스케이트보드,sled|썰매,gate|대문"),
+D("comb|빗질하다,sweep|쓸다,tidy up|정리하다,set the table|상을 차리다,do the dishes|설거지하다,take out the trash|쓰레기를 버리다,water the plants|화초에 물을 주다,feed|먹이를 주다,walk the dog|개를 산책시키다,pack|짐을 싸다,call a friend|친구에게 전화하다,read a book|책을 읽다,write a diary|일기를 쓰다,practice piano|피아노를 연습하다,ride a bike|자전거를 타다,play soccer|축구를 하다,go shopping|쇼핑하러 가다,go camping|캠핑 가다,go to the beach|해변에 가다,department store|백화점,convenience store|편의점,flower shop|꽃집,toy store|장난감 가게,shoe store|신발 가게,clothing store|옷 가게,pet shop|애완동물 가게,barbershop|이발소,beauty salon|미용실,city hall|시청,amusement park|놀이공원,aquarium|수족관,movie theater|영화관,stadium|경기장,swimming pool|수영장,harbor|항구,village|마을,city|도시,farm|농장,beach|해변,island|섬,lake|호수,field|들판,desert|사막,cave|동굴,waterfall|폭포,moral education|도덕,practical arts|실과,exam|기말고사,grade|성적,report card|성적표,subject|과목,schedule|시간표,vacation|방학,semester|학기,graduation|졸업,entrance ceremony|입학식,baking|제빵,gardening|정원 가꾸기,painting|그림 그리기,chess|체스,board game|보드게임,jogging|조깅,yoga|요가,golf|골프,bowling|볼링,skating|스케이트,skiing|스키,surfing|서핑,climbing|등반,running|달리기,hockey|하키,tidy|단정한,messy|어질러진,crowded|붐비는,noisy|소란스러운,peaceful|평화로운,safe|안전한,comfortable|편안한,exciting|흥미진진한,interesting|흥미로운,terrible|끔찍한,amazing|놀라운,lovely|사랑스러운,cute|귀여운,pretty|예쁜,ugly|못생긴,handsome|잘생긴,silly|어리석은,serious|진지한,gentle|온화한,rich|부유한,poor|가난한,wet|젖은,dry|마른"),
+D("North Korea|북한,Philippines|필리핀,Indonesia|인도네시아,Turkey|터키,Greece|그리스,Switzerland|스위스,Netherlands|네덜란드,Sweden|스웨덴,Norway|노르웨이,Argentina|아르헨티나,Peru|페루,Kenya|케냐,South Africa|남아프리카공화국,New Zealand|뉴질랜드,Singapore|싱가포르,Mongolia|몽골,Taiwan|대만,Poland|폴란드,Portugal|포르투갈,Ireland|아일랜드,Scotland|스코틀랜드,Asia|아시아,Europe|유럽,Africa|아프리카,Antarctica|남극,Arctic|북극,continent|대륙,capital|수도,border|국경,flag|국기,culture|문화,language|언어,tourist|관광객,passport|여권,foreigner|외국인,citizen|시민,allergy|알레르기,injury|부상,wound|상처,bruise|멍,bandage|붕대,surgery|수술,vaccine|백신,patient|환자,symptom|증상,cure|치료하다,recover|회복하다,pain|통증,dizzy|어지러운,sneeze|재채기하다,vomit|토하다,diet|식단,vitamin|비타민,nutrition|영양,habit|습관,courage|용기,kindness|친절,friendship|우정,freedom|자유,peace|평화,dream|꿈,success|성공,failure|실패,effort|노력,mistake|실수,idea|아이디어,opinion|의견,reason|이유,problem|문제,solution|해결책,secret|비밀,truth|진실,lie|거짓말,memory|기억,adventure|모험,mystery|수수께끼,create|만들어 내다,discover|발견하다,invent|발명하다,explore|탐험하다,explain|설명하다,describe|묘사하다,compare|비교하다,follow|따르다,lead|이끌다,solve|(문제를) 풀다,improve|향상시키다,develop|발전시키다,prepare|준비하다,arrange|정돈하다,donate|기부하다,volunteer|자원봉사하다,respect|존중하다,celebrate|축하하다,promise|약속하다,imagine|상상하다,suggest|제안하다,agree|동의하다,refuse|거절하다,accept|받아들이다,allow|허락하다,avoid|피하다,destroy|파괴하다,reduce|줄이다,increase|늘리다")];
+EWX.forEach((v,i)=>{if(i&&EWY[i])EWX[i]=v.concat(EWY[i])});
+const HZY=[0,D("一日|일일,二日|이일,十日|십일,一人|일인,二人|이인,三人|삼인,二十|이십,三十|삼십,四十|사십,六十|육십,八十|팔십,九十|구십,十五|십오,十一|십일,十二|십이,十三|십삼,大中小|대중소,月日|월일,日中|일중,火中|화중,土中|토중,山火|산화,大火|대화,小山|소산,中山|중산"),
+D("王女|왕녀,王室|왕실,室長|실장,學長|학장,父女|부녀,父兄|부형,軍門|군문,軍長|군장,外門|외문,年長|연장,長年|장년,萬民|만민,萬國|만국,萬人|만인,萬一|만일,生母|생모,生年|생년,生父|생부,民軍|민군,南門|남문,北門|북문,東門|동문,西門|서문,東南|동남,西北|서북,東北|동북,西南|서남,東大門|동대문,南大門|남대문,西大門|서대문,大學校|대학교,中學校|중학교,小學校|소학교,長白山|장백산,白山|백산,南山|남산,北山|북산,國民學校|국민학교,韓國軍|한국군,母校|모교"),
+D("家門|가문,歌手|가수,間食|간식,江山|강산,空中|공중,工事|공사,記入|기입,氣力|기력,旗手|기수,內外|내외,農民|농민,農地|농지,答案|답안,同時|동시,動力|동력,登山|등산,來年|내년,老人|노인,里長|이장,立冬|입동,立春|입춘,立秋|입추,立夏|입하,每月|매월,面前|면전,名人|명인,命名|명명,問安|문안,百姓|백성,百年|백년,百萬|백만,夫人|부인,事前|사전,事物|사물,算出|산출,姓名|성명,少年|소년,少女|소녀,所重|소중,手足|수족,市內|시내,市長|시장,時日|시일,食水|식수,植樹|식수,安全|안전,有力|유력,邑內|읍내,入場|입장,子女|자녀,自力|자력,自立|자립,場內|장내,全力|전력,前後|전후,電力|전력,電氣|전기,正午|정오,祖父|조부,祖母|조모,主力|주력,住民|주민,重力|중력,直前|직전,千萬|천만,天然|천연,草木|초목,村落|촌락,出力|출력,便利|편리,平年|평년,下山|하산,海軍|해군,花草|화초,活力|활력,休學|휴학"),
+D("各國|각국,感情|감정,強國|강국,開國|개국,古代|고대,苦戰|고전,科目|과목,果樹|과수,交代|교대,區間|구간,近海|근해,根本|근본,級長|급장,多讀|다독,對面|대면,待機|대기,度數|도수,頭角|두각,等分|등분,樂天|낙천,例外|예외,禮式|예식,綠色|녹색,利用|이용,美人|미인,班長|반장,番號|번호,別名|별명,使用|사용,席次|석차,成功|성공,消火|소화,孫子|손자,樹林|수림,勝者|승자,始祖|시조,式場|식장,神童|신동,新年|신년,失明|실명,弱者|약자,洋食|양식,陽地|양지,永生|영생,英才|영재,溫室|온실,勇敢|용감,運命|운명,由來|유래,油田|유전,銀行|은행,音讀|음독,飮食|음식,衣食|의식,意見|의견,醫院|의원,作別|작별,才能|재능,在學|재학,戰場|전장,庭園|정원,定時|정시,第一|제일,題名|제명,朝會|조회,族長|족장,注目|주목,晝夜|주야,集中|집중,窓口|창구,淸明|청명,體育|체육,表現|표현,幸運|행운,現場|현장,和合|화합,會長|회장,黃色|황색"),
+D("勞|일할 로,朗|밝을 랑,陸|뭍 륙,止|그칠 지,知|알 지,質|바탕 질,着|붙을 착,參|참여할 참,唱|부를 창,責|꾸짖을 책,鐵|쇠 철,初|처음 초,最|가장 최,祝|빌 축,充|채울 충,致|이를 치,則|법칙 칙,他|다를 타,打|칠 타,卓|높을 탁,炭|숯 탄,宅|집 택,板|널 판,敗|패할 패,品|물건 품,必|반드시 필,筆|붓 필,河|물 하,寒|찰 한,害|해할 해,許|허락할 허,湖|호수 호,化|될 화,患|근심 환,效|본받을 효,凶|흉할 흉,黑|검을 흑,知識|지식,質問|질문,着陸|착륙,參加|참가,唱歌|창가,鐵道|철도,初步|초보,最高|최고,最初|최초,祝福|축복,充分|충분,他國|타국,打者|타자,敗北|패배,品目|품목,必要|필요,筆記|필기,河川|하천,寒冷|한랭,害蟲|해충,許可|허가,湖水|호수,化學|화학,患者|환자,效果|효과,黑白|흑백,黑色|흑색,勞動|노동,陸地|육지,朗讀|낭독,止血|지혈,價格|가격,客席|객석,決勝|결승,結婚|결혼,敬禮|경례,告別|고별,課外|과외,過去|과거,觀客|관객"),
+D("更|다시 갱,據|근거 거,擧|들 거,件|물건 건,健|굳셀 건,建|세울 건,激|격할 격,潔|깨끗할 결,景|볕 경,輕|가벼울 경,系|맬 계,械|기계 계,館|집 관,較|견줄 교,久|오랠 구,求|구할 구,壇|단 단,談|말씀 담,臺|대 대,貸|빌릴 대,倒|넘어질 도,逃|도망할 도,盜|도둑 도,途|길 도,凍|얼 동,鈍|둔할 둔,絡|이을 락,蘭|난초 란,浪|물결 랑,郞|사내 랑,廊|행랑 랑,涼|서늘할 량,梁|들보 량,劣|못할 렬,獵|사냥 렵,零|떨어질 령,領|거느릴 령,令|하여금 령,靈|신령 령,爐|화로 로,祿|녹 록,弄|희롱할 롱,雷|우레 뢰,了|마칠 료,料|헤아릴 료,暮|저물 모,貌|모양 모,謀|꾀 모,默|잠잠할 묵,紋|무늬 문,敏|민첩할 민,返|돌이킬 반,飯|밥 반,般|가지 반,犯|범할 범,範|법 범,繁|번성할 번,凡|무릇 범,碑|비석 비,秘|숨길 비,賓|손 빈,寺|절 사,辭|말씀 사,司|맡을 사,詞|말 사,階級|계급,季刊|계간,經驗|경험,警告|경고,金庫|금고,孔雀|공작,攻略|공략,官職|관직,句節|구절,君主|군주,群衆|군중,屈服|굴복,宮殿|궁전,卷頭|권두,規定|규정,極端|극단,紀元|기원,暖房|난방,難關|난관,納品|납품,單純|단순,段落|단락,端正|단정,達人|달인,擔任|담임,帶同|대동,部隊|부대,指導|지도,督促|독촉,銅錢|동전,得點|득점,羅列|나열,混亂|혼란,展覽|전람,略圖|약도,兩側|양측,糧食|양식,考慮|고려,華麗|화려,連結|연결,熱烈|열렬,記錄|기록,論文|논문,龍宮|용궁,留學|유학,規律|규율,離別|이별,睡眠|수면,勉學|면학,悲鳴|비명,模範|모범,妙技|묘기,墓所|묘소,舞臺|무대,義務|의무,武器|무기,未來|미래,意味|의미,密室|밀실,博士|박사,房門|방문,拜禮|배례,背信|배신,配布|배포,討伐|토벌,罰金|벌금,壁畫|벽화,周邊|주변,保管|보관,報道|보도,寶石|보석,步道|보도,回復|회복,政府|정부,婦人|부인,富國|부국,負擔|부담,粉末|분말,佛敎|불교,準備|준비,悲劇|비극,非難|비난,飛行|비행,貧困|빈곤"),
+D("壽|목숨 수,輸|보낼 수,隨|따를 수,需|쓰일 수,愁|근심 수,授|줄 수,搜|찾을 수,垂|드리울 수,殊|다를 수,獸|짐승 수,淑|맑을 숙,熟|익을 숙,旬|열흘 순,巡|돌 순,瞬|눈 깜짝일 순,述|지을 술,拾|주울 습,濕|젖을 습,襲|엄습할 습,昇|오를 승,乘|탈 승,僧|중 승,侍|모실 시,施|베풀 시,視|볼 시,飾|꾸밀 식,息|쉴 식,伸|펼 신,愼|삼갈 신,乞|빌 걸,距離|거리,拒絶|거절,乾燥|건조,傑作|걸작,肩章|견장,契約|계약,戒嚴|계엄,繼續|계속,鷄卵|계란,枯木|고목,原稿|원고,鼓手|고수,顧問|고문,哭聲|곡성,貢物|공물,寡婦|과부,官廳|관청,貫徹|관철,慣例|관례,狂風|광풍,鑛物|광물,怪談|괴담,構造|구조,救助|구조,賀客|하객,恨歎|한탄,含蓄|함축,陷落|함락,恒常|항상,該博|해박,玄關|현관,豪放|호방,魂靈|혼령,悔恨|회한,懷疑|회의,計劃|계획,獲得|획득,縱橫|종횡,稀貴|희귀,尖銳|첨예,交替|교체,抄錄|초록,基礎|기초,秒速|초속,超越|초월,接觸|접촉,促求|촉구,聰明|총명,催告|최고,抽象|추상,畜產|축산,縮約|축약,蓄財|축재,衝擊|충격,惡臭|악취,趣味|취미,測量|측량,側面|측면,數値|수치,恥辱|치욕,侵害|침해,浸水|침수,墮落|타락,妥協|타협,混濁|혼탁,奪取|탈취,貪慾|탐욕"),
+D("阿|언덕 아,雅|맑을 아,亞|버금 아,岳|큰 산 악,顔|낯 안,岸|언덕 안,庵|암자 암,壓|누를 압,液|진 액,額|이마 액,耶|어조사 야,揚|날릴 양,壤|흙덩이 양,讓|사양할 양,御|거느릴 어,抑|누를 억,憶|생각할 억,嚴|엄할 엄,予|나 여,硏|갈 연,宴|잔치 연,沿|물 따라갈 연,燕|제비 연,悅|기쁠 열,炎|불꽃 염,簡便|간편,肝臟|간장,鑑賞|감상,鋼板|강판,綱領|강령,剛直|강직,介入|개입,概要|개요,隔月|격월,兼職|겸직,謙讓|겸양,耕地|경지,硬度|경도,啓發|계발,桂皮|계피,寬大|관대,佳人|가인,閣僚|각료,脚線|각선,濃縮|농축,尿素|요소,昆蟲|곤충,昏睡|혼수,掘削|굴삭,洞窟|동굴,弓矢|궁시,拳法|권법,軌道|궤도,叫喚|규환,糾彈|규탄,劍道|검도,謁見|알현,細菌|세균,斤量|근량,僅少|근소,謹賀|근하,錦繡|금수,琴線|금선,家禽|가금,企圖|기도,祈雨|기우,騎馬|기마,放棄|방기,幾何|기하,飢寒|기한,忌日|기일,稼動|가동"),
+D("蝗|메뚜기 황,蚊|모기 문,蚤|벼룩 조,蝦|새우 하,蟹|게 해,鯉|잉어 리,鯨|고래 경,鰐|악어 악,鷗|갈매기 구,鷹|매 응,鶴|학 학,鵲|까치 작,雀|참새 작,雉|꿩 치,鴨|오리 압,鴻|기러기 홍,烏|까마귀 오,鳩|비둘기 구,苛斂|가렴,艱苦|간고,渴症|갈증,褐炭|갈탄,葛根|갈근,瑞光|서광,璧玉|벽옥,瑤池|요지,琢磨|탁마,蠶桑|잠상,蟬鳴|선명,蝶夢|접몽,蜂蜜|봉밀,蟻集|의집,蛙鳴|와명,螢光|형광,蝸角|와각,琴瑟|금슬,澗水|간수,疆土|강토,瓊玉|경옥")];
+HZX.forEach((v,i)=>{if(i&&HZY[i])HZX[i]=v.concat(HZY[i])});
+const addTo=(B,X,n)=>{const seen=new Set();for(let i=1;i<=n;i++)B[i]=B[i].concat(X[i]).filter(it=>{if(seen.has(it[0]))return false;seen.add(it[0]);return true})};
+addTo(EW,EWX,7);addTo(HZ,HZX,9);
+EW[8]=EW[9]=EW.slice(1,8).flat();HZ[10]=HZ.slice(1,10).flat();
+EW[10]=EW[10].concat(D("My favorite subject ___ math.|is|are|am,We ___ a picnic last Sunday.|had|have|has,I ___ my grandparents every month.|visit|visits|visiting,She is ___ a letter to her friend.|writing|write|wrote,He ___ up at six every morning.|gets|get|getting,Who ___ you help yesterday?|did|do|does,___ you ever been to Jeju?|Have|Has|Did,I have never ___ sushi.|eaten|ate|eat,The window was ___ by Tom.|broken|break|broke,This bag is ___ expensive than that one.|more|most|much,He runs ___ than me.|faster|fast|fastest,She sings very ___.|well|good|best,Be ___ with the knife.|careful|carefully|care,He speaks ___.|slowly|slow|slower,I am ___ tired to walk.|too|very|so,If you study hard you ___ pass.|will|would|did,I don't know ___ he is.|who|whom|whose,Tell me ___ you want.|what|who|where,I want ___ a doctor.|to be|be|being,I enjoy ___ books.|reading|to read|read,He stopped ___ TV.|watching|to watch|watch"));
+EW[10]=EW[10].concat(D("We ___ in a big house.|live|lives|living,The dog ___ under the tree.|sleeps|sleep|sleeping,Birds can ___.|fly|flies|flying,Fish ___ in the water.|swim|swims|swimming,I ___ a new bag.|have|has|am,She ___ two brothers.|has|have|are,There ___ five apples on the table.|are|is|am,___ is the weather today?|How|What|Who,___ do you want to be?|What|Where|Who,___ is the library?|Where|What|Who,My mom ___ to work by car.|goes|go|going,He ___ his hands before lunch.|washes|wash|washing,The bus ___ at eight.|leaves|leave|leaving,___ is your favorite food?|What|Who|Where,I like ___ and bananas.|apples|apple|an apple,She is ___ a hat.|wearing|wear|wears,The sun ___ in the east.|rises|rise|rising,It is ___ outside. Take an umbrella.|raining|rain|rains,I am ___ than my sister.|taller|tall|tallest,My bag is ___ than yours.|heavier|heavy|heaviest,Seoul is the ___ city in Korea.|biggest|bigger|big,That movie was ___.|exciting|excite|excites,He ___ a book yesterday.|read|reads|reading,We ___ to the beach last summer.|went|go|goes,I ___ my room yesterday.|cleaned|clean|cleans,She ___ a cold last week.|had|has|have,They ___ at home yesterday.|were|was|are,Did he ___ his homework?|do|did|does,I didn't ___ breakfast.|eat|ate|eats,What did you ___ yesterday?|do|did|does,He ___ not like carrots.|does|do|is,___ you like music?|Do|Does|Is,___ she a teacher?|Is|Are|Do,___ they your friends?|Are|Is|Do,Can he ___ a bike?|ride|rides|riding,She can't ___ the piano.|play|plays|playing,You ___ not run in the hall.|must|can|do,We ___ go home now.|should|can|are,I will ___ a doctor.|be|am|is,It ___ rain tomorrow.|will|did|was,We are ___ to visit Jeju.|going|go|went,She ___ here since morning.|has been|was|is,Please ___ the door.|close|closes|closing,Don't ___ late.|be|is|are,___ me your name.|Tell|Tells|Telling,Let's ___ soccer.|play|plays|played,___ about going to the park?|How|What|Who,I'm good ___ drawing.|at|in|on,She is interested ___ music.|in|at|on,He is afraid ___ dogs.|of|in|at,I'm looking ___ my pen.|for|at|to,Put your coat ___.|on|in|at,Turn ___ the light.|off|of|at,Look ___ the board.|at|in|on,He is ___ the room.|in|at|on,The cat jumped ___ the table.|onto|into|at,I waited ___ two hours.|for|since|at,School starts ___ March.|in|on|at,See you ___ Friday.|on|in|at,She is ___ the bus stop.|at|in|on,There is a bridge ___ the river.|over|at|to,He walked ___ the park.|through|into|on,I have ___ friends.|many|much|a lot,There is ___ milk in the cup.|some|a|many,Do you have ___ brothers?|any|some|a,I have ___ money.|no|any|many,She drinks ___ water.|a lot of|a lot|many,How ___ water do you drink?|much|many|long,How ___ books do you have?|many|much|old,___ is your birthday?|When|Where|Who,___ is this pen?|Whose|Who|What,___ is your teacher?|Who|Whose|What,___ do you go to school?|How|Who|When,___ is the museum? It's near the park.|Where|When|Who,___ do you live? I live in Busan.|Where|Who|What,___ time do you get up?|What|Who|How,___ do you do after school?|What|Who|Where,___ hat is this?|Whose|Who|Which,___ one do you like?|Which|Who|When,This is my brother. ___ name is Tom.|His|He|Him,This is my sister. ___ name is Mina.|Her|She|Hers,I love my dog. ___ is cute.|It|Its|They,This is ___ book.|my|me|I,Give ___ the pen.|me|I|my,They are ___ friends.|our|we|us,I like ___. She is kind.|her|she|hers,That bag is ___.|mine|me|my,___ are my parents.|They|It|He,My uncle ___ in New York.|lives|live|living,We have ___ English class today.|an|a|the,I saw ___ elephant at the zoo.|an|a|the,I want ___ orange.|an|a|two,She is ___ honest girl.|an|a|the,Look at ___ moon.|the|an|a,He plays ___ guitar.|the|an|a,There are many ___ in the park.|trees|tree|a tree,I have three ___.|boxes|box|boxs,Two ___ are on the bench.|women|woman|womans,I see five ___.|children|child|childs,My ___ hurt.|feet|foot|foots,She has long ___.|hair|hairs|a hair,He ___ TV now.|is watching|watches|watch,She ___ to music every day.|listens|listen|listening,I ___ playing games.|like|likes|liking,We ___ lunch at noon.|have|has|having,He is ___ his teeth now.|brushing|brush|brushes,They ___ tennis on Sundays.|play|plays|playing,The train ___ at ten.|arrives|arrive|arriving"));
+EW[10]=EW[10].concat(D("I ___ a boy.|am|is|are,You ___ my friend.|are|is|am,It ___ a dog.|is|am|are,He ___ a teacher.|is|are|am,We ___ friends.|are|is|am,My mom ___ a nurse.|is|are|am,The cats ___ cute.|are|is|am,I ___ ten years old.|am|is|are,This is ___ pencil.|a|an|two,That is ___ egg.|an|a|two,I have ___ cat.|a|an|are,She has ___ umbrella.|an|a|two,I see two ___.|birds|bird|a bird,Look at ___ sun.|the|an|two,I eat ___ apple every day.|an|a|two,There are ten ___ in the room.|boys|boy|a boy,___ is this? It is a ball.|What|Who|Where,___ is she? She is my mom.|Who|What|How,___ are you? I am fine.|How|What|Who,___ is my bag? It is on the desk.|Where|What|Who,___ is your birthday? It is May 5th.|When|Where|Who,___ do you go to school? By bus.|How|Who|When,___ pencils do you have?|How many|How much|How old,___ is this? It is 1000 won.|How much|How many|How old,___ time is it?|What|Who|Where,___ is your favorite color?|What|Who|Where,She ___ to school every day.|goes|go|going,I ___ a book every night.|read|reads|reading,He ___ breakfast at seven.|eats|eat|eating,They ___ soccer after school.|play|plays|playing,My dad ___ coffee.|drinks|drink|drinking,We ___ English on Monday.|study|studies|studying,The baby ___ a lot.|sleeps|sleep|sleeping,My sister ___ the piano well.|plays|play|playing,I ___ to bed at ten.|go|goes|going,Mina ___ her teeth every morning.|brushes|brush|brushing,I ___ swim.|can|am|do,She can ___ the guitar.|play|plays|playing,I ___ like carrots.|don't|doesn't|isn't,He ___ like milk.|doesn't|don't|isn't,Do you ___ pizza?|like|likes|liking,___ you help me?|Can|Is|Are,I can't ___ fast.|run|runs|running,Does she ___ English?|speak|speaks|speaking,The cat is ___ the box.|in|on|at,The ball is ___ the table.|under|at|to,I go to school ___ 8 o'clock.|at|on|in,My birthday is ___ Monday.|on|in|at,We have no school ___ Sunday.|on|in|at,She lives ___ Seoul.|in|on|at,The bank is ___ the library.|next to|in|at,He is sitting ___ me.|behind|on|to,Come ___ my house.|to|at|in,I go to school ___ bus.|by|in|with,There ___ two cats in the house.|are|is|am,There ___ a book on the desk.|is|are|am,___ is my bag.|This|These|They,___ are my shoes.|These|This|That,Look at ___ birds over there.|those|this|that,Is ___ your pencil? Yes it is.|this|these|those,I am ___ now.|reading|read|reads,She is ___ a letter.|writing|write|writes,They are ___ in the park.|running|run|runs,He is ___ a bath.|taking|take|takes,What are you ___?|doing|do|does,We are ___ to music.|listening|listen|listens,I ___ to the zoo last Sunday.|went|go|goes,She ___ a cake yesterday.|made|make|makes,We ___ happy yesterday.|were|was|are,He ___ a movie last night.|watched|watch|watches,I ___ my homework.|finished|finish|finishes,They ___ soccer last weekend.|played|play|plays,It ___ cold yesterday.|was|were|is,Did you ___ lunch?|eat|ate|eats,I will ___ you tomorrow.|call|called|calls,It will ___ tomorrow.|rain|rained|rains,She is going to ___ a doctor.|be|is|are,This box is ___ than that one.|bigger|big|biggest,Tom is ___ than Jim.|faster|fast|fastest,Mina is the ___ in her class.|tallest|taller|tall,This is the ___ book of all.|best|good|better,I'm ___ than you.|older|old|oldest,You ___ wash your hands.|should|can|are,We ___ be quiet in the library.|must|can|are,If it rains I ___ stay home.|will|did|was,How ___ is the river?|long|longer|many"));
+EW[10]=EW[10].filter((x,i,a)=>a.findIndex(y=>y[0]===x[0])===i);
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=rnd(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+let bag=[],bagKey='',lastIt=null;
+function nextEntry(L){
+ const key=mode+stage;
+ if(bagKey!==key||!bag.length){bagKey=key;const fd=mode=='eng'&&(stage==8||stage==9)?(stage==9?1:0):null,cnt={};
+ L.forEach(x=>{if(x.length==2){const k=(x[0].length>1)+x[1];cnt[k]=(cnt[k]||0)+1}});
+ bag=shuf(L.flatMap(it=>{if(it.length>2)return[[it,0]];const am=cnt[(it[0].length>1)+it[1]]>1;if(am)return fd===1?[]:[[it,0]];return fd!==null?[[it,fd]]:L.length>=30?[[it,Math.random()<.5?1:0]]:[[it,0],[it,1]]}))}
+ for(let i=bag.length-1;i>=0;i--){const e=bag[i];if(e[0]!==lastIt&&!drops.some(d=>d.it===e[0])){bag.splice(i,1);lastIt=e[0];return e}}
+ const e=bag.pop();lastIt=e[0];return e}
+const FILL=['banana','pencil','tree','window','chair','pizza'];
+function quiz(){
+ const L=mode=='eng'?EW[stage]:HZ[stage],[it,rev]=nextEntry(L);
+ if(it.length>2){const o=it.slice(1),fl=FILL.filter(x=>!o.includes(x));while(o.length<5&&fl.length)o.push(fl.splice(rnd(0,fl.length-1),1)[0]);return[it[0],it[1],shuf(o),it]}
+ const ans=rev?it[0]:it[1],tw=it[0].length>1;
+ const pool=[...new Set(L.filter(x=>x.length==2&&(mode=='eng'||(x[0].length>1)==tw)).map(x=>rev?x[0]:x[1]))].filter(x=>x!==ans),o=[ans];
+ while(o.length<5&&pool.length)o.push(pool.splice(rnd(0,pool.length-1),1)[0]);
+ return[rev?it[1]+' → ?':it[0],ans,shuf(o),it]}
+let lastT=null;
+function showTarget(t){if(t===lastT)return;lastT=t;disp.textContent=t?t.q:'\u00a0';const c=$('ch');c.innerHTML='';
+ if(t&&t.ch)t.ch.forEach(x=>{const b=document.createElement('button');b.textContent=x;if(mode=='han'&&x.length==1)b.style.fontSize='30px';b.onclick=()=>choose(x,b);c.appendChild(b)})}
+// ---- 성 그리기 ----
+// ---- 성 그리기 (SVG 벽돌 성: 탑·성벽·성문·창문·성가퀴) ----
+const CDS=[0,
+ {p:[[3,5],[1,3],[5,7],[1,3],[3,5]],gh:3,win:[[1,3],[11,3],[5,5],[7,5]]},
+ {p:[[3,7],[2,4],[7,10],[2,4],[3,7]],gh:3,win:[[1,4],[15,4],[6,6],[10,6],[8,8]]},
+ {p:[[4,9],[3,5],[7,12],[3,5],[4,9]],gh:4,win:[[1,5],[2,5],[18,5],[19,5],[1,7],[2,7],[18,7],[19,7],[8,8],[10,8],[12,8],[10,10]]},
+ {p:[[3,6],[2,4],[4,9],[2,5],[7,12],[2,5],[4,9],[2,4],[3,6]],gh:4,win:[[1,4],[27,4],[6,6],[7,6],[21,6],[22,6],[6,8],[22,8],[12,8],[14,8],[16,8],[14,10]]},
+ {p:[[3,8],[3,5],[4,11],[2,6],[9,15],[2,6],[4,11],[3,5],[3,8]],gh:5,spire:4,win:[[1,5],[31,5],[7,7],[8,7],[24,7],[25,7],[7,9],[8,9],[24,9],[25,9],[14,9],[16,9],[18,9],[16,12],[16,14]]}];
+const CDI=[0,1,1,2,2,3,3,4,4,5,5],UW=8,UH=5;
+function genCastle(lv){const d=CDS[CDI[lv]],cols=[];d.p.forEach(([w,h])=>{for(let i=0;i<w;i++)cols.push(h)});
+ const W=cols.length,c0=(W-1)/2;if(d.spire)for(let c=c0-1;c<=c0+1;c++)cols[c]+=d.spire;
+ const Hm=Math.max(...cols),cells=[],win=new Set(d.win.map(x=>x[0]+','+x[1]));
+ for(let r=1;r<=Hm;r++)for(let c=0;c<W;c++){if(r>cols[c]||(r==cols[c]&&c%2==1))continue;
+  let t='b';if(Math.abs(c-c0)<=1&&(r<d.gh||(r==d.gh&&c==c0)))t='g';else if(win.has(c+','+r))t='w';cells.push({c,r,t})}
+ return{W,Hm,cells,c0,top:cols[c0]}}
+function castleSVG(lv,full){const g=genCastle(lv),W=g.W*UW,Y0=8*UH,H=Y0+g.Hm*UH;
+ let h='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMax meet">';
+ g.cells.forEach(k=>{const x=k.c*UW,y=Y0+(g.Hm-k.r)*UH,jx=k.r%2?UW/2:0;
+  h+='<g class="k'+(k.t=='w'?' tw':k.t=='g'?' tg':'')+(full?'':' e')+'"><rect class="f" x="'+x+'" y="'+y+'" width="'+UW+'" height="'+UH+'"/><path d="M'+x+' '+(y+UH)+'h'+UW+'M'+(x+jx)+' '+y+'v'+UH+'"/></g>'});
+ const fx=g.c0*UW+UW/2,fy=Y0+(g.Hm-g.top)*UH,ty=fy-7*UH;
+ return h+'<g class="flag'+(full?' plant':'')+'"'+(full?'':' style="display:none"')+'><line class="fp" x1="'+fx+'" y1="'+fy+'" x2="'+fx+'" y2="'+ty+'"/><path class="fc" d="M'+fx+' '+ty+'l'+UW*2.2+' '+UH*.9+'l-'+UW*2.2+' '+UH*.9+'z"/></g></svg>'}
+const castleBig=lv=>'<div class="s'+lv+' bigc">'+castleSVG(lv,true)+'</div>';
+function buildCastle(){castle.className='s'+stage;curVis=0;castle.innerHTML=castleSVG(stage,false)+'<div id="door"><i></i></div><div id="mon"><span class="hm">🔨</span><span class="mm">👹</span></div>'}
+// ---- 폭죽 ----
+let fwRaf=0,fwC=null;
+function stopFw(){if(fwRaf)cancelAnimationFrame(fwRaf);fwRaf=0;if(fwC){fwC.remove();fwC=null}}
+function fireworks(sec){stopFw();const c=document.createElement('canvas');c.style.cssText='position:fixed;inset:0;width:100%;height:100%;z-index:11;pointer-events:none';document.body.appendChild(c);fwC=c;
+ const g=c.getContext&&c.getContext('2d');if(!g){return}
+ const dpr=window.devicePixelRatio||1,Wd=innerWidth,Hd=innerHeight;c.width=Wd*dpr;c.height=Hd*dpr;g.scale(dpr,dpr);
+ let ps=[],last=performance.now(),t0=last,next=0;
+ const burst=(x,y)=>{const col=pick(['#ff595e','#ffca3a','#8ac926','#1982c4','#ff9ff3','#ffffff','#ff924c']);for(let i=0;i<40;i++){const a=i/40*6.283+Math.random()*.15,sp=1.6+Math.random()*3.4;ps.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,l:1,c:col})}};
+ const step=now=>{const dt=Math.min((now-last)/16,3);last=now;g.clearRect(0,0,Wd,Hd);const live=(now-t0)/1000<sec;
+  if(live&&now>=next){burst(rnd(40,Wd-40),rnd(70,Hd*.5));next=now+rnd(220,520)}
+  ps=ps.filter(p=>p.l>0);ps.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=.05*dt;p.vx*=.99;p.l-=.011*dt;g.globalAlpha=Math.max(p.l,0);g.fillStyle=p.c;g.beginPath();g.arc(p.x,p.y,2.3,0,6.283);g.fill()});
+  g.globalAlpha=1;if(live||ps.length)fwRaf=requestAnimationFrame(step);else stopFw()};
+ fwRaf=requestAnimationFrame(step)}
+// ---- 효과 ----
+let ac;let snd=true;try{if(localStorage.getItem('castleSnd')==='0')snd=false}catch(e){}
+function beep(f,d){if(!snd)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=f;o.type='triangle';g.gain.value=.08;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
+function say(t,sm){const e=document.createElement('div');e.className='say';e.textContent=t;if(sm)e.style.fontSize='19px';area.appendChild(e);setTimeout(()=>e.remove(),1000)}
+function vert(q){const m=q.match(/^(\d+) ([+−×÷]) (\d+)$/);if(!m||Math.random()>.4)return q;const[,a,o,b]=m;
+ if(o=='÷')return'<div class="vt"><div class="dv"><span>'+b+'</span><span class="dd">'+a+'</span></div></div>';
+ return'<div class="vt"><div>'+a+'</div><div class="l2"><span>'+o+'</span><span>'+b+'</span></div><div>?</div></div>'}
+let mseen=new Set();
+function mathQ(){let r;for(let i=0;i<12;i++){r=(Math.random()<SQP?pick(GQ[stage]):pick(G[stage]))();if(!mseen.has(r[0])&&!drops.some(d=>d.q===r[0]))break}mseen.add(r[0]);if(mseen.size>4000)mseen.clear();return r}
+// ---- 게임 ----
+let curVis=0;
+function setBricks(n,anim){const ks=castle.querySelectorAll('.k'),vis=Math.round(n*ks.length/TOTAL);curVis=vis;
+ ks.forEach((k,i)=>{const on=i<vis,e=k.classList.contains('e'),cr=k.classList.contains('cr');
+  if(on&&(e||cr)){k.classList.remove('e','cr');if(anim){k.classList.remove('pp');void k.getBoundingClientRect();k.classList.add('pp')}}
+  else if(!on&&!e&&!cr){if(anim){k.classList.remove('pp');k.classList.add('cr');setTimeout(()=>{if(i>=curVis){k.classList.remove('cr');k.classList.add('e')}},380)}else k.classList.add('e')}});
+ const fl=castle.querySelector('.flag');if(fl){if(n>=TOTAL){fl.style.display='';fl.classList.add('plant')}else{fl.style.display='none';fl.classList.remove('plant')}}}
+function lose(k){if(!run)return;if(built<=0)return gameOver();built=Math.max(0,built-k);setBricks(built,1)}
+function gameOver(){if(mon)setTrack('start');run=false;paused=false;area.style.filter='';$('ta').style.display='none';drops.forEach(d=>d.el.remove());drops=[];beep(120,.6);
+ showOv('💥 성이 무너졌어요!','깨질 벽돌이 더 없어서 게임이 끝났어요<br>정답 '+okc+'개 · 최고 연속 '+best+(smashes?' · 괴물 쾅 '+smashes+'번':'')+'<br><small>다시 도전해 봐요! 💪</small>','<div style="font-size:56px">🏚️</div>',[[stage+'단계 다시 하기',()=>start(stage,TOTAL)]].concat(stage>1?[['1단계부터 다시 시작',()=>{done.fill(0);start(1,20)}]]:[]))}
+function taUpd(){const iv=2*GAP[stage],rem=Math.max(0,iv-monT);$('tt').textContent=rem.toFixed(1);$('tb').style.transform='scaleX('+rem/iv+')';$('ta').classList.toggle('urgent',rem<2)}
+function banner(t,c){const e=document.createElement('div');e.className='tab';e.textContent=t||'⚠️ TIME ATTACK! ⚠️';if(c)e.style.color=c;area.appendChild(e);setTimeout(()=>e.remove(),1800)}
+function monOn(){if(mon)return;mon=true;monT=0;setTrack('battle');const m=$('mon');
+ if(m){m.style.display='block';m.style.bottom='2px';m.classList.remove('hit');m.classList.add('walk');setTimeout(()=>m.classList.remove('walk'),1700)}
+ $('ta').style.display='block';taUpd();banner();beep(90,.5);
+ const d=$('door');if(d){d.classList.add('open');setTimeout(()=>d.classList.remove('open'),1500)}}
+function retreat(){if(!mon)return;mon=false;strikes=0;setTrack(mode);$('ta').style.display='none';
+ const m=$('mon'),d=$('door');if(m){m.classList.remove('walk','hit');m.style.bottom='2px';void m.offsetWidth;m.classList.add('leave');setTimeout(()=>{m.classList.remove('leave');m.style.display='none'},1300)}
+ if(d){d.classList.add('open');setTimeout(()=>d.classList.remove('open'),1400)}
+ banner('🎉 괴물 퇴치!','#2f9e6e');beep(700,.15);updInfo()}
+function attack(){const m=$('mon');if(!m)return;m.classList.remove('walk','hit');void m.offsetWidth;
+ const ks=castle.querySelectorAll('.k'),vis=Math.round(built*ks.length/TOTAL),b=ks[vis-1];let dx=70,bt=2;
+ if(b){const br=b.getBoundingClientRect(),mr=m.getBoundingClientRect(),cr=castle.getBoundingClientRect();dx=Math.max(0,Math.min(300,mr.left-br.right+4));bt=Math.max(2,cr.bottom-br.bottom-6)}
+ m.style.bottom=bt+'px';m.style.setProperty('--dx',dx+'px');m.classList.add('hit');smashes++;
+ setTimeout(()=>{if(run&&mon){lose(1);if(!run)return;say('💥 쾅!');beep(110,.3);updInfo()}},380)}
+function spawn(){
+ const[q,ans,ch,it]=mode=='math'?mathQ():quiz(),el=document.createElement('div');el.className='drop';const h=vert(q);el.innerHTML=h;if(h!=q)el.classList.add('v');if(mode=='han'&&q.length<=2)el.style.fontSize='calc(26px*var(--fs,1))';area.appendChild(el);
+ drops.push({q,ans,ch,it,el,y:0,x:4+Math.random()*Math.max(0,area.clientWidth-el.offsetWidth-8),pauses:0});spawned++;updInfo();
+}
+const lowest=()=>drops.reduce((m,d)=>!m||d.y>m.y?d:m,null);
+function updInfo(){
+ $('info').textContent=stage+'단계 : '+NAME[stage];$('mis').textContent=mon?'👹':'❤️'.repeat(Math.max(0,3-strikes))+'🖤'.repeat(Math.min(3,strikes));
+ $('bricks').textContent='🧱 '+built+'/'+TOTAL;$('bricks').style.color=built<=0?'#c0392b':'';$('combo').textContent=combo>=2?'🔥'+combo:'';
+ const t=lowest();drops.forEach(d=>d.el.classList.toggle('t',d===t));if(typeof cb!=='undefined')cb.classList.toggle('on',paused&&mode=='math'&&run&&ov.classList.contains('h'));if(mode!='math')showTarget(t);
+ const left=pq;
+ pbtn.innerHTML=paused?'▶ 계속하기<br><small>'+Math.ceil(pLeft)+'초'+(canType()?' · ✏️입력가능':'')+'</small>':'⏸ 잠깐정지<br><small>남은 횟수 '+left+(gain?' ▲+1':'')+'</small>';
+ pbtn.disabled=!paused&&left<=0;
+}
+function loop(ts){
+ if(!run)return;
+ const dt=Math.min((ts-last)/1000,.1);last=ts;
+ if(paused){pLeft-=dt;if(pLeft<=0)setPause(false);else updInfo()}
+ else{
+  const H=area.clientHeight,sp=H/SPEED[stage];nextSpawn-=dt;
+  if(nextSpawn<=0){spawn();nextSpawn=GAP[stage]}
+  if(mon){monT+=dt;if(monT>=2*GAP[stage]){monT=0;attack()}taUpd()}
+  for(const d of drops.slice()){
+   d.y+=sp*dt;d.el.style.transform='translate('+d.x+'px,'+d.y+'px)';
+   if(d.y+d.el.offsetHeight>=H){missDrop(d);if(!run)return}
+  }
+ }
+ requestAnimationFrame(loop);
+}
+function missDrop(d,why){recordWrong(d);remove(d,'miss');missed++;strikes++;combo=0;lose(1);if(!run)return;say(why||'💥 벽돌 −1!',!!why);beep(150,.25);if(strikes>3)monOn();updInfo()}
+function remove(d,c){drops.splice(drops.indexOf(d),1);d.el.classList.add(c);setTimeout(()=>d.el.remove(),350)}
+/*CB*/
+
+// ===== 칠판 (잠깐정지 중 손으로 계산하기: 사칙연산) =====
+const cb=document.createElement('div');cb.id='cb';
+cb.innerHTML='<div id="cbq"></div><canvas id="cv"></canvas><div id="cbt"><button data-t="w" class="sel">✏️ 흰색</button><button data-t="y">🟡 노랑</button><button data-t="p">🌸 분홍</button><button data-t="e">🧽 지우개</button><button data-t="c">🗑️ 모두 지우기</button></div>';
+area.appendChild(cb);
+const cv=cb.querySelector('#cv');let cx=null,tool='w',drawing=false,lx=0,ly=0;
+const TC={w:'#ffffff',y:'#ffe066',p:'#ff9ecb'};
+function cvSize(){try{const r=cv.getBoundingClientRect(),d=window.devicePixelRatio||1;cv.width=Math.max(1,Math.round(r.width*d));cv.height=Math.max(1,Math.round(r.height*d));cx=cv.getContext&&cv.getContext('2d');if(cx){cx.scale(d,d);cx.lineCap='round';cx.lineJoin='round'}}catch(e){cx=null}}
+function cvClear(){if(cx){cx.save();cx.setTransform(1,0,0,1,0,0);cx.clearRect(0,0,cv.width,cv.height);cx.restore()}}
+function cvPos(e){const r=cv.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]}
+cv.addEventListener('pointerdown',e=>{if(!cx)return;drawing=true;[lx,ly]=cvPos(e);try{cv.setPointerCapture(e.pointerId)}catch(_){}seg(lx,ly,lx+.01,ly+.01);e.preventDefault()});
+cv.addEventListener('pointermove',e=>{if(!drawing||!cx)return;const[x,y]=cvPos(e);seg(lx,ly,x,y);lx=x;ly=y;e.preventDefault()});
+['pointerup','pointercancel','pointerleave'].forEach(n=>cv.addEventListener(n,()=>{drawing=false}));
+function seg(a,b,c,d){cx.globalCompositeOperation=tool=='e'?'destination-out':'source-over';cx.strokeStyle=TC[tool]||'#fff';cx.lineWidth=tool=='e'?26:3.5;cx.beginPath();cx.moveTo(a,b);cx.lineTo(c,d);cx.stroke()}
+cb.querySelectorAll('#cbt button').forEach(b=>b.onclick=()=>{const t=b.dataset.t;if(t=='c')return cvClear();tool=t;cb.querySelectorAll('#cbt button').forEach(x=>x.classList.toggle('sel',x===b))});
+function cbChips(){const q=$('cbq');q.innerHTML='';const t=lowest();[...drops].sort((a,b)=>b.y-a.y).forEach(d=>{const c=document.createElement('div');c.className='cq'+(d===t?' t':'');c.innerHTML=d.el.innerHTML;q.appendChild(c)})}
+function cbOpen(){cb.classList.add('on');cbChips();cvSize();tool='w';cb.querySelectorAll('#cbt button').forEach((x,i)=>x.classList.toggle('sel',i==0))}
+function setPause(on){paused=on;if(on&&canType())say(mode=='math'?'📝 칠판에 계산해 봐요!':'✏️ 입력할 수 있어요!');if(on)pLeft=PAUSE;area.style.filter=on&&mode!='math'?'saturate(.4)':'';if(on&&mode=='math')cbOpen();else cb.classList.remove('on');updInfo()}
+pbtn.onclick=()=>{if(paused)return setPause(false);if(!run||pq<=0)return;pq--;setPause(true)};
+const canType=()=>true;
+function right(hits){
+ if(paused)setPause(false);
+ hits.forEach(d=>remove(d,'hit'));built=Math.min(TOTAL,built+hits.length);okc+=hits.length;setBricks(built,1);
+ combo++;best=Math.max(best,combo);if(mon&&combo>=3)retreat();if(combo%3==0){pq++;gain=true;pbtn.classList.remove('gn');void pbtn.offsetWidth;pbtn.classList.add('gn');setTimeout(()=>{gain=false;updInfo()},1500)}
+ say(combo>=3?'🔥 '+combo+'연속!':pick(['좋아요! 👍','정답! ✨','멋져요! 🌟','굿! 🎯']));beep(520+combo*40,.12);
+ cur='';disp.innerHTML='&nbsp;';updInfo();if(built>=TOTAL)finish();
+}
+function wrong(){combo=0;beep(180,.2);disp.classList.add('bad');setTimeout(()=>{disp.classList.remove('bad');if(mode=='math'){cur='';disp.innerHTML='&nbsp;'}},250);updInfo()}
+function submit(){
+ if(!cur||(paused&&!canType()))return;
+ const v=parseFloat(cur),hits=drops.filter(d=>Math.abs(d.ans-v)<1e-6);
+ hits.length?right(hits):wrong();
+}
+function choose(x,btn){if(!run||(paused&&!canType()))return;const t=lowest();if(!t)return;
+ if(x===t.ans)return right([t]);
+ if(btn){btn.disabled=true;btn.classList.add('x')}
+ t.wr=(t.wr||0)+1;
+ if(t.wr>=2){const a=String(t.ans);missDrop(t,'❌ 정답: '+(a.length>14?a.slice(0,14)+'…':a),1)}else wrong()}
+function key(k){
+ if(!run||(paused&&!canType()))return;
+ if(k==='⌫')cur=cur.slice(0,-1);else if(k=='.'){if(cur&&!cur.includes('.'))cur+='.'}else if(cur.length<8)cur+=k;
+ disp.textContent=cur||'\u00a0';
+}
+['1','2','3','4','5','6','7','8','9','0','.','⌫'].forEach(k=>{const b=document.createElement('button');b.textContent=k;b.onclick=()=>key(k);if(k=='.')window.dotB=b;$('pad').appendChild(b)});
+const ok=document.createElement('button');ok.textContent='확인';ok.className='ok';ok.onclick=submit;$('pad').appendChild(ok);
+// ---- 화면 전환 ----
+function showOv(h,p,c,btns,fin){stopFw();atHome=false;if(typeof cb!=='undefined')cb.classList.remove('on');
+ const t=ov.querySelector('h1');t.textContent=h;t.className=fin?'gold':'';ov.querySelector('p').innerHTML=p;$('oc').innerHTML=c;
+ const w=$('btns');w.innerHTML='';btns.forEach(([x,f,sub])=>{const b=document.createElement('button');if(sub){const d=document.createElement('div');d.textContent=x;const sm=document.createElement('small');sm.textContent=sub;sm.style.cssText='display:block;font-size:12px;opacity:.9;margin-top:2px;font-weight:400';b.append(d,sm)}else b.textContent=x;b.onclick=f;w.appendChild(b)});
+ ov.querySelectorAll('.cf').forEach(e=>e.remove());
+ if(fin)for(let i=0;i<40;i++){const e=document.createElement('span');e.className='cf';e.textContent=pick(['🎉','⭐','✨','🎊','👑','🏰']);e.style.cssText='left:'+rnd(0,98)+'%;animation-duration:'+(3+Math.random()*4)+'s;animation-delay:-'+Math.random()*6+'s';ov.appendChild(e)}
+ ov.classList.remove('h');ov.scrollTop=0;
+}
+function finish(){
+ run=false;paused=false;area.style.filter='';$('ta').style.display='none';drops.forEach(d=>d.el.remove());drops=[];
+ const stars=missed==0?3:missed<=3?2:1;
+ const info='놓친 비 '+missed+'개 · 정답 '+okc+'개 · 최고 연속 '+best+(smashes?' · 괴물 쾅 '+smashes+'번':'');
+ done[stage]=TOTAL;beep(880,.3);recordClear(mode,stage,stars);
+ let rw='';const was=!isLocked(LOCKFROM);if(!RW.got[mode].includes(stage)){RW.got[mode].push(stage);addPts(CLEAR_PTS);rw='<br>⭐ 클리어 보상 <b>+'+CLEAR_PTS+'점</b> (내 보상 '+RW.pts+'점)'}if(!was&&!isLocked(LOCKFROM))rw+='<br><b style="color:#ffd84a">🔓 '+LOCKFROM+'단계부터 모든 단계가 열렸어요!</b>';
+ const st='⭐'.repeat(stars)+'☆'.repeat(3-stars)+'<br>'+info;
+ const saveBtn=['💾 저장하기',e=>{saveGame();e.target.textContent='✅ 저장됨!'}];
+ const pickBtn=['🧪 단계 선택',()=>stagePick(mode)],homeBtn=['🏠 처음 화면으로',home];
+ if(stage==10&&allCleared(mode)){let sky='';for(let k=1;k<=10;k++)sky+='<div class="s'+k+' mini">'+castleSVG(k,true)+'</div>';
+  showOv('🎉 '+GRAND.n+' 탄생! 🎉','<span class="rk">👑 '+GRAND.n+'</span><br><b>'+MN[mode]+' 10단계를 모두 클리어!</b><br>'+GRAND.d+'<br>'+info+rw,kingBox(10,true)+'<div class="sky">'+sky+'</div>',[saveBtn,['처음부터 다시 도전',()=>{done.fill(0);start(1,20)}],pickBtn,homeBtn],1);fireworks(12);fanfare(true);rateMaybe();return}
+ const r=RK[stage],last=stage==10;
+ const btns=[];if(!last)btns.push(isLocked(stage+1)?['🔒 '+(stage+1)+'단계 : 보상 '+UNLOCK+'점 필요 (지금 '+RW.pts+'점)',()=>lockTap('🔒 보상이 '+UNLOCK+'점 이상이면 열려요',()=>start(stage+1,20))]:['▶ '+(stage+1)+'단계 : '+NAME[stage+1],()=>start(stage+1,20)]);btns.push(saveBtn,pickBtn,homeBtn);
+ const left=[];for(let i=1;i<=10;i++)if(!SESS[mode][i])left.push(i);
+ showOv(last?'🎆 10단계 성 완성! 🎆':'🎆 성을 완성했습니다! 🎆','<b>'+stage+'단계 성 완성! 🚩</b><br><span class="rk">👑 '+r.n+'</span><br>'+r.d+'<br>'+st+rw+(last?'<br><small>아직 못 깬 단계: '+left.join(', ')+'단계 — 모두 깨면 '+GRAND.n+'!</small>':''),kingBox(stage)+castleBig(stage),btns);fireworks(last?8:4);fanfare(last);rateMaybe();
+}
+function start(s,n){stopFw();stopFanfare();setTrack(mode);
+ stage=s;TOTAL=n;area.querySelectorAll('.drop,.say').forEach(e=>e.remove());
+ drops=[];spawned=0;built=0;okc=0;mon=false;monT=0;smashes=0;strikes=0;pq=PSTART+bonus();gain=false;missed=0;combo=0;best=0;cur='';paused=false;nextSpawn=0;area.style.filter='';
+ area.style.background='linear-gradient('+SKY[s][0]+','+SKY[s][1]+')';window.dotB.style.visibility=mode=='math'&&s>=6?'visible':'hidden';
+ lastT=null;bagKey='';lastIt=null;mseen=new Set();$('ch').innerHTML='';$('pad').style.display=mode=='math'?'':'none';$('ch').style.display=mode=='math'?'none':'grid';
+ disp.innerHTML='&nbsp;';buildCastle();$('ta').style.display='none';updInfo();ov.classList.add('h');
+ run=true;last=performance.now();requestAnimationFrame(loop);
+}
+function jump(n,c,m){if(isLocked(n))return;if(m)setMode(m);for(let i=1;i<n;i++)done[i]=20;start(n,c)}
+const MN={math:'➕ 사칙연산',eng:'🔤 영어',han:'🈶 한자'},MO=['math','eng','han'];
+function setMode(m){mode=m;NAME=NAMES[m]}
+const SD={math:'사칙연산 10단계<br>초등 1~6학년 · 단항식과 다항식 계산',eng:'영어 10단계<br>초등 1~6학년 단어·문장',han:'한자 10단계<br>한자능력검정 급수별'},SI={math:'➕',eng:'🔤',han:'🈶'};
+
+// ===== 게임 이름 (이름을 바꾸려면 여기만 고치면 화면 제목이 바뀝니다) =====
+const TITLE='초등 공부 왕(King)';
+// 스토어에 올릴 때 capacitor.config.json 의 appId 와 똑같이 맞추세요 (별점 버튼이 이 주소로 이동)
+const APPID='com.example.castlegame';
+document.title=TITLE;
+// ===== 저장 =====
+const SKEY='castleSave';
+const blank=()=>({math:Array(11).fill(0),eng:Array(11).fill(0),han:Array(11).fill(0)});
+const cl=o=>JSON.parse(JSON.stringify(o));
+let SAVED=blank();
+try{const v=JSON.parse(localStorage.getItem(SKEY)||'null');if(v)for(const k of ['math','eng','han'])if(Array.isArray(v[k]))for(let i=1;i<=10;i++)SAVED[k][i]=+v[k][i]||0}catch(e){}
+let SESS=cl(SAVED);
+const hasUnsaved=()=>JSON.stringify(SESS)!==JSON.stringify(SAVED);
+function saveGame(){SAVED=cl(SESS);try{localStorage.setItem(SKEY,JSON.stringify(SAVED))}catch(e){}}
+function wipeSave(){SAVED=blank();SESS=blank();try{localStorage.removeItem(SKEY)}catch(e){}}
+function recordClear(m,n,st){SESS[m][n]=Math.max(SESS[m][n],st)}
+const allCleared=m=>{for(let i=1;i<=10;i++)if(!SESS[m][i])return false;return true};
+const cnt=(o,m)=>{let c=0;for(let i=1;i<=10;i++)if(o[m][i])c++;return c};
+// ===== 왕의 계급 =====
+const RK=[null,
+{n:'마을 촌장',d:'작은 마을을 이끄는 촌장이 되었어요!'},
+{n:'기사',d:'용감한 기사 작위를 받았어요!'},
+{n:'영주',d:'영지를 다스리는 영주가 되었어요!'},
+{n:'남작',d:'귀족 남작이 되었어요!'},
+{n:'백작',d:'위엄 있는 백작이 되었어요!'},
+{n:'공작',d:'왕 다음가는 공작이 되었어요!'},
+{n:'왕',d:'드디어 왕관을 썼어요! 왕이 되었습니다!'},
+{n:'대왕',d:'온 나라가 우러러보는 대왕이 되었어요!'},
+{n:'황제',d:'여러 나라를 다스리는 황제가 되었어요!'},
+{n:'대황제',d:'세상에서 가장 위대한 대황제! 1~9단계도 모두 깨면 최종 왕이 돼요!'}];
+const GRAND={n:'엄청난 왕',d:'모든 단계를 깬 '+TITLE+'! 전설의 왕이 되었어요!'};
+const ROBE=['','#8d6e4a','#6f7f90','#2e7d4f','#3a64b5','#7b3fa0','#b23a48','#c62828','#d84315','#6a1b9a','#101a55'];
+function crownSVG(pts,x0,x1,yb,yt,col,gem,big){let d='M'+x0+','+yb,w=(x1-x0)/pts,g='';
+ for(let i=0;i<pts;i++){const px=x0+(i+.5)*w,vx=x0+(i+1)*w;d+=' L'+(x0+i*w).toFixed(1)+','+(yb-6)+' L'+px.toFixed(1)+','+yt+' L'+vx.toFixed(1)+','+(yb-6);g+='<circle cx="'+px.toFixed(1)+'" cy="'+(yt-1)+'" r="'+(big?2.6:2)+'" fill="'+gem+'" stroke="#fff" stroke-width=".6"/>'}
+ d+=' L'+x1+','+yb+' Z';return '<path d="'+d+'" fill="'+col+'" stroke="#8a5a00" stroke-width="1.2" stroke-linejoin="round"/><rect x="'+x0+'" y="'+(yb-1)+'" width="'+(x1-x0)+'" height="6" rx="1.5" fill="'+col+'" stroke="#8a5a00" stroke-width="1.2"/>'+g+'<circle cx="'+((x0+x1)/2)+'" cy="'+(yb+2)+'" r="2.2" fill="'+gem+'"/>'}
+function kingSVG(r,grand){
+ let o='<svg viewBox="0 0 100 125" xmlns="http://www.w3.org/2000/svg">';
+ const robe=grand?'#7a0f2e':ROBE[r];
+ if(grand||r>=9)o+='<defs><radialGradient id="gl"><stop offset="0" stop-color="#fff3b0" stop-opacity=".9"/><stop offset="1" stop-color="#fff3b0" stop-opacity="0"/></radialGradient></defs><circle cx="50" cy="55" r="'+(grand?58:46)+'" fill="url(#gl)"/>';
+ if(grand){for(let i=0;i<12;i++){const a=i*Math.PI/6;o+='<line x1="'+(50+30*Math.cos(a)).toFixed(1)+'" y1="'+(55+30*Math.sin(a)).toFixed(1)+'" x2="'+(50+56*Math.cos(a)).toFixed(1)+'" y2="'+(55+56*Math.sin(a)).toFixed(1)+'" stroke="#ffd84a" stroke-width="2" stroke-linecap="round" opacity=".8"/>'}}
+ if(r>=4||grand)o+='<path d="M30,62 Q14,100 18,121 L82,121 Q86,100 70,62 Z" fill="'+(grand?'#c9a100':r>=7?'#8b0000':'#5a2d82')+'" opacity=".95"/>';
+ o+='<path d="M32,62 Q50,56 68,62 L78,121 L22,121 Z" fill="'+robe+'" stroke="#0004" stroke-width="1"/>';
+ if(r>=3||grand)o+='<path d="M50,62 L50,121" stroke="#ffd84a" stroke-width="2" opacity=".7"/>';
+ if(r>=6||grand){o+='<path d="M30,64 Q50,76 70,64 L68,72 Q50,84 32,72 Z" fill="#fff" stroke="#bbb" stroke-width=".8"/>';for(let i=0;i<6;i++)o+='<circle cx="'+(38+i*5)+'" cy="'+(70+(i%2)*2)+'" r="1" fill="#222"/>'}
+ if(r>=8||grand)for(let i=0;i<3;i++)o+='<circle cx="50" cy="'+(88+i*10)+'" r="2.4" fill="#ffd84a" stroke="#8a5a00" stroke-width=".6"/>';
+ // 얼굴
+ o+='<circle cx="50" cy="44" r="15" fill="#ffd9b0" stroke="#c69060" stroke-width="1"/>';
+ if(r>=5||grand)o+='<path d="M36,48 Q38,66 50,68 Q62,66 64,48 Q58,56 50,56 Q42,56 36,48 Z" fill="#f4f4f4" stroke="#bbb" stroke-width=".8"/>';
+ o+='<circle cx="44.5" cy="43" r="1.8" fill="#222"/><circle cx="55.5" cy="43" r="1.8" fill="#222"/><path d="M45,'+((r>=5||grand)?50:49)+' Q50,'+((r>=5||grand)?53:54)+' 55,'+((r>=5||grand)?50:49)+'" stroke="#a33" stroke-width="1.6" fill="none" stroke-linecap="round"/>';
+ if(r<3&&!grand)o+='<circle cx="41" cy="48" r="2" fill="#f7a" opacity=".5"/><circle cx="59" cy="48" r="2" fill="#f7a" opacity=".5"/>';
+ // 머리장식
+ if(!grand&&r==1)o+='<path d="M34,36 Q50,14 66,36 Z" fill="#a1824a" stroke="#6b5230" stroke-width="1.2"/><rect x="32" y="34" width="36" height="4" rx="2" fill="#7a5f33"/><path d="M60,22 q10,-14 12,-4 q-6,2 -8,8" fill="#e53"/>';
+ else if(!grand&&r==2)o+='<path d="M34,40 Q34,17 50,17 Q66,17 66,40 Z" fill="#b8c4d0" stroke="#5c6b7a" stroke-width="1.4"/><rect x="48" y="26" width="4" height="14" fill="#8392a1"/><path d="M50,17 q10,-14 20,-6 q-8,0 -12,8" fill="#d33"/>';
+ else if(grand)o+=crownSVG(9,28,72,30,5,'#ffd84a','#ff3b6b',true)+'<circle cx="50" cy="3" r="3.2" fill="#4cf" stroke="#fff" stroke-width=".7"/>';
+ else{const P=[0,0,0,3,3,4,5,5,6,7,8][r],col=r==3?'#d8dde3':'#ffd84a',gem=['','','','#4aa3ff','#3ccf6a','#ff3b6b','#4aa3ff','#ff3b6b','#b04aff','#ff7a00','#3cf'][r];o+=crownSVG(P,33,67,31,r>=7?10:17,col,gem,r>=7)}
+ // 홀
+ if(r>=7||grand){o+='<rect x="80" y="62" width="3" height="56" rx="1.5" fill="#c9a100" stroke="#8a5a00" stroke-width=".6"/><circle cx="81.5" cy="58" r="'+(grand?6:4.5)+'" fill="'+(grand?'#4cf':'#e33')+'" stroke="#ffd84a" stroke-width="1.2"/>'}
+ if(r>=9||grand)o+='<path d="M10,20 l2,5 5,2 -5,2 -2,5 -2,-5 -5,-2 5,-2z M88,30 l1.6,4 4,1.6 -4,1.6 -1.6,4 -1.6,-4 -4,-1.6 4,-1.6z" fill="#fff3b0"/>';
+ return o+'</svg>'}
+const kingBox=(r,grand)=>'<div class="kingbox'+(grand?' big':'')+'">'+kingSVG(r,grand)+'</div>';
+function rankSummary(m){const c=cnt(SESS,m);return c?('클리어 '+c+'/10단계'+(allCleared(m)?' · 👑 '+GRAND.n:' · 최고 계급 '+RK[Math.max(...SESS[m].map((v,i)=>v?i:0))].n)):'아직 클리어한 단계가 없어요'}
+function mark(m,n){const v=SESS[m][n];if(!v)return '';const sv=SAVED[m][n]?'✅ ':'☑️ ';return sv}
+function saveInfo(){const f=m=>MN[m]+' '+(cnt(SAVED,m))+'/10';return f('math')+'<br>'+f('eng')+'<br>'+f('han')}
+function recordScr(back){const rows=['math','eng','han'].map(m=>{const l=[];for(let i=1;i<=10;i++)if(SAVED[m][i])l.push(i);return '<b>'+MN[m]+'</b> : '+(l.length?l.join(', ')+'단계':'없음')+(cnt(SAVED,m)==10?' 👑':'')}).join('<br>');
+ showOv('📂 저장 기록','저장된 클리어 단계<br><br>'+rows+(hasUnsaved()?'<br><br><small>⚠️ 아직 저장하지 않은 클리어가 있어요</small>':''),'',[['← 돌아가기',back]])}
+function wipeScr(back){showOv('🗑️ 저장 기록 지우기','저장된 기록을 모두 지울까요?<br>되돌릴 수 없어요!','',[['네, 모두 지우기',()=>{wipeSave();back('🗑️ 저장 기록을 지웠어요')}],['← 취소',()=>back()]])}
+
+// ===== 공통 저장 도우미 =====
+const ld=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}};
+const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// ===== 오답 노트 =====
+let WR=ld('castleWrong',[]);if(!Array.isArray(WR))WR=[];
+function recordWrong(d){if(!d||d.q==null)return;const q=String(d.q),a=String(d.ans),e=WR.find(x=>x.m==mode&&x.q==q);
+ if(e){e.n++;e.t=Date.now()}else{WR.push({m:mode,s:stage,q,a,n:1,t:Date.now()});if(WR.length>80)WR.sort((x,y)=>y.t-x.t),WR.length=80}sv('castleWrong',WR)}
+const wcnt=m=>WR.filter(x=>!m||x.m==m).length;
+let noteBack=null;
+function noteScr(msg){const bs=[];
+ if(WR.length)bs.push(['🔁 복습하기 (전체 '+WR.length+'개)',()=>reviewStart(null)]);
+ MO.forEach(m=>{if(wcnt(m))bs.push(['🔁 '+MN[m]+' 복습 ('+wcnt(m)+')',()=>reviewStart(m)])});
+ if(WR.length)bs.push(['📋 목록 보기',()=>noteList()],['🗑️ 모두 지우기',()=>{WR=[];sv('castleWrong',WR);noteScr('🗑️ 오답 노트를 비웠어요')}]);
+ bs.push(['← 돌아가기',noteBack||home]);
+ showOv('📒 오답 노트',(msg?'<b style="color:#ffd84a">'+msg+'</b><br>':'')+(WR.length?'틀린 문제를 모아 두었어요<br>'+MO.map(m=>MN[m]+' '+wcnt(m)).join(' · ')+'<br><small>복습에서 "알아요"를 누르면 노트에서 지워져요</small>':'아직 틀린 문제가 없어요 👍<br><small>산성비를 놓치거나 보기를 두 번 틀리면 여기에 모여요</small>'),'<div style="font-size:50px">📒</div>',bs)}
+function noteList(){const l=[...WR].sort((a,b)=>b.t-a.t).slice(0,30).map(x=>'<div style="text-align:left;font-size:15px;border-bottom:1px solid #ffffff33;padding:4px 0">'+esc(MN[x.m].split(' ')[0])+' <b>'+esc(x.q)+'</b> → <span style="color:#ffd84a">'+esc(x.a)+'</span>'+(x.n>1?' <small>×'+x.n+'</small>':'')+'</div>').join('');
+ showOv('📋 오답 목록','최근 틀린 문제 (최대 30개)','<div style="width:min(94%,320px);margin:0 auto">'+l+'</div>',[['← 돌아가기',()=>noteScr()]])}
+let RV=null;
+function reviewStart(m){const q=shuf(WR.filter(x=>!m||x.m==m)).slice(0,10);if(!q.length)return noteScr();RV={q,i:0,gone:0,again:0};reviewCard()}
+function reviewCard(){if(RV.i>=RV.q.length){const left=WR.length,r=RV;RV=null;return showOv('🎓 복습 끝!','알아요 ✅ '+r.gone+'개 · 다시 볼 ❌ '+r.again+'개<br>노트에 남은 문제 '+left+'개',
+  '<div style="font-size:50px">🎓</div>',[['📒 오답 노트로',()=>noteScr()],['← 돌아가기',noteBack||home]],r.again==0)}
+ const it=RV.q[RV.i];
+ showOv('🔁 복습 '+(RV.i+1)+'/'+RV.q.length,MN[it.m]+(it.n>1?' · '+it.n+'번 틀렸어요':''),'<div class="qbig">'+esc(it.q)+'</div><div class="qans">❓</div>',[['👀 정답 보기',()=>{
+  $('oc').querySelector('.qans').textContent=it.a;
+  const w=$('btns');w.innerHTML='';
+  [['✅ 알아요 (노트에서 지우기)',()=>{WR=WR.filter(x=>x!==it);sv('castleWrong',WR);RV.gone++;RV.i++;reviewCard()}],['❌ 아직이에요 (남겨두기)',()=>{RV.again++;RV.i++;reviewCard()}]].forEach(([t,f])=>{const b=document.createElement('button');b.textContent=t;b.onclick=f;w.appendChild(b)})}],['← 그만하기',()=>{RV=null;noteScr()}]])}
+// ===== 출석 =====
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+// ===== 보상 점수 / 잠금 =====
+// 6단계부터 잠겨 있고, 보상 점수가 UNLOCK점 이상이면 풀려요 (숫자를 바꾸면 규칙이 바뀝니다)
+const UNLOCK=5,LOCKFROM=6,CLEAR_PTS=3;
+let RW=ld('castleRew',{pts:0,got:{}});if(!RW||typeof RW.pts!='number')RW={pts:0,got:{}};if(!RW.got)RW.got={};
+['math','eng','han'].forEach(m=>{if(!Array.isArray(RW.got[m]))RW.got[m]=[]});
+// 개발자 모드: 잠긴 단계를 5번 연속 누르면 켜짐 (모든 단계 잠금 해제). 스토어에 올릴 때는 DEV_ALLOWED 를 false 로!
+const DEV_ALLOWED=true;let DEV=DEV_ALLOWED&&ld('castleDev',0)===1,devTaps=0,devT=0;
+function setDev(v){DEV=DEV_ALLOWED&&v;sv('castleDev',DEV?1:0)}
+function lockTap(msg,after){const now=Date.now();devTaps=now-devT<2500?devTaps+1:1;devT=now;
+ if(DEV_ALLOWED&&devTaps>=5){devTaps=0;setDev(true);toast('🛠️ 개발자 모드 켜짐 · 모든 단계 열림');if(after)after();return}
+ toast(msg)}
+const isLocked=n=>n>=LOCKFROM&&RW.pts<UNLOCK&&!DEV;
+function addPts(n){RW.pts+=n;sv('castleRew',RW)}
+const streakPts=d=>d>=6?10:d==5?5:d==4?3:d==3?2:d==2?1:0;
+let AT=ld('castleDaily',{last:'',streak:0,total:0});
+const PB=[0,1,1,2,2,3,3,5],TT=[[30,'🏅 출석 왕'],[20,'🏆 노력왕'],[10,'📘 성실한 학생'],[5,'🌿 꿈나무'],[1,'🌱 새싹']];
+const cday=()=>((Math.max(1,AT.streak)-1)%7)+1,title=()=>{const t=TT.find(x=>AT.total>=x[0]);return t?t[1]:'🌱 새싹'};
+const bonus=()=>AT.last===ymd(new Date())?PB[cday()]:0;
+function checkin(){const t=ymd(new Date());if(AT.last===t)return false;const y=new Date();y.setDate(y.getDate()-1);
+ AT.streak=AT.last===ymd(y)?AT.streak+1:1;AT.total++;AT.last=t;AT.gp=streakPts(AT.streak);sv('castleDaily',AT);addPts(AT.gp);return true}
+function attScr(first){const c=cday(),st=[];for(let i=1;i<=7;i++)st.push('<div class="'+(i<=c?'on':'')+'"><span>'+i+'일</span><b>'+(i<=c?(i==7?'👑':'✅'):(i==7?'👑':'🎁'))+'</b><span>+'+PB[i]+'</span></div>');
+ showOv(first?'📅 출석 체크!':'📅 출석부',(first?'<b style="color:#ffd84a">오늘 출석 완료! 🎉</b><br>':'')+'연속 <b>'+AT.streak+'</b>일 · 누적 '+AT.total+'일<br>칭호: <b>'+title()+'</b><br>오늘 보너스: ⏸ 잠깐정지 <b>+'+bonus()+'회</b>'+(first?' · ⭐ 보상 <b>+'+(AT.gp||0)+'점</b>':'')+'<br>⭐ 내 보상 점수: <b>'+RW.pts+'점</b>'+(isLocked(LOCKFROM)?' <small>(🔒 '+LOCKFROM+'단계부터는 '+UNLOCK+'점이 필요해요)</small>':' <small>(🔓 모든 단계 열림)</small>')+'<br><small>출석 보상 점수: 2일 +1 · 3일 +2 · 4일 +3 · 5일 +5 · 6일 이상 +10<br>단계 클리어 보상 +'+CLEAR_PTS+'점 (처음 클리어할 때)<br>하루 걸러 접속하면 처음부터 다시 시작해요</small>',
+  '<div class="stamps">'+st.join('')+'</div>',[[first?'▶ 게임 하러 가기':'← 돌아가기',home]],first&&c==7)}
+// ===== 별점 요청 =====
+let RT=ld('castleRate',{c:0,asks:0,last:0,done:0});
+function openStore(){try{location.href='https://play.google.com/store/apps/details?id='+APPID}catch(e){}}
+function rateNow(){const P=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.InAppReview;if(P&&P.requestReview){try{P.requestReview().catch(openStore);return}catch(e){}}openStore()}
+function rateMaybe(){RT.c++;const ask=!RT.done&&RT.c>=3&&RT.asks<3&&Date.now()-RT.last>7*864e5;sv('castleRate',RT);if(!ask)return;
+ RT.asks++;RT.last=Date.now();sv('castleRate',RT);
+ const b=document.createElement('div');b.className='ratebox';b.innerHTML='⭐ 재미있었나요?<br><small>별점 한 번이 개발에 큰 힘이 돼요!</small><br>';
+ const y=document.createElement('button');y.textContent='⭐ 별점 남기기';y.onclick=()=>{RT.done=1;sv('castleRate',RT);b.remove();rateNow()};
+ const n=document.createElement('button');n.textContent='다음에';n.className='g';n.onclick=()=>b.remove();
+ b.append(y,n);$('oc').appendChild(b)}
+// ===== 뒤로가기 / 세로 고정 =====
+function toast(t){document.querySelectorAll('.toast').forEach(e=>e.remove());const e=document.createElement('div');e.className='toast';e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),1800)}
+let atHome=false,exitArm=false;
+function guard(){try{history.pushState({g:1},'')}catch(e){}}
+function onBack(){
+ if(!ov.classList.contains('h')){
+  const bs=[...document.querySelectorAll('#btns button')];
+  if(atHome){if(!exitArm){exitArm=true;toast('한 번 더 누르면 앱이 종료돼요');setTimeout(()=>{exitArm=false;guard()},1800);return}return}
+  const b=bs.find(x=>/^←|계속하기/.test(x.textContent.trim()));if(b){guard();b.click();return}
+  guard();home();return}
+ if(run){guard();menu();return}
+ guard()}
+try{window.addEventListener('popstate',onBack);guard()}catch(e){}
+try{screen.orientation&&screen.orientation.lock&&screen.orientation.lock('portrait').catch(()=>{})}catch(e){}
+function subjectScr(m){setTrack('start');setMode(m);showOv(MN[m],SD[m]+'<br><small>'+rankSummary(m)+'</small>','<div style="font-size:56px">'+SI[m]+'</div>',[['▶ 시작',()=>{done.fill(0);start(1,20)}],['🧪 단계 선택 (저장 불러오기)',()=>stagePick(m)],['← 돌아가기',home]])}
+function stagePick(m){const NM=NAMES[m],b=[];for(let n=1;n<=10;n++)b.push(isLocked(n)?['🔒 '+n+'단계 : '+NM[n],()=>lockTap('🔒 보상 '+UNLOCK+'점이 필요해요 (지금 '+RW.pts+'점)',()=>stagePick(m)),'보상 '+UNLOCK+'점 이상이면 열려요']:[mark(m,n)+n+'단계 : '+NM[n],()=>jump(n,20,m),SESS[m][n]?'⭐'.repeat(SESS[m][n])+' '+RK[n].n+(SAVED[m][n]?' · 저장됨':' · 저장 안 됨'):'']);b.push(['← 돌아가기',()=>subjectScr(m)]);showOv('🧪 단계 선택 · '+MN[m],'원하는 단계를 골라요 (✅ 저장됨 · ☑️ 저장 전)<br>⭐ 내 보상 '+RW.pts+'점'+(isLocked(LOCKFROM)?' · 🔒 '+LOCKFROM+'단계부터 '+UNLOCK+'점 필요':'')+'<br><small>'+SNOTE[m]+'</small>','',b)}
+function menu(){if(!run)return;run=false;menuScr()}
+function menuScr(msg){showOv('☰ 메뉴',msg?'<b style="color:#ffd84a">'+msg+'</b>':'진행 중: '+stage+'단계 : '+NAME[stage],'',[['💾 저장하기',()=>{saveGame();menuScr('💾 저장했어요!')}],['계속하기',()=>{ov.classList.add('h');run=true;last=performance.now();requestAnimationFrame(loop)}],[stage+'단계 처음부터',()=>start(stage,TOTAL)],['1단계부터 다시',()=>{done.fill(0);start(1,20)}],['📒 오답 노트',()=>{noteBack=menuScr;noteScr()}],['⚙️ 옵션',()=>optMenu(menuScr)],['🏠 처음 화면으로',home]])}
+const FS=[.75,.88,1,1.2,1.45],FN=['아주 작게','작게','보통','크게','아주 크게'];let fsi=2;
+try{const v=localStorage.getItem('castleFS');if(v!==null&&+v>=0&&+v<=4)fsi=+v}catch(e){}
+function applyFS(){document.documentElement.style.setProperty('--fs',FS[fsi]);try{localStorage.setItem('castleFS',fsi)}catch(e){}
+ drops.forEach(d=>{d.x=Math.max(0,Math.min(d.x,area.clientWidth-d.el.offsetWidth-4))})}
+function fontMenu(back){applyFS();const chip=t=>'<span style="display:inline-block;margin:8px 4px 0;padding:5px 11px;background:#2f9e6e;border-radius:4px 20px 20px 20px;font-weight:700;font-size:calc(17px*var(--fs))">'+t+'</span>';
+ showOv('🔠 글자 크기','산성비 문제 글자 크기: <b>'+FN[fsi]+'</b> ('+(fsi+1)+'/5)<br>'+chip('12 + 5')+chip('apple')+chip('學校'),'',[['➕ 크게',()=>{fsi=Math.min(4,fsi+1);fontMenu(back)}],['➖ 작게',()=>{fsi=Math.max(0,fsi-1);fontMenu(back)}],['보통으로',()=>{fsi=2;fontMenu(back)}],['← 돌아가기',back]])}
+$('mn').onclick=menu;
+function home(){stopFanfare();setTrack('start');run=false;paused=false;area.style.filter='';$('ta').style.display='none';drops.forEach(d=>d.el.remove());drops=[];done.fill(0);lastT=null;
+showOv('👑 '+TITLE,'하늘에서 내려오는 💧산성비 문제를<br>풀면 벽돌 +1 🧱, 땅에 닿으면 −1 💥<br>4번 넘게 놓치면 👹괴물이 벽돌을 부숴요!<br>벽돌을 다 채우면 다음 단계로!<br>벽돌이 없는데 또 깨지면 게임 오버 💀<br>사칙연산·영어·한자 중에서 골라요 (영어·한자는 보기 5개 중 정답 고르기, 두 번 틀리면 틀린 것으로 처리)<br>단계를 깰 때마다 왕의 계급이 올라가요! 10단계를 모두 깨면 엄청난 왕 👑<br><small>⏸ 잠깐정지: 60초 · 처음 10번 · 3연속 정답마다 +1<br>⏸ 정지 중에도 답을 입력할 수 있고, 맞히면 바로 다시 시작돼요!</small>','<div style="font-size:60px">🏰</div>',[['➕ 사칙연산 시작',()=>subjectScr('math')],['🔤 영어 시작',()=>subjectScr('eng')],['🈶 한자 시작',()=>subjectScr('han')],['📒 오답 노트'+(WR.length?' ('+WR.length+')':''),()=>{noteBack=home;noteScr()}],['📅 출석부 · '+title()+' · ⭐'+RW.pts,()=>attScr(false)],['⚙️ 옵션',()=>optMenu(home)]]);atHome=true}
+applyFS();if(checkin())attScr(true);else home();
+</script>
+</body>
+</html>
