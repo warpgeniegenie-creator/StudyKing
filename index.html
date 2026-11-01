@@ -943,7 +943,15 @@ function fontMenu(back){applyFS();const chip=t=>'<span style="display:inline-blo
 $('mn').onclick=menu;
 // ===== 랭킹 (Firebase) =====
 // ★ Firebase 콘솔에서 만든 웹앱 설정값을 아래에 붙여 넣으세요 (FIREBASE-SETUP.md 참고)
-const FBCFG={apiKey:'AIzaSyDIgWONPm7UeBQKbDOHLQjZeZ8LAZ7_1K4',authDomain:'studyking-8a461.firebaseapp.com',projectId:'studyking-8a461',appId:'1:1009122076687:web:3d9f0296f3a51227359b7a'};
+const FBCFG={
+  apiKey: "AIzaSyDIgWONPm7UeBQKbDOHLQjZeZ8LAZ7_1K4",
+  authDomain: "studyking-8a461.firebaseapp.com",
+  projectId: "studyking-8a461",
+  storageBucket: "studyking-8a461.firebasestorage.app",
+  messagingSenderId: "1009122076687",
+  appId: "1:1009122076687:web:3d9f0296f3a51227359b7a",
+  measurementId: "G-E4ZRDCBBVE"
+};
 const RKEY='castleRank';let RKR=ld(RKEY,{nick:'',on:0});
 const rkEsc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const myStars=()=>{let n=0;for(const m of['math','eng','han'])for(let i=1;i<=10;i++)n+=SESS[m][i]||0;return n};
