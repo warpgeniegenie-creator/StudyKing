@@ -127,7 +127,7 @@ html,body{height:100%;margin:0;background:var(--s2);color:var(--ink);font-family
 #cv{flex:1;min-height:0;width:100%;touch-action:none;cursor:crosshair}
 #cbt{flex:none;display:flex;gap:4px;padding:4px;justify-content:center;flex-wrap:wrap}#cbt button{font:inherit;font-size:13px;padding:4px 9px;border-radius:8px;border:0;background:#ffffff33;color:#fff}#cbt button.sel{background:#f2b705;color:#222}
 .kpair{display:flex;gap:10px;justify-content:center;align-items:flex-end}.kcol{display:flex;flex-direction:column;align-items:center}.klab{font-size:13px;font-weight:700;margin-top:2px;color:#ffd84a}
-.kpair .kingbox{width:112px;height:140px;margin:0}.kpair.big .kingbox{width:150px;height:187px}.rlist{width:100%;max-width:360px;margin:8px auto 0;text-align:left;font-size:14px}.rrow{display:flex;align-items:center;gap:8px;padding:4px 8px;margin:4px 0;background:rgba(255,255,255,.08);border-radius:12px}.rrow.me{background:rgba(255,216,74,.22);outline:2px solid #ffd84a}.rno{width:30px;text-align:center;font-weight:800;font-size:17px}.rav{width:44px;height:70px;flex:none}.rav svg{width:100%;height:100%;display:block}.rin{flex:1;min-width:0}.rnk{font-weight:800;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rsc{font-size:12px;opacity:.85}.rpt{font-weight:800;font-size:20px;color:#ffd84a}.rpt small{font-size:11px;margin-left:2px}.kingbox.av{width:100px;height:160px}.kingbox.av.big{width:130px;height:208px}.kpair .kingbox.av{width:96px;height:154px}.kpair.big .kingbox.av{width:116px;height:186px}
+.kpair .kingbox{width:112px;height:140px;margin:0}.kpair.big .kingbox{width:150px;height:187px}.rkreg{position:fixed;top:14px;right:62px;z-index:12;padding:7px 11px;border:0;border-radius:12px;background:#f2b705;color:#222;font-weight:800;font-size:13px;box-shadow:0 2px 8px #0006}.mrk{width:100%;max-width:300px;margin:8px auto 0;padding:6px 10px 4px;border-radius:14px;background:rgba(255,255,255,.09);border:1px solid rgba(255,216,74,.45);cursor:pointer;text-align:left}.mrkh{font-size:13px;font-weight:800;color:#ffd84a;text-align:center;margin-bottom:2px}.mrkh small{font-weight:400;opacity:.7;font-size:10px;margin-left:4px}.mmsg{font-size:12px;text-align:center;padding:6px 2px;line-height:1.4;opacity:.9}.mmsg b{color:#ffd84a}.mrow{display:flex;align-items:center;gap:6px;padding:1px 0;font-size:13px}.mrow.me{background:rgba(255,216,74,.2);border-radius:8px}.mn{width:22px;text-align:center;font-size:13px}.mav{width:22px;height:35px;flex:none}.mav svg{width:100%;height:100%;display:block}.mrow b{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mrow i{font-style:normal;color:#ffd84a;font-weight:800}.rlist{width:100%;max-width:360px;margin:8px auto 0;text-align:left;font-size:14px}.rrow{display:flex;align-items:center;gap:8px;padding:4px 8px;margin:4px 0;background:rgba(255,255,255,.08);border-radius:12px}.rrow.me{background:rgba(255,216,74,.22);outline:2px solid #ffd84a}.rno{width:30px;text-align:center;font-weight:800;font-size:17px}.rav{width:44px;height:70px;flex:none}.rav svg{width:100%;height:100%;display:block}.rin{flex:1;min-width:0}.rnk{font-weight:800;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rsc{font-size:12px;opacity:.85}.rpt{font-weight:800;font-size:20px;color:#ffd84a}.rpt small{font-size:11px;margin-left:2px}.kingbox.av{width:100px;height:160px}.kingbox.av.big{width:130px;height:208px}.kpair .kingbox.av{width:96px;height:154px}.kpair.big .kingbox.av{width:116px;height:186px}
 </style>
 </head>
 <body>
@@ -524,7 +524,7 @@ function key(k){
 ['1','2','3','4','5','6','7','8','9','0','.','⌫'].forEach(k=>{const b=document.createElement('button');b.textContent=k;b.onclick=()=>key(k);if(k=='.')window.dotB=b;$('pad').appendChild(b)});
 const ok=document.createElement('button');ok.textContent='확인';ok.className='ok';ok.onclick=submit;$('pad').appendChild(ok);
 // ---- 화면 전환 ----
-function showOv(h,p,c,btns,fin){stopFw();atHome=false;if(typeof cb!=='undefined')cb.classList.remove('on');
+function showOv(h,p,c,btns,fin){stopFw();stopRW();atHome=false;if(typeof cb!=='undefined')cb.classList.remove('on');
  const t=ov.querySelector('h1');t.textContent=h;t.className=fin?'gold':'';ov.querySelector('p').innerHTML=p;$('oc').innerHTML=c;
  const w=$('btns');w.innerHTML='';btns.forEach(([x,f,sub])=>{const b=document.createElement('button');if(sub){const d=document.createElement('div');d.textContent=x;const sm=document.createElement('small');sm.textContent=sub;sm.style.cssText='display:block;font-size:12px;opacity:.9;margin-top:2px;font-weight:400';b.append(d,sm)}else b.textContent=x;b.onclick=f;w.appendChild(b)});
  ov.querySelectorAll('.cf').forEach(e=>e.remove());
@@ -620,7 +620,7 @@ const COIN=[0,5,8,12,18,26,36,50,68,90,120];const coinFor=(n,first)=>first?COIN[
 let RW=ld('castleRew',{pts:0,got:{}});if(!RW||typeof RW.pts!='number')RW={pts:0,got:{}};if(!RW.got)RW.got={};
 ['math','eng','han'].forEach(m=>{if(!Array.isArray(RW.got[m]))RW.got[m]=[]});
 function addPts(n){RW.pts+=n;sv('castleRew',RW)}
-const streakPts=d=>d>=6?30:d==5?15:d==4?9:d==3?6:d==2?3:0;
+const streakPts=d=>d>=1?100+50*(Math.min(d,7)-1):0;
 let AT=ld('castleDaily',{last:'',streak:0,total:0});
 const PB=[0,1,1,2,2,3,3,5],TT=[[30,'🏅 출석 왕'],[20,'🏆 노력왕'],[10,'📘 성실한 학생'],[5,'🌿 꿈나무'],[1,'🌱 새싹']];
 const cday=()=>((Math.max(1,AT.streak)-1)%7)+1,title=()=>{const t=TT.find(x=>AT.total>=x[0]);return t?t[1]:'🌱 새싹'};
@@ -628,7 +628,7 @@ const bonus=()=>AT.last===ymd(new Date())?PB[cday()]:0;
 function checkin(){const t=ymd(new Date());if(AT.last===t)return false;const y=new Date();y.setDate(y.getDate()-1);
  AT.streak=AT.last===ymd(y)?AT.streak+1:1;AT.total++;AT.last=t;AT.gp=streakPts(AT.streak);sv('castleDaily',AT);addPts(AT.gp);return true}
 function attScr(first){const c=cday(),st=[];for(let i=1;i<=7;i++)st.push('<div class="'+(i<=c?'on':'')+'"><span>'+i+'일</span><b>'+(i<=c?(i==7?'👑':'✅'):(i==7?'👑':'🎁'))+'</b><span>+'+PB[i]+'</span></div>');
- showOv(first?'📅 출석 체크!':'📅 출석부',(first?'<b style="color:#ffd84a">오늘 출석 완료! 🎉</b><br>':'')+'연속 <b>'+AT.streak+'</b>일 · 누적 '+AT.total+'일<br>칭호: <b>'+title()+'</b><br>오늘 보너스: ⏸ 잠깐정지 <b>+'+bonus()+'회</b>'+(first?' · 🪙 출석 보상 <b>+'+(AT.gp||0)+'코인</b>':'')+'<br>🪙 내 코인: <b>'+RW.pts+'개</b>'+'<br><small>출석 보상 코인: 2일 +3 · 3일 +6 · 4일 +9 · 5일 +15 · 6일 이상 +30<br>단계 클리어 보상: 1단계 +5 ~ 10단계 +120 코인 (다시 클리어하면 절반)<br>하루 걸러 접속하면 처음부터 다시 시작해요</small>',
+ showOv(first?'📅 출석 체크!':'📅 출석부',(first?'<b style="color:#ffd84a">오늘 출석 완료! 🎉</b><br>':'')+'연속 <b>'+AT.streak+'</b>일 · 누적 '+AT.total+'일<br>칭호: <b>'+title()+'</b><br>오늘 보너스: ⏸ 잠깐정지 <b>+'+bonus()+'회</b>'+(first?' · 🪙 출석 보상 <b>+'+(AT.gp||0)+'코인</b>':'')+'<br>🪙 내 코인: <b>'+RW.pts+'개</b>'+'<br><small>출석 보상: 첫날 🪙 100 · 매일 연속 출석하면 +50씩 (150, 200 … 7일째 400)<br>단계 클리어 보상: 1단계 +5 ~ 10단계 +120 코인 (다시 클리어하면 절반)<br>하루 걸러 접속하면 처음부터 다시 시작해요</small>',
   '<div class="stamps">'+st.join('')+'</div>',[[first?'▶ 게임 하러 가기':'← 돌아가기',home]],first&&c==7)}
 // ===== 별점 요청 =====
 let RT=ld('castleRate',{c:0,asks:0,last:0,done:0});
@@ -880,7 +880,7 @@ function shopCat(cat,msg,sc){const nm=SHOP_CATS.find(x=>x[0]==cat)[1],bs=[];
  showOv('🛍️ 상점 · '+nm,(msg?'<b style="color:#ffd84a">'+msg+'</b><br>':'')+'🪙 보유 코인 <b>'+RW.pts+'개</b>',avBox(0),bs);
  if(sc)ov.scrollTop=sc}
 const pairBox=(r,grand)=>'<div class="kpair'+(grand?' big':'')+'"><div class="kcol">'+avBox(grand)+'</div></div>';
-function subjectScr(m){setTrack('start');setMode(m);showOv(MN[m],SD[m]+'<br><small>'+rankSummary(m)+'</small>','<div style="font-size:56px">'+SI[m]+'</div>',[['▶ 시작',()=>{done.fill(0);start(1,20)}],['🧪 단계 선택 (저장 불러오기)',()=>stagePick(m)],['← 돌아가기',home]])}
+function subjectScr(m){setTrack('start');setMode(m);showOv(MN[m],SD[m]+'<br><small>'+rankSummary(m)+'</small>','<div style="font-size:56px">'+SI[m]+'</div>',[['▶ 시작',()=>{done.fill(0);start(1,20)}],['🧪 단계 선택 (저장 불러오기)',()=>stagePick(m)],['← 돌아가기',gameMenu]])}
 function stagePick(m){const NM=NAMES[m],b=[];for(let n=1;n<=10;n++)b.push([mark(m,n)+n+'단계 : '+NM[n],()=>jump(n,20,m),SESS[m][n]?'⭐'.repeat(SESS[m][n])+(SAVED[m][n]?' · 저장됨':' · 저장 안 됨'):'']);b.push(['← 돌아가기',()=>subjectScr(m)]);showOv('🧪 단계 선택 · '+MN[m],'원하는 단계를 골라요 (✅ 저장됨 · ☑️ 저장 전)<br>⭐ 내 보상 '+RW.pts+'점'+'<br><small>'+SNOTE[m]+'</small>','',b)}
 function menu(){if(!run)return;run=false;menuScr()}
 function menuScr(msg){showOv('☰ 메뉴',msg?'<b style="color:#ffd84a">'+msg+'</b>':'진행 중: '+stage+'단계 : '+NAME[stage],'',[['💾 저장하기',()=>{saveGame();menuScr('💾 저장했어요!')}],['계속하기',()=>{ov.classList.add('h');run=true;last=performance.now();requestAnimationFrame(loop)}],[stage+'단계 처음부터',()=>start(stage,TOTAL)],['1단계부터 다시',()=>{done.fill(0);start(1,20)}],['📒 오답 노트',()=>{noteBack=menuScr;noteScr()}],['⚙️ 옵션',()=>optMenu(menuScr)],['🏠 처음 화면으로',home]])}
@@ -919,8 +919,15 @@ async function fbInit(){if(FB)return FB;if(!FBCFG.apiKey)throw new Error('nocfg'
  const uid=(auth.currentUser||(await AU.signInAnonymously(auth)).user).uid;
  FB={uid,
   async put(d){await FS.setDoc(FS.doc(db,'rankings',uid),Object.assign({t:FS.serverTimestamp()},d))},
+  watch(n,cb,err){return FS.onSnapshot(FS.query(FS.collection(db,'rankings'),FS.orderBy('score','desc'),FS.limit(n)),q=>cb(q.docs.map(x=>Object.assign({id:x.id},x.data()))),err||(()=>{}))},
   async top(n){const r=await FS.getDocs(FS.query(FS.collection(db,'rankings'),FS.orderBy('score','desc'),FS.limit(n)));return r.docs.map(x=>Object.assign({id:x.id},x.data()))}};
  return FB}
+let RWT=0,RWS=null;
+function stopRW(){RWT++;if(RWS){try{RWS()}catch(e){}RWS=null}}
+function rankWatch(n,render,fail){stopRW();const t=RWT;fbInit().then(f=>{if(t!==RWT)return;RWS=f.watch(n,l=>{if(t===RWT)render(l,f.uid)},e=>{if(t===RWT)fail(e)})}).catch(e=>{if(t===RWT)fail(e)})}
+const miniRow=(r,i,me)=>'<div class="mrow'+(me?' me':'')+'"><span class="mn">'+(i<3?['🥇','🥈','🥉'][i]:i+1)+'</span><div class="mav">'+avatarSVG(cleanAv(r),{lite:1})+'</div><b>'+rkEsc(String(r.nick||'').slice(0,8))+'</b><i>'+(+r.score||0)+'</i></div>';
+const miniBox=()=>'<div class="mrk" id="mrk" onclick="rankScr()"><div class="mrkh">🏆 실시간 랭킹 <small>눌러서 크게 보기 · 등록</small></div><div id="mrkl"></div></div>';
+function miniRank(){const b=$('mrk'),l=$('mrkl');if(!b||!l)return;b.style.display='block';if(!FBCFG.apiKey){l.innerHTML='<div class="mmsg">랭킹 서버가 아직 설정되지 않았어요</div>';return}l.innerHTML='<div class="mmsg">불러오는 중… ⏳</div>';rankWatch(5,(L,uid)=>{const l=$('mrkl');if(!l)return;l.innerHTML=L.length?L.map((r,i)=>miniRow(r,i,r.id==uid)).join(''):'<div class="mmsg">아직 등록한 친구가 없어요<br><b>눌러서 첫 번째로 등록해 보세요!</b></div>'},e=>{const l=$('mrkl');if(l)l.innerHTML='<div class="mmsg">'+rankErr(e)+'</div>'})}
 const rankDoc=()=>({nick:RKR.nick,score:myScore(),stars:myStars(),cleared:myClears(),sex:AV.sex||'m',eq:cleanAv(AV).eq});
 async function rankPush(quiet){if(!RKR.on)return;try{const f=await fbInit();await f.put(rankDoc());return 1}catch(e){if(!quiet)throw e}}
 function rankRow(r,i,me){const a=cleanAv(r);return '<div class="rrow'+(me?' me':'')+'"><div class="rno">'+(i<3?['🥇','🥈','🥉'][i]:i+1)+'</div><div class="rav">'+avatarSVG(a,{lite:1})+'</div><div class="rin"><div class="rnk">'+rkEsc(String(r.nick||'').slice(0,8))+(me?' <small>(나)</small>':'')+'</div><div class="rsc">⭐ '+(+r.stars||0)+' · 클리어 '+(+r.cleared||0)+'/30</div></div><div class="rpt">'+(+r.score||0)+'<small>점</small></div></div>'}
@@ -929,16 +936,21 @@ async function rankScr(msg){const me=RKR.on;
  if(!me)bs.push(['🏆 랭킹 등록하기',()=>rankNick()]);
  else bs.push(['🔄 내 점수 올리기',async()=>{try{await rankPush();rankScr('✅ 점수를 올렸어요!')}catch(e){rankScr(rankErr(e))}}],['✏️ 닉네임 바꾸기',()=>rankNick()]);
  bs.push(['← 돌아가기',home]);
- showOv('🏆 랭킹',(msg?'<b style="color:#ffd84a">'+msg+'</b><br>':'')+'내 점수 <b>'+myScore()+'점</b> <small>(별 '+myStars()+'개 × 10)</small><br><small>'+(me?'등록된 닉네임: '+rkEsc(RKR.nick):'등록하면 내 닉네임·점수·아바타가 다른 친구들에게 보여요')+'</small>','<div class="rlist" id="rl">불러오는 중… ⏳</div>',bs);
- try{const f=await fbInit();const L=await f.top(30);const el=$('rl');if(!el)return;
-  el.innerHTML=L.length?L.map((r,i)=>rankRow(r,i,r.id==f.uid)).join(''):'아직 등록한 친구가 없어요. 첫 번째가 되어 보세요!'}
- catch(e){const el=$('rl');if(el)el.innerHTML='<small>'+rankErr(e)+'</small>'}}
-const rankErr=e=>e&&e.message=='nocfg'?'랭킹 서버(Firebase)가 아직 설정되지 않았어요.':'인터넷 연결을 확인해 주세요. 랭킹을 불러오지 못했어요.';
+ showOv('🏆 랭킹',(msg?'<b style="color:#ffd84a">'+msg+'</b><br>':'')+'내 점수 <b>'+myScore()+'점</b> <small>(별 '+myStars()+'개 × 10)</small><br><small>'+(me?'등록된 닉네임: '+rkEsc(RKR.nick):'등록하면 내 닉네임·점수·아바타가 다른 친구들에게 보여요')+'</small>','<button class="rkreg" onclick="rankNick()">'+(me?'내 정보':'랭킹 등록')+'</button><div class="rlist" id="rl">불러오는 중… ⏳</div>',bs);
+ rankWatch(30,(L,uid)=>{const el=$('rl');if(!el)return;el.innerHTML=L.length?L.map((r,i)=>rankRow(r,i,r.id==uid)).join(''):'아직 등록한 친구가 없어요. 첫 번째가 되어 보세요!'},e=>{const el=$('rl');if(el)el.innerHTML='<small>'+rankErr(e)+'</small>'})}
+const rankErr=e=>{const c=(e&&(e.code||e.message))||'';
+ if(c=='nocfg')return '랭킹 서버(Firebase)가 아직 설정되지 않았어요.';
+ if(/operation-not-allowed|admin-restricted/.test(c))return '익명 로그인이 꺼져 있어요. Firebase 콘솔 → Authentication → 로그인 방법에서 "익명"을 켜 주세요.';
+ if(/unauthorized-domain/.test(c))return '이 주소가 승인되지 않았어요. Firebase 콘솔 → Authentication → 설정 → 승인된 도메인에 이 주소를 추가해 주세요.';
+ if(/permission-denied/.test(c))return '권한이 없어요. Firestore 규칙을 확인해 주세요 (읽기 허용: allow read: if true).';
+ if(/failed-precondition|not-found/.test(c))return 'Firestore 데이터베이스가 아직 만들어지지 않았어요.';
+ return '랭킹을 불러오지 못했어요. 인터넷 연결을 확인해 주세요. ('+String(c).slice(0,60)+')'};
 function rankNick(){showOv('🏆 닉네임 정하기','랭킹에 보일 이름이에요 (1~8글자)<br><small>실명·전화번호 등 개인정보는 쓰지 마세요</small>','<div style="margin:6px 0 10px"><div style="width:96px;height:154px;margin:0 auto">'+avatarSVG(AV)+'</div></div><input id="nk" type="text" maxlength="8" value="'+rkEsc(RKR.nick)+'" placeholder="닉네임" style="font-size:20px;text-align:center;padding:8px;border-radius:10px;border:2px solid #ffd84a;background:#102;color:#fff;width:70%">',
  [['✅ 등록하고 점수 올리기',async()=>{const v=($('nk').value||'').replace(/[<>&"']/g,'').trim().slice(0,8);if(!v){toast('닉네임을 입력해 주세요');return}
    RKR={nick:v,on:1};sv(RKEY,RKR);try{await rankPush();rankScr('🎉 랭킹에 등록했어요!')}catch(e){rankScr(rankErr(e))}}],['← 취소',()=>rankScr()]])}
+function gameMenu(){stopFanfare();setTrack('start');showOv('▶ 게임 시작','어떤 공부를 할까요?','<div style="font-size:60px">🏰</div>',[['➕ 사칙연산',()=>subjectScr('math')],['🔤 영어',()=>subjectScr('eng')],['🈶 한자',()=>subjectScr('han')],['← 돌아가기',home]])}
 function home(){stopFanfare();setTrack('start');run=false;paused=false;area.style.filter='';$('ta').style.display='none';drops.forEach(d=>d.el.remove());drops=[];done.fill(0);lastT=null;
-showOv('👑 '+TITLE,'하늘에서 내려오는 💧산성비 문제를<br>풀면 벽돌 +1 🧱, 땅에 닿으면 −1 💥<br>4번 넘게 놓치면 👹괴물이 벽돌을 부숴요!<br>벽돌을 다 채우면 다음 단계로!<br>벽돌이 없는데 또 깨지면 게임 오버 💀<br>사칙연산·영어·한자 중에서 골라요 (영어·한자는 보기 5개 중 정답 고르기, 두 번 틀리면 틀린 것으로 처리)<br>단계를 깰 때마다 🪙코인을 받아요! 높은 단계일수록 더 많이, 다시 깨면 절반!<br><small>⏸ 잠깐정지: 60초 · 처음 10번 · 3연속 정답마다 +1<br>⏸ 정지 중에도 답을 입력할 수 있고, 맞히면 바로 다시 시작돼요!</small>','<div style="font-size:60px">🏰</div>',[['➕ 사칙연산 시작',()=>subjectScr('math')],['🔤 영어 시작',()=>subjectScr('eng')],['🈶 한자 시작',()=>subjectScr('han')],['👤 나의 '+sexName()+' · 상점 🪙'+RW.pts,()=>avScr()],['🏆 랭킹 · 친구와 겨루기',()=>rankScr()],['📒 오답 노트'+(WR.length?' ('+WR.length+')':''),()=>{noteBack=home;noteScr()}],['📅 출석부 · '+title(),()=>attScr(false)],['⚙️ 옵션',()=>optMenu(home)]]);atHome=true}
+showOv('👑 '+TITLE,'하늘에서 내려오는 💧산성비 문제를<br>풀면 벽돌 +1 🧱, 땅에 닿으면 −1 💥<br>4번 넘게 놓치면 👹괴물이 벽돌을 부숴요!<br>벽돌을 다 채우면 다음 단계로!<br>벽돌이 없는데 또 깨지면 게임 오버 💀<br>사칙연산·영어·한자 중에서 골라요 (영어·한자는 보기 5개 중 정답 고르기, 두 번 틀리면 틀린 것으로 처리)<br>단계를 깰 때마다 🪙코인을 받아요! 높은 단계일수록 더 많이, 다시 깨면 절반!<br><small>⏸ 잠깐정지: 60초 · 처음 10번 · 3연속 정답마다 +1<br>⏸ 정지 중에도 답을 입력할 수 있고, 맞히면 바로 다시 시작돼요!</small>','<div style="font-size:60px">🏰</div>'+miniBox(),[['▶ 게임 시작',()=>gameMenu()],['🛍️ 상점 🪙'+RW.pts,()=>avScr()],['📒 오답 노트'+(WR.length?' ('+WR.length+')':''),()=>{noteBack=home;noteScr()}],['📅 출석부 · '+title(),()=>attScr(false)],['⚙️ 옵션',()=>optMenu(home)]]);atHome=true;miniRank()}
 applyFS();const goStart=()=>{if(checkin())attScr(true);else home()};
 if(!AV.sex)avFirst(goStart);else goStart();
 </script>
