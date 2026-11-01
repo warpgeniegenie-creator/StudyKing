@@ -293,7 +293,7 @@ function toggleMus(){musOn=!musOn;try{localStorage.setItem('castleMus',musOn?'1'
 ['pointerdown','touchstart','keydown'].forEach(e=>document.addEventListener(e,()=>{if(!unlocked){unlocked=true;mCtx();musPlay()}},{passive:true}));
 document.addEventListener('visibilitychange',()=>{if(document.hidden){musStop();if(MA&&MA.suspend)MA.suspend()}else{if(MA&&MA.resume)MA.resume();musPlay()}});
 function toggleSnd(){snd=!snd;try{localStorage.setItem('castleSnd',snd?'1':'0')}catch(e){}if(snd)beep(660,.12)}
-function optMenu(back,msg){showOv('⚙️ 옵션',(msg?'<b style="color:#ffd84a">'+msg+'</b>':'게임 설정을 바꿔요')+(hasUnsaved()?'<br><small>⚠️ 저장하지 않은 클리어가 있어요</small>':''),'',[['💾 저장하기',()=>{saveGame();optMenu(back,'💾 저장했어요!')},'클리어한 단계를 저장해요'],['📂 저장 기록 보기',()=>recordScr(()=>optMenu(back))],].concat(DEV?[['🛠️ 개발자 모드: 켜짐 (눌러서 끄기)',()=>{setDev(false);optMenu(back,'🛠️ 개발자 모드를 껐어요')}]]:[]).concat([['🗑️ 저장 기록 지우기',()=>wipeScr(mg=>optMenu(back,mg))],['🔠 글자 크기 · '+FN[fsi],()=>fontMenu(()=>optMenu(back))],[snd?'🔊 효과음: 켜짐 (눌러서 끄기)':'🔇 효과음: 꺼짐 (눌러서 켜기)',()=>{toggleSnd();optMenu(back)}],[musOn?'🎵 배경음악: 켜짐 (눌러서 끄기)':'🎵 배경음악: 꺼짐 (눌러서 켜기)',()=>{toggleMus();optMenu(back)}],['← 돌아가기',back]]))}
+function optMenu(back,msg){showOv('⚙️ 옵션',(msg?'<b style="color:#ffd84a">'+msg+'</b>':'게임 설정을 바꿔요')+(hasUnsaved()?'<br><small>⚠️ 저장하지 않은 클리어가 있어요</small>':''),'',[['💾 저장하기',()=>{saveGame();optMenu(back,'💾 저장했어요!')},'클리어한 단계를 저장해요'],['📂 저장 기록 보기',()=>recordScr(()=>optMenu(back))],['🗑️ 저장 기록 지우기',()=>wipeScr(mg=>optMenu(back,mg))],['🔠 글자 크기 · '+FN[fsi],()=>fontMenu(()=>optMenu(back))],[snd?'🔊 효과음: 켜짐 (눌러서 끄기)':'🔇 효과음: 꺼짐 (눌러서 켜기)',()=>{toggleSnd();optMenu(back)}],[musOn?'🎵 배경음악: 켜짐 (눌러서 끄기)':'🎵 배경음악: 꺼짐 (눌러서 켜기)',()=>{toggleMus();optMenu(back)}],['← 돌아가기',back]])}
 // ---- 영어·한자 (보기 5개 고르기) ----
 const D=t=>t.split(',').map(x=>x.split('|'));
 const EW=[0,D("red|빨강,blue|파랑,yellow|노랑,green|초록,black|검정,white|하양,pink|분홍,one|하나,two|둘,three|셋,four|넷,five|다섯,six|여섯,seven|일곱,eight|여덟,nine|아홉,ten|열,hello|안녕,goodbye|잘 가,yes|네,no|아니요"),
@@ -534,14 +534,14 @@ function finish(){
  const stars=missed==0?3:missed<=3?2:1;
  const info='놓친 비 '+missed+'개 · 정답 '+okc+'개 · 최고 연속 '+best+(smashes?' · 괴물 쾅 '+smashes+'번':'');
  done[stage]=TOTAL;beep(880,.3);recordClear(mode,stage,stars);
- let rw='';const was=!isLocked(LOCKFROM);if(!RW.got[mode].includes(stage)){RW.got[mode].push(stage);addPts(CLEAR_PTS);rw='<br>⭐ 클리어 보상 <b>+'+CLEAR_PTS+'점</b> (내 보상 '+RW.pts+'점)'}if(!was&&!isLocked(LOCKFROM))rw+='<br><b style="color:#ffd84a">🔓 '+LOCKFROM+'단계부터 모든 단계가 열렸어요!</b>';
+ let rw='';if(!RW.got[mode].includes(stage)){RW.got[mode].push(stage);addPts(CLEAR_PTS);rw='<br>⭐ 클리어 보상 <b>+'+CLEAR_PTS+'점</b> (내 보상 '+RW.pts+'점)'}
  const st='⭐'.repeat(stars)+'☆'.repeat(3-stars)+'<br>'+info;
  const saveBtn=['💾 저장하기',e=>{saveGame();e.target.textContent='✅ 저장됨!'}];
  const pickBtn=['🧪 단계 선택',()=>stagePick(mode)],homeBtn=['🏠 처음 화면으로',home];
  if(stage==10&&allCleared(mode)){let sky='';for(let k=1;k<=10;k++)sky+='<div class="s'+k+' mini">'+castleSVG(k,true)+'</div>';
   showOv('🎉 '+GRAND.n+' 탄생! 🎉','<span class="rk">👑 '+GRAND.n+'</span><br><b>'+MN[mode]+' 10단계를 모두 클리어!</b><br>'+GRAND.d+'<br>'+info+rw,kingBox(10,true)+'<div class="sky">'+sky+'</div>',[saveBtn,['처음부터 다시 도전',()=>{done.fill(0);start(1,20)}],pickBtn,homeBtn],1);fireworks(12);fanfare(true);rateMaybe();return}
  const r=RK[stage],last=stage==10;
- const btns=[];if(!last)btns.push(isLocked(stage+1)?['🔒 '+(stage+1)+'단계 : 보상 '+UNLOCK+'점 필요 (지금 '+RW.pts+'점)',()=>lockTap('🔒 보상이 '+UNLOCK+'점 이상이면 열려요',()=>start(stage+1,20))]:['▶ '+(stage+1)+'단계 : '+NAME[stage+1],()=>start(stage+1,20)]);btns.push(saveBtn,pickBtn,homeBtn);
+ const btns=[];if(!last)btns.push(['▶ '+(stage+1)+'단계 : '+NAME[stage+1],()=>start(stage+1,20)]);btns.push(saveBtn,pickBtn,homeBtn);
  const left=[];for(let i=1;i<=10;i++)if(!SESS[mode][i])left.push(i);
  showOv(last?'🎆 10단계 성 완성! 🎆':'🎆 성을 완성했습니다! 🎆','<b>'+stage+'단계 성 완성! 🚩</b><br><span class="rk">👑 '+r.n+'</span><br>'+r.d+'<br>'+st+rw+(last?'<br><small>아직 못 깬 단계: '+left.join(', ')+'단계 — 모두 깨면 '+GRAND.n+'!</small>':''),kingBox(stage)+castleBig(stage),btns);fireworks(last?8:4);fanfare(last);rateMaybe();
 }
@@ -553,7 +553,7 @@ function start(s,n){stopFw();stopFanfare();setTrack(mode);
  disp.innerHTML='&nbsp;';buildCastle();$('ta').style.display='none';updInfo();ov.classList.add('h');
  run=true;last=performance.now();requestAnimationFrame(loop);
 }
-function jump(n,c,m){if(isLocked(n))return;if(m)setMode(m);for(let i=1;i<n;i++)done[i]=20;start(n,c)}
+function jump(n,c,m){if(m)setMode(m);for(let i=1;i<n;i++)done[i]=20;start(n,c)}
 const MN={math:'➕ 사칙연산',eng:'🔤 영어',han:'🈶 한자'},MO=['math','eng','han'];
 function setMode(m){mode=m;NAME=NAMES[m]}
 const SD={math:'사칙연산 10단계<br>초등 1~6학년 · 단항식과 다항식 계산',eng:'영어 10단계<br>초등 1~6학년 단어·문장',han:'한자 10단계<br>한자능력검정 급수별'},SI={math:'➕',eng:'🔤',han:'🈶'};
@@ -655,17 +655,10 @@ function reviewCard(){if(RV.i>=RV.q.length){const left=WR.length,r=RV;RV=null;re
 // ===== 출석 =====
 const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 // ===== 보상 점수 / 잠금 =====
-// 6단계부터 잠겨 있고, 보상 점수가 UNLOCK점 이상이면 풀려요 (숫자를 바꾸면 규칙이 바뀝니다)
-const UNLOCK=5,LOCKFROM=6,CLEAR_PTS=3;
+// ===== 보상 점수 (출석·클리어로 모이는 점수) =====
+const CLEAR_PTS=3;
 let RW=ld('castleRew',{pts:0,got:{}});if(!RW||typeof RW.pts!='number')RW={pts:0,got:{}};if(!RW.got)RW.got={};
 ['math','eng','han'].forEach(m=>{if(!Array.isArray(RW.got[m]))RW.got[m]=[]});
-// 개발자 모드: 잠긴 단계를 5번 연속 누르면 켜짐 (모든 단계 잠금 해제). 스토어에 올릴 때는 DEV_ALLOWED 를 false 로!
-const DEV_ALLOWED=true;let DEV=DEV_ALLOWED&&ld('castleDev',0)===1,devTaps=0,devT=0;
-function setDev(v){DEV=DEV_ALLOWED&&v;sv('castleDev',DEV?1:0)}
-function lockTap(msg,after){const now=Date.now();devTaps=now-devT<2500?devTaps+1:1;devT=now;
- if(DEV_ALLOWED&&devTaps>=5){devTaps=0;setDev(true);toast('🛠️ 개발자 모드 켜짐 · 모든 단계 열림');if(after)after();return}
- toast(msg)}
-const isLocked=n=>n>=LOCKFROM&&RW.pts<UNLOCK&&!DEV;
 function addPts(n){RW.pts+=n;sv('castleRew',RW)}
 const streakPts=d=>d>=6?10:d==5?5:d==4?3:d==3?2:d==2?1:0;
 let AT=ld('castleDaily',{last:'',streak:0,total:0});
@@ -675,7 +668,7 @@ const bonus=()=>AT.last===ymd(new Date())?PB[cday()]:0;
 function checkin(){const t=ymd(new Date());if(AT.last===t)return false;const y=new Date();y.setDate(y.getDate()-1);
  AT.streak=AT.last===ymd(y)?AT.streak+1:1;AT.total++;AT.last=t;AT.gp=streakPts(AT.streak);sv('castleDaily',AT);addPts(AT.gp);return true}
 function attScr(first){const c=cday(),st=[];for(let i=1;i<=7;i++)st.push('<div class="'+(i<=c?'on':'')+'"><span>'+i+'일</span><b>'+(i<=c?(i==7?'👑':'✅'):(i==7?'👑':'🎁'))+'</b><span>+'+PB[i]+'</span></div>');
- showOv(first?'📅 출석 체크!':'📅 출석부',(first?'<b style="color:#ffd84a">오늘 출석 완료! 🎉</b><br>':'')+'연속 <b>'+AT.streak+'</b>일 · 누적 '+AT.total+'일<br>칭호: <b>'+title()+'</b><br>오늘 보너스: ⏸ 잠깐정지 <b>+'+bonus()+'회</b>'+(first?' · ⭐ 보상 <b>+'+(AT.gp||0)+'점</b>':'')+'<br>⭐ 내 보상 점수: <b>'+RW.pts+'점</b>'+(isLocked(LOCKFROM)?' <small>(🔒 '+LOCKFROM+'단계부터는 '+UNLOCK+'점이 필요해요)</small>':' <small>(🔓 모든 단계 열림)</small>')+'<br><small>출석 보상 점수: 2일 +1 · 3일 +2 · 4일 +3 · 5일 +5 · 6일 이상 +10<br>단계 클리어 보상 +'+CLEAR_PTS+'점 (처음 클리어할 때)<br>하루 걸러 접속하면 처음부터 다시 시작해요</small>',
+ showOv(first?'📅 출석 체크!':'📅 출석부',(first?'<b style="color:#ffd84a">오늘 출석 완료! 🎉</b><br>':'')+'연속 <b>'+AT.streak+'</b>일 · 누적 '+AT.total+'일<br>칭호: <b>'+title()+'</b><br>오늘 보너스: ⏸ 잠깐정지 <b>+'+bonus()+'회</b>'+(first?' · ⭐ 보상 <b>+'+(AT.gp||0)+'점</b>':'')+'<br>⭐ 내 보상 점수: <b>'+RW.pts+'점</b>'+'<br><small>출석 보상 점수: 2일 +1 · 3일 +2 · 4일 +3 · 5일 +5 · 6일 이상 +10<br>단계 클리어 보상 +'+CLEAR_PTS+'점 (처음 클리어할 때)<br>하루 걸러 접속하면 처음부터 다시 시작해요</small>',
   '<div class="stamps">'+st.join('')+'</div>',[[first?'▶ 게임 하러 가기':'← 돌아가기',home]],first&&c==7)}
 // ===== 별점 요청 =====
 let RT=ld('castleRate',{c:0,asks:0,last:0,done:0});
@@ -702,7 +695,7 @@ function onBack(){
 try{window.addEventListener('popstate',onBack);guard()}catch(e){}
 try{screen.orientation&&screen.orientation.lock&&screen.orientation.lock('portrait').catch(()=>{})}catch(e){}
 function subjectScr(m){setTrack('start');setMode(m);showOv(MN[m],SD[m]+'<br><small>'+rankSummary(m)+'</small>','<div style="font-size:56px">'+SI[m]+'</div>',[['▶ 시작',()=>{done.fill(0);start(1,20)}],['🧪 단계 선택 (저장 불러오기)',()=>stagePick(m)],['← 돌아가기',home]])}
-function stagePick(m){const NM=NAMES[m],b=[];for(let n=1;n<=10;n++)b.push(isLocked(n)?['🔒 '+n+'단계 : '+NM[n],()=>lockTap('🔒 보상 '+UNLOCK+'점이 필요해요 (지금 '+RW.pts+'점)',()=>stagePick(m)),'보상 '+UNLOCK+'점 이상이면 열려요']:[mark(m,n)+n+'단계 : '+NM[n],()=>jump(n,20,m),SESS[m][n]?'⭐'.repeat(SESS[m][n])+' '+RK[n].n+(SAVED[m][n]?' · 저장됨':' · 저장 안 됨'):'']);b.push(['← 돌아가기',()=>subjectScr(m)]);showOv('🧪 단계 선택 · '+MN[m],'원하는 단계를 골라요 (✅ 저장됨 · ☑️ 저장 전)<br>⭐ 내 보상 '+RW.pts+'점'+(isLocked(LOCKFROM)?' · 🔒 '+LOCKFROM+'단계부터 '+UNLOCK+'점 필요':'')+'<br><small>'+SNOTE[m]+'</small>','',b)}
+function stagePick(m){const NM=NAMES[m],b=[];for(let n=1;n<=10;n++)b.push([mark(m,n)+n+'단계 : '+NM[n],()=>jump(n,20,m),SESS[m][n]?'⭐'.repeat(SESS[m][n])+' '+RK[n].n+(SAVED[m][n]?' · 저장됨':' · 저장 안 됨'):'']);b.push(['← 돌아가기',()=>subjectScr(m)]);showOv('🧪 단계 선택 · '+MN[m],'원하는 단계를 골라요 (✅ 저장됨 · ☑️ 저장 전)<br>⭐ 내 보상 '+RW.pts+'점'+'<br><small>'+SNOTE[m]+'</small>','',b)}
 function menu(){if(!run)return;run=false;menuScr()}
 function menuScr(msg){showOv('☰ 메뉴',msg?'<b style="color:#ffd84a">'+msg+'</b>':'진행 중: '+stage+'단계 : '+NAME[stage],'',[['💾 저장하기',()=>{saveGame();menuScr('💾 저장했어요!')}],['계속하기',()=>{ov.classList.add('h');run=true;last=performance.now();requestAnimationFrame(loop)}],[stage+'단계 처음부터',()=>start(stage,TOTAL)],['1단계부터 다시',()=>{done.fill(0);start(1,20)}],['📒 오답 노트',()=>{noteBack=menuScr;noteScr()}],['⚙️ 옵션',()=>optMenu(menuScr)],['🏠 처음 화면으로',home]])}
 const FS=[.75,.88,1,1.2,1.45],FN=['아주 작게','작게','보통','크게','아주 크게'];let fsi=2;
