@@ -126,6 +126,8 @@ html,body{height:100%;margin:0;background:var(--s2);color:var(--ink);font-family
 #cbq .cq{background:#ffffff22;color:#fff;border:1px dashed #fff8;border-radius:10px;padding:3px 9px;font-weight:700;font-size:calc(16px*var(--fs,1))}#cbq .cq.t{border:2px solid #f2c94c;background:#f2c94c33}
 #cv{flex:1;min-height:0;width:100%;touch-action:none;cursor:crosshair}
 #cbt{flex:none;display:flex;gap:4px;padding:4px;justify-content:center;flex-wrap:wrap}#cbt button{font:inherit;font-size:13px;padding:4px 9px;border-radius:8px;border:0;background:#ffffff33;color:#fff}#cbt button.sel{background:#f2b705;color:#222}
+.kpair{display:flex;gap:10px;justify-content:center;align-items:flex-end}.kcol{display:flex;flex-direction:column;align-items:center}.klab{font-size:13px;font-weight:700;margin-top:2px;color:#ffd84a}
+.kpair .kingbox{width:112px;height:140px;margin:0}.kpair.big .kingbox{width:150px;height:187px}
 </style>
 </head>
 <body>
@@ -534,16 +536,16 @@ function finish(){
  const stars=missed==0?3:missed<=3?2:1;
  const info='놓친 비 '+missed+'개 · 정답 '+okc+'개 · 최고 연속 '+best+(smashes?' · 괴물 쾅 '+smashes+'번':'');
  done[stage]=TOTAL;beep(880,.3);recordClear(mode,stage,stars);
- let rw='';if(!RW.got[mode].includes(stage)){RW.got[mode].push(stage);addPts(CLEAR_PTS);rw='<br>⭐ 클리어 보상 <b>+'+CLEAR_PTS+'점</b> (내 보상 '+RW.pts+'점)'}
+ let rw='';if(!RW.got[mode].includes(stage)){RW.got[mode].push(stage);addPts(CLEAR_PTS);rw='<br>⭐ 클리어 보상 <b>+'+CLEAR_PTS+'점</b> (내 보상 '+RW.pts+'점)'}else{addPts(1);rw='<br>⭐ 반복 클리어 <b>+1점</b> (내 보상 '+RW.pts+'점)'}
  const st='⭐'.repeat(stars)+'☆'.repeat(3-stars)+'<br>'+info;
  const saveBtn=['💾 저장하기',e=>{saveGame();e.target.textContent='✅ 저장됨!'}];
  const pickBtn=['🧪 단계 선택',()=>stagePick(mode)],homeBtn=['🏠 처음 화면으로',home];
  if(stage==10&&allCleared(mode)){let sky='';for(let k=1;k<=10;k++)sky+='<div class="s'+k+' mini">'+castleSVG(k,true)+'</div>';
-  showOv('🎉 '+GRAND.n+' 탄생! 🎉','<span class="rk">👑 '+GRAND.n+'</span><br><b>'+MN[mode]+' 10단계를 모두 클리어!</b><br>'+GRAND.d+'<br>'+info+rw,kingBox(10,true)+'<div class="sky">'+sky+'</div>',[saveBtn,['처음부터 다시 도전',()=>{done.fill(0);start(1,20)}],pickBtn,homeBtn],1);fireworks(12);fanfare(true);rateMaybe();return}
+  showOv('🎉 '+GRAND.n+' 탄생! 🎉','<span class="rk">👑 '+GRAND.n+'</span><br><b>'+MN[mode]+' 10단계를 모두 클리어!</b><br>'+GRAND.d+'<br>'+info+rw,pairBox(10,true)+'<div class="sky">'+sky+'</div>',[saveBtn,['처음부터 다시 도전',()=>{done.fill(0);start(1,20)}],pickBtn,homeBtn],1);fireworks(12);fanfare(true);rateMaybe();return}
  const r=RK[stage],last=stage==10;
  const btns=[];if(!last)btns.push(['▶ '+(stage+1)+'단계 : '+NAME[stage+1],()=>start(stage+1,20)]);btns.push(saveBtn,pickBtn,homeBtn);
  const left=[];for(let i=1;i<=10;i++)if(!SESS[mode][i])left.push(i);
- showOv(last?'🎆 10단계 성 완성! 🎆':'🎆 성을 완성했습니다! 🎆','<b>'+stage+'단계 성 완성! 🚩</b><br><span class="rk">👑 '+r.n+'</span><br>'+r.d+'<br>'+st+rw+(last?'<br><small>아직 못 깬 단계: '+left.join(', ')+'단계 — 모두 깨면 '+GRAND.n+'!</small>':''),kingBox(stage)+castleBig(stage),btns);fireworks(last?8:4);fanfare(last);rateMaybe();
+ showOv(last?'🎆 10단계 성 완성! 🎆':'🎆 성을 완성했습니다! 🎆','<b>'+stage+'단계 성 완성! 🚩</b><br><span class="rk">👑 '+r.n+'</span><br>'+r.d+'<br>'+st+rw+(last?'<br><small>아직 못 깬 단계: '+left.join(', ')+'단계 — 모두 깨면 '+GRAND.n+'!</small>':''),pairBox(stage)+castleBig(stage),btns);fireworks(last?8:4);fanfare(last);rateMaybe();
 }
 function start(s,n){stopFw();stopFanfare();setTrack(mode);
  stage=s;TOTAL=n;area.querySelectorAll('.drop,.say').forEach(e=>e.remove());
@@ -594,6 +596,7 @@ function crownSVG(pts,x0,x1,yb,yt,col,gem,big){let d='M'+x0+','+yb,w=(x1-x0)/pts
  for(let i=0;i<pts;i++){const px=x0+(i+.5)*w,vx=x0+(i+1)*w;d+=' L'+(x0+i*w).toFixed(1)+','+(yb-6)+' L'+px.toFixed(1)+','+yt+' L'+vx.toFixed(1)+','+(yb-6);g+='<circle cx="'+px.toFixed(1)+'" cy="'+(yt-1)+'" r="'+(big?2.6:2)+'" fill="'+gem+'" stroke="#fff" stroke-width=".6"/>'}
  d+=' L'+x1+','+yb+' Z';return '<path d="'+d+'" fill="'+col+'" stroke="#8a5a00" stroke-width="1.2" stroke-linejoin="round"/><rect x="'+x0+'" y="'+(yb-1)+'" width="'+(x1-x0)+'" height="6" rx="1.5" fill="'+col+'" stroke="#8a5a00" stroke-width="1.2"/>'+g+'<circle cx="'+((x0+x1)/2)+'" cy="'+(yb+2)+'" r="2.2" fill="'+gem+'"/>'}
 function kingSVG(r,grand){
+ const fem=typeof AV!=='undefined'&&AV.sex=='f';
  let o='<svg viewBox="0 0 100 125" xmlns="http://www.w3.org/2000/svg">';
  const robe=grand?'#7a0f2e':ROBE[r];
  if(grand||r>=9)o+='<defs><radialGradient id="gl"><stop offset="0" stop-color="#fff3b0" stop-opacity=".9"/><stop offset="1" stop-color="#fff3b0" stop-opacity="0"/></radialGradient></defs><circle cx="50" cy="55" r="'+(grand?58:46)+'" fill="url(#gl)"/>';
@@ -604,10 +607,12 @@ function kingSVG(r,grand){
  if(r>=6||grand){o+='<path d="M30,64 Q50,76 70,64 L68,72 Q50,84 32,72 Z" fill="#fff" stroke="#bbb" stroke-width=".8"/>';for(let i=0;i<6;i++)o+='<circle cx="'+(38+i*5)+'" cy="'+(70+(i%2)*2)+'" r="1" fill="#222"/>'}
  if(r>=8||grand)for(let i=0;i<3;i++)o+='<circle cx="50" cy="'+(88+i*10)+'" r="2.4" fill="#ffd84a" stroke="#8a5a00" stroke-width=".6"/>';
  // 얼굴
+ if(fem)o+='<path d="M32,42 Q28,66 34,80 L66,80 Q72,66 68,42 Q66,26 50,26 Q34,26 32,42Z" fill="#6b3b1d"/>';
  o+='<circle cx="50" cy="44" r="15" fill="#ffd9b0" stroke="#c69060" stroke-width="1"/>';
- if(r>=5||grand)o+='<path d="M36,48 Q38,66 50,68 Q62,66 64,48 Q58,56 50,56 Q42,56 36,48 Z" fill="#f4f4f4" stroke="#bbb" stroke-width=".8"/>';
+ if((r>=5||grand)&&!fem)o+='<path d="M36,48 Q38,66 50,68 Q62,66 64,48 Q58,56 50,56 Q42,56 36,48 Z" fill="#f4f4f4" stroke="#bbb" stroke-width=".8"/>';
  o+='<circle cx="44.5" cy="43" r="1.8" fill="#222"/><circle cx="55.5" cy="43" r="1.8" fill="#222"/><path d="M45,'+((r>=5||grand)?50:49)+' Q50,'+((r>=5||grand)?53:54)+' 55,'+((r>=5||grand)?50:49)+'" stroke="#a33" stroke-width="1.6" fill="none" stroke-linecap="round"/>';
  if(r<3&&!grand)o+='<circle cx="41" cy="48" r="2" fill="#f7a" opacity=".5"/><circle cx="59" cy="48" r="2" fill="#f7a" opacity=".5"/>';
+ o+=fem?'<path d="M35,42 Q38,28 50,29 Q62,28 65,42 Q58,35 50,36 Q42,35 35,42Z" fill="#6b3b1d"/>':'<path d="M35,41 Q34,26 50,27 Q66,26 65,41 Q60,32 50,33 Q40,32 35,41Z" fill="#5a3a22"/>';
  // 머리장식
  if(!grand&&r==1)o+='<path d="M34,36 Q50,14 66,36 Z" fill="#a1824a" stroke="#6b5230" stroke-width="1.2"/><rect x="32" y="34" width="36" height="4" rx="2" fill="#7a5f33"/><path d="M60,22 q10,-14 12,-4 q-6,2 -8,8" fill="#e53"/>';
  else if(!grand&&r==2)o+='<path d="M34,40 Q34,17 50,17 Q66,17 66,40 Z" fill="#b8c4d0" stroke="#5c6b7a" stroke-width="1.4"/><rect x="48" y="26" width="4" height="14" fill="#8392a1"/><path d="M50,17 q10,-14 20,-6 q-8,0 -12,8" fill="#d33"/>';
@@ -694,6 +699,103 @@ function onBack(){
  guard()}
 try{window.addEventListener('popstate',onBack);guard()}catch(e){}
 try{screen.orientation&&screen.orientation.lock&&screen.orientation.lock('portrait').catch(()=>{})}catch(e){}
+// ===== 나만의 왕 아바타 · 상점 =====
+const AKEY='castleAvatar';
+let AV=ld(AKEY,{sex:null,owned:['tunic'],eq:{body:'tunic'}});
+if(!AV||typeof AV!='object')AV={sex:null,owned:['tunic'],eq:{body:'tunic'}};
+if(!Array.isArray(AV.owned))AV.owned=['tunic'];if(!AV.owned.includes('tunic'))AV.owned.push('tunic');if(!AV.eq)AV.eq={};if(!AV.eq.body)AV.eq.body='tunic';
+const saveAV=()=>sv(AKEY,AV);
+const HC=f=>f?'#6b3b1d':'#5a3a22';
+const crw=(pts,x0,x1,yb,yt,col,gem,big)=>crownSVG(pts,x0,x1,yb,yt,col,gem,big);
+const BODY={
+ tunic:f=>'<path d="M32,62 Q50,56 68,62 L76,121 L24,121 Z" fill="#a98467" stroke="#6b4a2f" stroke-width="1"/><path d="M42,60 L50,70 L58,60" fill="none" stroke="#6b4a2f" stroke-width="1.4"/><rect x="26" y="95" width="48" height="5" fill="#6b4a2f"/><circle cx="50" cy="97.5" r="2.4" fill="#d9b66a"/>',
+ robe_blue:f=>'<path d="M32,62 Q50,56 68,62 L78,121 L22,121 Z" fill="#3a64b5" stroke="#0004"/><path d="M50,62 L50,121" stroke="#ffd84a" stroke-width="2" opacity=".7"/>',
+ robe_red:f=>'<path d="M32,62 Q50,56 68,62 L78,121 L22,121 Z" fill="#c62828" stroke="#0004"/><path d="M50,62 L50,121" stroke="#ffd84a" stroke-width="2" opacity=".7"/>',
+ robe_purple:f=>'<path d="M32,62 Q50,56 68,62 L78,121 L22,121 Z" fill="#7b3fa0" stroke="#0004"/><path d="M50,62 L50,121" stroke="#ffd84a" stroke-width="2" opacity=".7"/><circle cx="50" cy="92" r="2.4" fill="#ffd84a"/><circle cx="50" cy="102" r="2.4" fill="#ffd84a"/>',
+ robe_gold:f=>'<path d="M32,62 Q50,56 68,62 L78,121 L22,121 Z" fill="#d4a017" stroke="#8a5a00"/><path d="M50,62 L50,121 M40,66 L36,121 M60,66 L64,121" stroke="#fff3b0" stroke-width="1.6" opacity=".8"/><circle cx="50" cy="90" r="2.6" fill="#ff3b6b"/><circle cx="50" cy="102" r="2.6" fill="#ff3b6b"/>',
+ armor:f=>'<path d="M32,62 Q50,56 68,62 L76,121 L24,121 Z" fill="#8a97a6" stroke="#4a5563"/><path d="M36,64 L64,64 L62,92 L38,92 Z" fill="#b8c4d0" stroke="#4a5563"/><path d="M50,64 L50,92 M38,78 L62,78" stroke="#5c6b7a" stroke-width="1.2"/><circle cx="33" cy="66" r="6" fill="#b8c4d0" stroke="#4a5563"/><circle cx="67" cy="66" r="6" fill="#b8c4d0" stroke="#4a5563"/>',
+ gown_pink:f=>'<path d="M36,62 Q50,57 64,62 L62,78 L90,121 L10,121 L38,78 Z" fill="#ff8fb8" stroke="#c4527f"/><path d="M38,78 L62,78" stroke="#fff" stroke-width="3"/><circle cx="50" cy="78" r="3" fill="#ffd84a"/>',
+ gown_royal:f=>'<path d="M36,62 Q50,57 64,62 L62,78 L90,121 L10,121 L38,78 Z" fill="#8e1b5a" stroke="#4a0d2e"/><path d="M38,78 L62,78" stroke="#ffd84a" stroke-width="3"/><path d="M50,78 L50,121" stroke="#ffd84a" stroke-width="1.5" opacity=".7"/><circle cx="50" cy="78" r="3.4" fill="#4cf" stroke="#fff" stroke-width=".6"/>'
+};
+const CAPE={cape_red:'#b71c1c',cape_blue:'#1e4fa8',cape_royal:'#5a2d82',cape_gold:'#c9a100'};
+const HEAD={
+ straw:f=>'<ellipse cx="50" cy="33" rx="24" ry="5.5" fill="#e6c36a" stroke="#a88a3a" stroke-width="1"/><path d="M36,33 Q36,16 50,16 Q64,16 64,33 Z" fill="#f0d37e" stroke="#a88a3a" stroke-width="1"/><rect x="36" y="27" width="28" height="4" fill="#c0392b"/>',
+ laurel:f=>{let g='';for(let i=0;i<9;i++){const a=Math.PI*(1.1+i*.1),x=50+16*Math.cos(a)*1.0,y=39+16*Math.sin(a)*1.0;g+='<ellipse cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" rx="4" ry="2" transform="rotate('+(i*20-80)+' '+x.toFixed(1)+' '+y.toFixed(1)+')" fill="#5aa04a" stroke="#2f6a2a" stroke-width=".6"/>'}return g},
+ helmet:f=>'<path d="M34,40 Q34,17 50,17 Q66,17 66,40 Z" fill="#b8c4d0" stroke="#5c6b7a" stroke-width="1.4"/><rect x="48" y="26" width="4" height="14" fill="#8392a1"/><path d="M50,17 q10,-14 20,-6 q-8,0 -12,8" fill="#d33"/>',
+ crown_silver:f=>crw(3,33,67,31,17,'#d8dde3','#4aa3ff'),
+ tiara:f=>crw(5,36,64,33,23,'#e8eef5','#ff7ac8'),
+ crown_gold:f=>crw(4,33,67,31,16,'#ffd84a','#3ccf6a'),
+ crown_gem:f=>crw(5,33,67,31,13,'#ffd84a','#ff3b6b'),
+ crown_grand:f=>crw(8,29,71,31,7,'#ffd84a','#b04aff',true)+'<circle cx="50" cy="4" r="3.2" fill="#4cf" stroke="#fff" stroke-width=".7"/>'
+};
+const HAND={
+ staff:f=>'<rect x="80" y="52" width="3.4" height="66" rx="1.7" fill="#8b5a2b" stroke="#5a3a18" stroke-width=".6"/><circle cx="81.7" cy="50" r="4" fill="#6fcf6a" stroke="#2f6a2a" stroke-width=".8"/>',
+ flag:f=>'<rect x="80" y="40" width="2.6" height="78" fill="#8b5a2b"/><path d="M82.6,42 L98,48 L82.6,56 Z" fill="#e53935" stroke="#8a1f1c" stroke-width=".8"/>',
+ book:f=>'<rect x="12" y="92" width="20" height="15" rx="1.5" fill="#5b3a8a" stroke="#2f1d4f"/><rect x="14" y="94" width="16" height="2" fill="#ffd84a"/><rect x="14" y="98" width="12" height="1.4" fill="#fff" opacity=".7"/>',
+ sword:f=>'<path d="M81.7,24 L84,34 L84,86 L79.4,86 L79.4,34 Z" fill="#dfe6ee" stroke="#6b7785" stroke-width=".8"/><rect x="74" y="86" width="15.4" height="3.4" rx="1.5" fill="#c9a100" stroke="#8a5a00" stroke-width=".6"/><rect x="80.2" y="89" width="3" height="12" fill="#6b3b1d"/><circle cx="81.7" cy="103" r="2.4" fill="#c9a100"/>',
+ scepter:f=>'<rect x="80" y="62" width="3" height="56" rx="1.5" fill="#c9a100" stroke="#8a5a00" stroke-width=".6"/><circle cx="81.5" cy="58" r="4.5" fill="#e33" stroke="#ffd84a" stroke-width="1.2"/>',
+ scepter_gem:f=>'<rect x="80" y="62" width="3" height="56" rx="1.5" fill="#c9a100" stroke="#8a5a00" stroke-width=".6"/><path d="M81.5,46 L88,54 L81.5,64 L75,54 Z" fill="#4cf" stroke="#ffd84a" stroke-width="1.2"/><path d="M81.5,46 L81.5,64 M75,54 L88,54" stroke="#fff" stroke-width=".6" opacity=".7"/>'
+};
+const NECK={
+ necklace:f=>'<path d="M38,66 Q50,84 62,66" fill="none" stroke="#ffd84a" stroke-width="1.8"/><circle cx="50" cy="78" r="3.2" fill="#ff3b6b" stroke="#ffd84a" stroke-width=".8"/>',
+ medal:f=>'<path d="M44,62 L50,80 L56,62" fill="#c62828" stroke="#7a1010" stroke-width=".8"/><circle cx="50" cy="84" r="5" fill="#ffd84a" stroke="#8a5a00" stroke-width="1"/><path d="M50,80.5 l1.2,2.6 2.8,.3 -2.1,1.9 .6,2.8 -2.5,-1.4 -2.5,1.4 .6,-2.8 -2.1,-1.9 2.8,-.3z" fill="#fff3b0"/>',
+ collar:f=>'<path d="M30,64 Q50,76 70,64 L68,72 Q50,84 32,72 Z" fill="#fff" stroke="#bbb" stroke-width=".8"/>'+[0,1,2,3,4,5].map(i=>'<circle cx="'+(38+i*5)+'" cy="'+(70+(i%2)*2)+'" r="1" fill="#222"/>').join('')
+};
+const FACE={
+ glasses:f=>'<circle cx="44.5" cy="43" r="5.2" fill="#ffffff55" stroke="#333" stroke-width="1.3"/><circle cx="55.5" cy="43" r="5.2" fill="#ffffff55" stroke="#333" stroke-width="1.3"/><path d="M49.7,43 L50.3,43" stroke="#333" stroke-width="1.3"/><path d="M39.3,42 L36,40 M60.7,42 L64,40" stroke="#333" stroke-width="1.1"/>',
+ beard:f=>'<path d="M36,48 Q38,66 50,68 Q62,66 64,48 Q58,56 50,56 Q42,56 36,48 Z" fill="#f4f4f4" stroke="#bbb" stroke-width=".8"/>'
+};
+function auraBack(a){if(a=='glow')return '<defs><radialGradient id="ag"><stop offset="0" stop-color="#fff3b0" stop-opacity=".95"/><stop offset="1" stop-color="#fff3b0" stop-opacity="0"/></radialGradient></defs><circle cx="50" cy="58" r="56" fill="url(#ag)"/>';
+ if(a=='rainbow')return ['#ff5a5a','#ffb84a','#ffe94a','#5ad16a','#4aa3ff','#9a5aff'].map((c,i)=>'<circle cx="50" cy="62" r="'+(58-i*4)+'" fill="none" stroke="'+c+'" stroke-width="3.2" opacity=".75"/>').join('');return ''}
+const auraFront=a=>a=='sparkle'||a=='glow'||a=='rainbow'?'<path d="M10,20 l2,5 5,2 -5,2 -2,5 -2,-5 -5,-2 5,-2z M88,30 l1.6,4 4,1.6 -4,1.6 -1.6,4 -1.6,-4 -4,-1.6 4,-1.6z M14,70 l1.4,3.4 3.4,1.4 -3.4,1.4 -1.4,3.4 -1.4,-3.4 -3.4,-1.4 3.4,-1.4z" fill="'+(a=='sparkle'?'#ffe66d':'#fff3b0')+'"/>':'';
+function avatarSVG(av,o){av=av||AV;const e=av.eq||{},f=av.sex=='f',hc=HC(f);
+ let s='<svg viewBox="0 0 100 125" xmlns="http://www.w3.org/2000/svg">'+auraBack(e.aura);
+ if(e.cape&&CAPE[e.cape])s+='<path d="M30,62 Q14,100 18,121 L82,121 Q86,100 70,62 Z" fill="'+CAPE[e.cape]+'" opacity=".95"/>'+(e.cape=='cape_royal'?'<path d="M18,114 L82,114 L82,121 L18,121Z" fill="#fff"/>':'');
+ if(f)s+='<path d="M32,42 Q27,72 35,88 L65,88 Q73,72 68,42 Q66,26 50,26 Q34,26 32,42Z" fill="'+hc+'"/>';
+ s+=(BODY[e.body]||BODY.tunic)(f);
+ if(e.neck&&NECK[e.neck])s+=NECK[e.neck](f);
+ s+='<circle cx="50" cy="44" r="15" fill="#ffd9b0" stroke="#c69060" stroke-width="1"/>';
+ s+=f?'<path d="M35,42 Q38,28 50,29 Q62,28 65,42 Q58,35 50,36 Q42,35 35,42Z" fill="'+hc+'"/>':'<path d="M35,41 Q34,26 50,27 Q66,26 65,41 Q60,32 50,33 Q40,32 35,41Z" fill="'+hc+'"/>';
+ if(e.face=='beard')s+=FACE.beard(f);
+ s+='<circle cx="44.5" cy="43" r="1.8" fill="#222"/><circle cx="55.5" cy="43" r="1.8" fill="#222"/><path d="M45,49 Q50,54 55,49" stroke="#a33" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="41" cy="48" r="2" fill="#f7a" opacity=".45"/><circle cx="59" cy="48" r="2" fill="#f7a" opacity=".45"/>';
+ if(e.face=='glasses')s+=FACE.glasses(f);
+ if(e.head&&HEAD[e.head])s+=HEAD[e.head](f);
+ if(e.hand&&HAND[e.hand])s+=HAND[e.hand](f);
+ return s+auraFront(e.aura)+'</svg>'}
+const SHOP_CATS=[['head','👑 머리 · 왕관'],['body','👘 옷'],['cape','🧣 망토'],['hand','🗡️ 손에 드는 것'],['neck','📿 목 · 가슴'],['face','👓 얼굴'],['aura','✨ 빛 효과']];
+const SHOP={
+ head:[['straw','밀짚모자',3],['laurel','월계관',12],['helmet','기사 투구',12],['crown_silver','은 왕관',15],['tiara','티아라',18],['crown_gold','금 왕관',30],['crown_gem','보석 왕관',45],['crown_grand','대왕관',80]],
+ body:[['robe_blue','푸른 로브',8],['robe_red','붉은 로브',10],['gown_pink','분홍 드레스',12],['robe_purple','보라 로브',18],['armor','기사 갑옷',20],['gown_royal','왕실 드레스',30],['robe_gold','황금 예복',45]],
+ cape:[['cape_red','붉은 망토',10],['cape_blue','푸른 망토',12],['cape_royal','왕실 망토',30],['cape_gold','황금 망토',40]],
+ hand:[['staff','나무 지팡이',5],['flag','깃발',8],['book','책',8],['sword','검',15],['scepter','왕의 홀',25],['scepter_gem','보석 홀',45]],
+ neck:[['necklace','목걸이',8],['medal','훈장',12],['collar','흰 털 칼라',18]],
+ face:[['glasses','안경',6],['beard','흰 수염',10]],
+ aura:[['sparkle','반짝이',15],['glow','황금 후광',35],['rainbow','무지개 후광',60]]};
+const itemInfo=id=>{for(const c in SHOP){const x=SHOP[c].find(i=>i[0]==id);if(x)return{c,id,n:x[1],p:x[2]}}return null};
+// 왕/여왕 이름
+const RKFN={7:['여왕','드디어 왕관을 썼어요! 여왕이 되었습니다!'],8:['대여왕','온 나라가 우러러보는 대여왕이 되었어요!'],9:['여제','여러 나라를 다스리는 여제가 되었어요!'],10:['대여제','세상에서 가장 위대한 대여제! 1~9단계도 모두 깨면 최종 여왕이 돼요!']};
+const RKMN={};for(let i=7;i<=10;i++)RKMN[i]=[RK[i].n,RK[i].d];
+function applySex(){const f=AV.sex=='f';for(let i=7;i<=10;i++){const t=(f?RKFN:RKMN)[i];RK[i].n=t[0];RK[i].d=t[1]}GRAND.n=f?'엄청난 여왕':'엄청난 왕';GRAND.d='모든 단계를 깬 '+TITLE+'! 전설의 '+(f?'여왕':'왕')+'이 되었어요!'}
+applySex();
+const avBox=(big,av)=>'<div class="kingbox'+(big?' big':'')+'">'+avatarSVG(av||AV)+'</div>';
+const sexName=()=>AV.sex=='f'?'여왕':'왕';
+function avFirst(next){showOv('👑 나만의 왕 만들기','누가 될까요?<br><small>처음에는 평민 옷으로 시작해요.<br>단계를 클리어해 점수를 모아 상점에서 꾸며요!</small>','<div class="kpair"><div class="kcol">'+avBox(0,{sex:'m',eq:{body:'tunic'}})+'<div class="klab">왕</div></div><div class="kcol">'+avBox(0,{sex:'f',eq:{body:'tunic'}})+'<div class="klab">여왕</div></div></div>',
+ [['🤴 왕으로 시작',()=>{AV.sex='m';applySex();saveAV();next()}],['👸 여왕으로 시작',()=>{AV.sex='f';applySex();saveAV();next()}]])}
+function avScr(msg){const bs=SHOP_CATS.map(([k,n])=>[n+(AV.eq[k]&&!(k=='body'&&AV.eq.body=='tunic')?' ✅':''),()=>shopCat(k)]);
+ bs.push(['🔁 '+(AV.sex=='f'?'왕으로 바꾸기':'여왕으로 바꾸기'),()=>{AV.sex=AV.sex=='f'?'m':'f';applySex();saveAV();avScr('모습을 바꿨어요!')}],['← 돌아가기',home]);
+ showOv('👤 나의 '+sexName(),(msg?'<b style="color:#ffd84a">'+msg+'</b><br>':'')+'⭐ 보유 점수 <b>'+RW.pts+'점</b><br><small>단계를 클리어하면 점수를 받아요 · 상점에서 꾸며 보세요</small>',avBox(1),bs)}
+function shopCat(cat,msg,sc){const nm=SHOP_CATS.find(x=>x[0]==cat)[1],bs=[];
+ SHOP[cat].forEach(([id,n,p])=>{const own=AV.owned.includes(id),on=AV.eq[cat]==id;
+  bs.push([(on?'✅ ':own?'':'🛒 ')+n,()=>{const keep=ov.scrollTop;
+    if(own){if(on)delete AV.eq[cat];else AV.eq[cat]=id;saveAV();shopCat(cat,on?'벗었어요':n+' 착용!',keep)}
+    else if(RW.pts>=p){RW.pts-=p;sv('castleRew',RW);AV.owned.push(id);AV.eq[cat]=id;saveAV();shopCat(cat,'🎉 '+n+' 구매 완료! 착용했어요',keep)}
+    else{toast('⭐ 점수가 부족해요 ('+RW.pts+'/'+p+'점)')}},
+   on?'착용 중 · 눌러서 벗기':own?'보유 중 · 눌러서 착용':'⭐ '+p+'점'+(RW.pts>=p?'':' (부족)')])});
+ if(cat=='body')bs.push(['평민 옷으로 되돌리기',()=>{AV.eq.body='tunic';saveAV();shopCat(cat,'평민 옷으로 돌아왔어요')}]);
+ bs.push(['← 다른 분류',()=>avScr()]);
+ showOv('🛍️ 상점 · '+nm,(msg?'<b style="color:#ffd84a">'+msg+'</b><br>':'')+'⭐ 보유 점수 <b>'+RW.pts+'점</b>',avBox(0),bs);
+ if(sc)ov.scrollTop=sc}
+const pairBox=(r,grand)=>'<div class="kpair'+(grand?' big':'')+'"><div class="kcol">'+avBox(grand)+'<div class="klab">나</div></div><div class="kcol"><div class="kingbox'+(grand?' big':'')+'">'+kingSVG(r,grand)+'</div><div class="klab">'+(grand?GRAND.n:RK[r].n)+'</div></div></div>';
 function subjectScr(m){setTrack('start');setMode(m);showOv(MN[m],SD[m]+'<br><small>'+rankSummary(m)+'</small>','<div style="font-size:56px">'+SI[m]+'</div>',[['▶ 시작',()=>{done.fill(0);start(1,20)}],['🧪 단계 선택 (저장 불러오기)',()=>stagePick(m)],['← 돌아가기',home]])}
 function stagePick(m){const NM=NAMES[m],b=[];for(let n=1;n<=10;n++)b.push([mark(m,n)+n+'단계 : '+NM[n],()=>jump(n,20,m),SESS[m][n]?'⭐'.repeat(SESS[m][n])+' '+RK[n].n+(SAVED[m][n]?' · 저장됨':' · 저장 안 됨'):'']);b.push(['← 돌아가기',()=>subjectScr(m)]);showOv('🧪 단계 선택 · '+MN[m],'원하는 단계를 골라요 (✅ 저장됨 · ☑️ 저장 전)<br>⭐ 내 보상 '+RW.pts+'점'+'<br><small>'+SNOTE[m]+'</small>','',b)}
 function menu(){if(!run)return;run=false;menuScr()}
@@ -706,8 +808,9 @@ function fontMenu(back){applyFS();const chip=t=>'<span style="display:inline-blo
  showOv('🔠 글자 크기','산성비 문제 글자 크기: <b>'+FN[fsi]+'</b> ('+(fsi+1)+'/5)<br>'+chip('12 + 5')+chip('apple')+chip('學校'),'',[['➕ 크게',()=>{fsi=Math.min(4,fsi+1);fontMenu(back)}],['➖ 작게',()=>{fsi=Math.max(0,fsi-1);fontMenu(back)}],['보통으로',()=>{fsi=2;fontMenu(back)}],['← 돌아가기',back]])}
 $('mn').onclick=menu;
 function home(){stopFanfare();setTrack('start');run=false;paused=false;area.style.filter='';$('ta').style.display='none';drops.forEach(d=>d.el.remove());drops=[];done.fill(0);lastT=null;
-showOv('👑 '+TITLE,'하늘에서 내려오는 💧산성비 문제를<br>풀면 벽돌 +1 🧱, 땅에 닿으면 −1 💥<br>4번 넘게 놓치면 👹괴물이 벽돌을 부숴요!<br>벽돌을 다 채우면 다음 단계로!<br>벽돌이 없는데 또 깨지면 게임 오버 💀<br>사칙연산·영어·한자 중에서 골라요 (영어·한자는 보기 5개 중 정답 고르기, 두 번 틀리면 틀린 것으로 처리)<br>단계를 깰 때마다 왕의 계급이 올라가요! 10단계를 모두 깨면 엄청난 왕 👑<br><small>⏸ 잠깐정지: 60초 · 처음 10번 · 3연속 정답마다 +1<br>⏸ 정지 중에도 답을 입력할 수 있고, 맞히면 바로 다시 시작돼요!</small>','<div style="font-size:60px">🏰</div>',[['➕ 사칙연산 시작',()=>subjectScr('math')],['🔤 영어 시작',()=>subjectScr('eng')],['🈶 한자 시작',()=>subjectScr('han')],['📒 오답 노트'+(WR.length?' ('+WR.length+')':''),()=>{noteBack=home;noteScr()}],['📅 출석부 · '+title()+' · ⭐'+RW.pts,()=>attScr(false)],['⚙️ 옵션',()=>optMenu(home)]]);atHome=true}
-applyFS();if(checkin())attScr(true);else home();
+showOv('👑 '+TITLE,'하늘에서 내려오는 💧산성비 문제를<br>풀면 벽돌 +1 🧱, 땅에 닿으면 −1 💥<br>4번 넘게 놓치면 👹괴물이 벽돌을 부숴요!<br>벽돌을 다 채우면 다음 단계로!<br>벽돌이 없는데 또 깨지면 게임 오버 💀<br>사칙연산·영어·한자 중에서 골라요 (영어·한자는 보기 5개 중 정답 고르기, 두 번 틀리면 틀린 것으로 처리)<br>단계를 깰 때마다 왕의 계급이 올라가요! 10단계를 모두 깨면 엄청난 왕 👑<br><small>⏸ 잠깐정지: 60초 · 처음 10번 · 3연속 정답마다 +1<br>⏸ 정지 중에도 답을 입력할 수 있고, 맞히면 바로 다시 시작돼요!</small>','<div style="font-size:60px">🏰</div>',[['➕ 사칙연산 시작',()=>subjectScr('math')],['🔤 영어 시작',()=>subjectScr('eng')],['🈶 한자 시작',()=>subjectScr('han')],['👤 나의 '+sexName()+' · 상점 ⭐'+RW.pts,()=>avScr()],['📒 오답 노트'+(WR.length?' ('+WR.length+')':''),()=>{noteBack=home;noteScr()}],['📅 출석부 · '+title(),()=>attScr(false)],['⚙️ 옵션',()=>optMenu(home)]]);atHome=true}
+applyFS();const goStart=()=>{if(checkin())attScr(true);else home()};
+if(!AV.sex)avFirst(goStart);else goStart();
 </script>
 </body>
 </html>
