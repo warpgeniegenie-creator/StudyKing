@@ -127,7 +127,7 @@ html,body{height:100%;margin:0;background:var(--s2);color:var(--ink);font-family
 #cv{flex:1;min-height:0;width:100%;touch-action:none;cursor:crosshair}
 #cbt{flex:none;display:flex;gap:4px;padding:4px;justify-content:center;flex-wrap:wrap}#cbt button{font:inherit;font-size:13px;padding:4px 9px;border-radius:8px;border:0;background:#ffffff33;color:#fff}#cbt button.sel{background:#f2b705;color:#222}
 .kpair{display:flex;gap:10px;justify-content:center;align-items:flex-end}.kcol{display:flex;flex-direction:column;align-items:center}.klab{font-size:13px;font-weight:700;margin-top:2px;color:#ffd84a}
-.kpair .kingbox{width:112px;height:140px;margin:0}.kpair.big .kingbox{width:150px;height:187px}
+.kpair .kingbox{width:112px;height:140px;margin:0}.kpair.big .kingbox{width:150px;height:187px}.kingbox.av{width:100px;height:160px}.kingbox.av.big{width:130px;height:208px}.kpair .kingbox.av{width:96px;height:154px}.kpair.big .kingbox.av{width:116px;height:186px}
 </style>
 </head>
 <body>
@@ -705,67 +705,201 @@ let AV=ld(AKEY,{sex:null,owned:['tunic'],eq:{body:'tunic'}});
 if(!AV||typeof AV!='object')AV={sex:null,owned:['tunic'],eq:{body:'tunic'}};
 if(!Array.isArray(AV.owned))AV.owned=['tunic'];if(!AV.owned.includes('tunic'))AV.owned.push('tunic');if(!AV.eq)AV.eq={};if(!AV.eq.body)AV.eq.body='tunic';
 const saveAV=()=>sv(AKEY,AV);
-const HC=f=>f?'#6b3b1d':'#5a3a22';
-const crw=(pts,x0,x1,yb,yt,col,gem,big)=>crownSVG(pts,x0,x1,yb,yt,col,gem,big);
-const BODY={
- tunic:f=>'<path d="M32,62 Q50,56 68,62 L76,121 L24,121 Z" fill="#a98467" stroke="#6b4a2f" stroke-width="1"/><path d="M42,60 L50,70 L58,60" fill="none" stroke="#6b4a2f" stroke-width="1.4"/><rect x="26" y="95" width="48" height="5" fill="#6b4a2f"/><circle cx="50" cy="97.5" r="2.4" fill="#d9b66a"/>',
- robe_blue:f=>'<path d="M32,62 Q50,56 68,62 L78,121 L22,121 Z" fill="#3a64b5" stroke="#0004"/><path d="M50,62 L50,121" stroke="#ffd84a" stroke-width="2" opacity=".7"/>',
- robe_red:f=>'<path d="M32,62 Q50,56 68,62 L78,121 L22,121 Z" fill="#c62828" stroke="#0004"/><path d="M50,62 L50,121" stroke="#ffd84a" stroke-width="2" opacity=".7"/>',
- robe_purple:f=>'<path d="M32,62 Q50,56 68,62 L78,121 L22,121 Z" fill="#7b3fa0" stroke="#0004"/><path d="M50,62 L50,121" stroke="#ffd84a" stroke-width="2" opacity=".7"/><circle cx="50" cy="92" r="2.4" fill="#ffd84a"/><circle cx="50" cy="102" r="2.4" fill="#ffd84a"/>',
- robe_gold:f=>'<path d="M32,62 Q50,56 68,62 L78,121 L22,121 Z" fill="#d4a017" stroke="#8a5a00"/><path d="M50,62 L50,121 M40,66 L36,121 M60,66 L64,121" stroke="#fff3b0" stroke-width="1.6" opacity=".8"/><circle cx="50" cy="90" r="2.6" fill="#ff3b6b"/><circle cx="50" cy="102" r="2.6" fill="#ff3b6b"/>',
- armor:f=>'<path d="M32,62 Q50,56 68,62 L76,121 L24,121 Z" fill="#8a97a6" stroke="#4a5563"/><path d="M36,64 L64,64 L62,92 L38,92 Z" fill="#b8c4d0" stroke="#4a5563"/><path d="M50,64 L50,92 M38,78 L62,78" stroke="#5c6b7a" stroke-width="1.2"/><circle cx="33" cy="66" r="6" fill="#b8c4d0" stroke="#4a5563"/><circle cx="67" cy="66" r="6" fill="#b8c4d0" stroke="#4a5563"/>',
- gown_pink:f=>'<path d="M36,62 Q50,57 64,62 L62,78 L90,121 L10,121 L38,78 Z" fill="#ff8fb8" stroke="#c4527f"/><path d="M38,78 L62,78" stroke="#fff" stroke-width="3"/><circle cx="50" cy="78" r="3" fill="#ffd84a"/>',
- gown_royal:f=>'<path d="M36,62 Q50,57 64,62 L62,78 L90,121 L10,121 L38,78 Z" fill="#8e1b5a" stroke="#4a0d2e"/><path d="M38,78 L62,78" stroke="#ffd84a" stroke-width="3"/><path d="M50,78 L50,121" stroke="#ffd84a" stroke-width="1.5" opacity=".7"/><circle cx="50" cy="78" r="3.4" fill="#4cf" stroke="#fff" stroke-width=".6"/>'
+const HC=f=>f?['#7a4a26','#3e2210']:['#6b4423','#33200f'];
+let UID=0;
+const mirror=d=>d.replace(/([MLQCZ])([^MLQCZ]*)/g,(m,c,a)=>{if(c=='Z')return 'Z';const n=a.trim().split(/[ ,]+/).map(Number);const o=[];for(let i=0;i<n.length;i+=2)o.push((100-n[i]).toFixed(1)+','+n[i+1]);return c+o.join(' ')});
+const lgd=(id,a,b,c,v)=>'<linearGradient id="'+id+'" x1="0" y1="0" x2="'+(v?0:1)+'" y2="'+(v?1:0)+'"><stop offset="0" stop-color="'+a+'"/><stop offset=".5" stop-color="'+b+'"/><stop offset="1" stop-color="'+c+'"/></linearGradient>';
+const shade=(h,k)=>{const n=parseInt(h.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255,f=x=>Math.max(0,Math.min(255,Math.round(k>0?x+(255-x)*k:x*(1+k))));return '#'+[f(r),f(g),f(b)].map(x=>x.toString(16).padStart(2,'0')).join('')};
+// 천(옷감) 한 조각: 그라데이션 + 짜임 + 결 + 접힌 선
+function cloth(u,id,d,col,o){o=o||{};let s='<defs>'+lgd(u+id,shade(col,.28),col,shade(col,-.34))+'</defs>';
+ s+='<path d="'+d+'" fill="url(#'+u+id+')" stroke="'+shade(col,-.5)+'" stroke-width=".7" stroke-linejoin="round"/>';
+ s+='<path d="'+d+'" fill="url(#'+u+(o.pat||'wv')+')" opacity="'+(o.po||.5)+'"/>';
+ s+='<path d="'+d+'" fill="#000" filter="url(#'+u+'gr)" opacity=".5"/>';
+ (o.folds||[]).forEach(f=>{s+='<path d="'+f+'" fill="none" stroke="#000" stroke-opacity=".22" stroke-width="1.1" stroke-linecap="round"/><path d="'+f+'" transform="translate(1.4 0)" fill="none" stroke="#fff" stroke-opacity=".18" stroke-width=".8" stroke-linecap="round"/>'});
+ return s}
+const stp=(d,c,w)=>'<path d="'+d+'" fill="none" stroke="'+c+'" stroke-width="'+(w||.6)+'" stroke-dasharray="1.6 1.2" opacity=".75"/>';
+const gem=(x,y,r,c)=>'<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+c+'" stroke="#fff" stroke-width=".4"/><circle cx="'+(x-r*.3)+'" cy="'+(y-r*.35)+'" r="'+(r*.35)+'" fill="#fff" opacity=".85"/>';
+const gold=(u)=>'url(#'+u+'au)';
+function defsCommon(u,f,e){const hc=HC(f);
+ return '<defs>'+lgd(u+'sk','#ffe6cf','#f6cba5','#e2a87f')+lgd(u+'hr',hc[0],hc[0],hc[1],1)+lgd(u+'au','#fff0a0','#e0aa1e','#8a5a00')+lgd(u+'ag','#ffffff','#c9d3de','#7a8794')+
+ '<radialGradient id="'+u+'iris"><stop offset="0" stop-color="#7b5a3a"/><stop offset="1" stop-color="#2c1d10"/></radialGradient>'+
+ '<pattern id="'+u+'wv" width="2.2" height="2.2" patternUnits="userSpaceOnUse"><path d="M0,0 L2.2,2.2 M2.2,0 L0,2.2" stroke="#000" stroke-opacity=".16" stroke-width=".35"/></pattern>'+
+ '<pattern id="'+u+'sa" width="4" height="4" patternUnits="userSpaceOnUse"><path d="M0,4 L4,0" stroke="#fff" stroke-opacity=".12" stroke-width=".7"/></pattern>'+
+ '<pattern id="'+u+'ve" width="1.6" height="1.6" patternUnits="userSpaceOnUse"><circle cx=".8" cy=".8" r=".45" fill="#000" fill-opacity=".22"/></pattern>'+
+ '<pattern id="'+u+'fl" width="11" height="11" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.5" fill="#fff"/><circle cx="3" cy="3" r=".6" fill="#f2b705"/><circle cx="8.5" cy="8.5" r="1.3" fill="#ffd1dc"/><circle cx="8.5" cy="8.5" r=".5" fill="#e0457b"/><path d="M8,2 q1.5,-1.5 3,0 q-1.5,1.5 -3,0z" fill="#8bd17c"/></pattern>'+
+ '<pattern id="'+u+'dm" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M4,0 L8,4 L4,8 L0,4 Z" fill="none" stroke="#fff3b0" stroke-opacity=".55" stroke-width=".5"/><circle cx="4" cy="4" r="1" fill="#fff3b0" fill-opacity=".5"/></pattern>'+
+ '<pattern id="'+u+'ln" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M0,2.5 Q1.25,0 2.5,2.5 T5,2.5" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width=".5"/></pattern>'+
+ '<filter id="'+u+'gr" x="0" y="0" width="1" height="1"><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="4" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  .9 0 0 0 -.3" result="a"/><feComposite in="a" in2="SourceAlpha" operator="in"/></filter>'+
+ '<filter id="'+u+'sh" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.6"/></filter>'+
+ '</defs>'}
+const armSkin=(u,x1,y1,x2,y2,w)=>'<path d="M'+(x1-w)+','+y1+' L'+(x2-w*.8)+','+y2+' L'+(x2+w*.8)+','+y2+' L'+(x1+w)+','+y1+'Z" fill="url(#'+u+'sk)" stroke="#c99a74" stroke-width=".6"/>';
+function hand(u,x,y,left){return '<g transform="translate('+x+' '+y+')"><ellipse rx="3.3" ry="4.3" fill="url(#'+u+'sk)" stroke="#c99a74" stroke-width=".6"/><path d="M'+(left?'-1.5':'1.5')+',-1 Q'+(left?'-3.6':'3.6')+',1.5 '+(left?'-2':'2')+',3.5" fill="none" stroke="#c99a74" stroke-width=".5"/><path d="M-1.2,2 L-1.2,3.8 M0,2.2 L0,4.2 M1.2,2 L1.2,3.8" stroke="#c99a74" stroke-width=".4"/></g>'}
+function shoes(u,col,style){col=col||'#4a3426';const sh=x=>'<path d="M'+(x-5)+',141 L'+(x+4)+',141 Q'+(x+6)+',147 '+(x+5)+',150 Q'+x+',152 '+(x-6)+',150 Q'+(x-7)+',145 '+(x-5)+',141Z" fill="'+col+'" stroke="'+shade(col,-.5)+'" stroke-width=".7"/><path d="M'+(x-5)+',149 Q'+x+',151 '+(x+5)+',149" stroke="#000" stroke-opacity=".35" fill="none" stroke-width=".8"/><path d="M'+(x-3)+',144 Q'+x+',143 '+(x+3)+',145" stroke="#fff" stroke-opacity=".35" fill="none" stroke-width=".8"/>';return sh(43)+sh(57)}
+function legs(u,top,sock){let s='';[44,56].forEach(x=>{s+='<path d="M'+(x-5)+','+top+' Q'+(x-5.5)+','+((top+142)/2)+' '+(x-4)+',142 L'+(x+4)+',142 Q'+(x+5.5)+','+((top+142)/2)+' '+(x+5)+','+top+'Z" fill="url(#'+u+'sk)" stroke="#c99a74" stroke-width=".6"/>'});
+ if(sock)[44,56].forEach(x=>{s+='<path d="M'+(x-4.4)+',134 L'+(x+4.4)+',134 L'+(x+4)+',144 L'+(x-4)+',144Z" fill="#fff" stroke="#d0d0d0" stroke-width=".5"/><path d="M'+(x-4.4)+',136 L'+(x+4.4)+',136" stroke="#e8a0b8" stroke-width="1"/>'});return s}
+// ---------- 옷 ----------
+const OUT={
+ tunic:(u,f)=>({legs:1,shoe:'#6b4a2f',body:
+  cloth(u,'tr','M39,94 Q38,120 40,142 L48.6,142 Q49.5,118 50,96 Q50.5,118 51.4,142 L60,142 Q62,120 61,94 Z','#8a7860',{folds:['M44,100 Q43,120 44,140','M56,100 Q57,120 56,140']})+
+  stp('M44.2,96 L44.2,142','#e8d9b8')+
+  cloth(u,'tn','M33,55 Q50,49 67,55 L70,64 L68,102 Q50,108 32,102 L30,64 Z','#cdb98e',{folds:['M40,66 Q38,84 36,100','M60,66 Q62,84 64,100','M50,70 Q49,86 50,104','M44,82 Q50,90 56,82']})+
+  '<path d="M43,52 L50,66 L57,52" fill="#8a7352" stroke="#5e4a30" stroke-width=".7"/><path d="M47,60 L53,64 M53,60 L47,64" stroke="#5e4a30" stroke-width=".7"/>'+
+  '<path d="M31,87 Q50,94 69,87" fill="none" stroke="#6b4a2f" stroke-width="3" stroke-linecap="round"/><path d="M31,87 Q50,94 69,87" fill="none" stroke="#a37c52" stroke-width="1" stroke-dasharray="1.5 1.3"/><path d="M60,91 q4,3 3,9 M62,91 q5,2 5,8" stroke="#6b4a2f" stroke-width="1.6" fill="none" stroke-linecap="round"/>',
+  sleeves:cloth(u,'sl','M32,55 L22,60 L21,74 L31,72 Z','#d6c397',{folds:['M28,60 L27,72']})+cloth(u,'sr','M68,55 L78,60 L79,74 L69,72 Z','#d6c397',{folds:['M72,60 L73,72']}),
+  armY:74}),
+ robe:(u,f,c)=>({legs:0,shoe:'#3a2a1c',body:
+  cloth(u,'rb','M33,55 Q50,48 67,55 L71,64 L69,86 Q74,120 82,148 Q50,155 18,148 Q26,120 31,86 L29,64 Z',c.m,{pat:c.pat||'wv',po:c.po||.55,folds:['M44,88 Q42,120 36,148','M56,88 Q58,120 64,148','M50,92 Q50,122 50,152','M38,96 Q32,124 27,148','M62,96 Q68,124 73,148']})+
+  '<path d="M19,144 Q50,151 81,144 L82,149 Q50,156 18,149Z" fill="'+c.t+'" stroke="'+shade(c.t,-.5)+'" stroke-width=".6"/>'+
+  '<path d="M48.4,54 L51.6,54 L52.2,150 L47.8,150Z" fill="'+c.t+'" opacity=".92" stroke="'+shade(c.t,-.5)+'" stroke-width=".4"/>'+
+  '<path d="M41,51 Q50,58 59,51 L57,57 Q50,64 43,57Z" fill="'+c.t+'" stroke="'+shade(c.t,-.5)+'" stroke-width=".6"/>'+
+  '<path d="M32,83 Q50,89 68,83 L68,89 Q50,95 32,89Z" fill="'+(c.b||c.t)+'" stroke="'+shade(c.b||c.t,-.5)+'" stroke-width=".6"/><rect x="46.5" y="84.4" width="7" height="6" rx="1.2" fill="url(#'+u+'au)" stroke="#8a5a00" stroke-width=".5"/>'+(c.gems?gem(50,100,1.6,'#ff3b6b')+gem(50,114,1.6,'#ff3b6b')+gem(50,128,1.6,'#ff3b6b'):''),
+  sleeves:cloth(u,'sl','M31,55 Q18,62 14,92 Q13,104 22,106 Q28,100 31,92 Q31,76 34,64Z',c.m,{pat:c.pat||'wv',po:c.po||.55,folds:['M26,64 Q20,84 18,102']})+'<path d="M14,100 Q18,108 24,106 L26,101 Q20,104 15,97Z" fill="'+c.t+'" stroke="'+shade(c.t,-.5)+'" stroke-width=".5"/>'+
+   cloth(u,'sr',mirror('M31,55 Q18,62 14,92 Q13,104 22,106 Q28,100 31,92 Q31,76 34,64Z'),c.m,{pat:c.pat||'wv',po:c.po||.55,folds:['M74,64 Q80,84 82,102']})+'<path d="M86,100 Q82,108 76,106 L74,101 Q80,104 85,97Z" fill="'+c.t+'" stroke="'+shade(c.t,-.5)+'" stroke-width=".5"/>',armY:106}),
+ gown:(u,f,c)=>({legs:0,shoe:'#c9a0b0',body:
+  (c.under?cloth(u,'un','M38,84 Q50,88 62,84 Q74,116 88,148 Q50,156 12,148 Q26,116 38,84Z',c.under,{pat:'sa',po:.6,folds:['M44,92 Q36,120 26,148','M56,92 Q64,120 74,148']}):'')+
+  cloth(u,'sk','M37,80 Q50,85 63,80 '+(c.under?'Q56,116 62,150 Q50,153 42,150 Q44,116 37,80Z M37,80Z':'Q80,114 94,148 Q50,158 6,148 Q20,114 37,80Z'),c.m,{pat:c.pat||'sa',po:c.po||.7,folds:['M42,88 Q32,118 18,148','M47,90 Q42,120 36,150','M53,90 Q58,120 64,150','M58,88 Q68,118 82,148','M38,86 Q24,116 10,146']})+
+  (c.under?cloth(u,'sk2','M37,80 Q50,85 63,80 Q80,114 94,148 L62,150 Q56,116 50,86Z',c.m,{pat:c.pat||'sa',po:c.po||.7,folds:['M58,90 Q70,120 84,148']})+cloth(u,'sk3','M37,80 Q50,85 63,80 L50,86 Q44,116 38,150 L6,148 Q20,114 37,80Z',c.m,{pat:c.pat||'sa',po:c.po||.7,folds:['M42,90 Q30,120 16,148']}):'')+
+  '<path d="M8,144 Q'+(c.under?'28,152 38,150':'50,152 92,144')+'" fill="none" stroke="'+c.t+'" stroke-width="3"/><path d="M6,148 Q50,158 94,148" fill="none" stroke="url(#'+u+'ln)" stroke-width="3.2" opacity=".95"/>'+
+  cloth(u,'bd','M34,57 Q42,62 50,61 Q58,62 66,57 L68,68 Q66,78 63,83 Q50,88 37,83 Q34,78 32,68 Z',c.b||c.m,{pat:'sa',po:.7,folds:['M44,66 Q43,76 44,84','M56,66 Q57,76 56,84']})+
+  '<path d="M36,57 Q43,63 50,62 Q57,63 64,57" fill="none" stroke="'+c.t+'" stroke-width="1.6"/>'+
+  '<path d="M36,82 Q50,88 64,82 L64,86 Q50,92 36,86Z" fill="'+c.t+'" stroke="'+shade(c.t,-.5)+'" stroke-width=".5"/>'+
+  '<path d="M50,86 Q40,78 36,84 Q38,90 50,88 Q62,90 64,84 Q60,78 50,86Z" fill="'+(c.bow||c.t)+'" stroke="'+shade(c.bow||c.t,-.5)+'" stroke-width=".6"/><circle cx="50" cy="86.5" r="2" fill="'+shade(c.bow||c.t,-.2)+'"/>'+(c.gems?gem(50,70,1.6,'#4cf'):''),
+  sleeves:(c.long?'':cloth(u,'sl','M33,56 Q21,53 19,63 Q19,72 28,71 Q34,68 35,60Z',c.m,{pat:'sa',po:.7,folds:['M24,58 Q22,66 26,70']})+cloth(u,'sr',mirror('M33,56 Q21,53 19,63 Q19,72 28,71 Q34,68 35,60Z'),c.m,{pat:'sa',po:.7,folds:['M76,58 Q78,66 74,70']})),armY:96,skin:1}),
+ aline:(u,f,c)=>({legs:1,sock:1,shoe:c.sh||'#c0392b',body:
+  cloth(u,'sk','M37,78 Q50,83 63,78 Q70,98 76,118 Q50,125 24,118 Q30,98 37,78Z',c.m,{pat:'fl',po:.95,folds:['M42,84 Q38,102 33,118','M50,86 Q50,104 50,121','M58,84 Q62,102 67,118']})+
+  '<path d="M24,114 Q50,122 76,114 L76,119 Q50,127 24,119Z" fill="'+c.t+'" stroke="'+shade(c.t,-.5)+'" stroke-width=".5"/>'+
+  cloth(u,'bd','M34,56 Q50,52 66,56 L67,68 Q65,76 63,80 Q50,84 37,80 Q35,76 33,68Z',c.b||c.m,{pat:'sa',po:.6})+
+  '<path d="M38,55 Q50,70 62,55 L60,53 Q50,62 40,53Z" fill="#fff" stroke="#d0d0d0" stroke-width=".6"/>'+
+  '<path d="M35,79 Q50,84 65,79 L65,83 Q50,88 35,83Z" fill="'+c.t+'" stroke="'+shade(c.t,-.5)+'" stroke-width=".5"/>'+'<path d="M50,83 Q42,76 38,81 Q40,87 50,85 Q60,87 62,81 Q58,76 50,83Z" fill="'+c.t+'" stroke="'+shade(c.t,-.5)+'" stroke-width=".6"/><circle cx="50" cy="83.3" r="1.8" fill="'+shade(c.t,-.25)+'"/>',
+  sleeves:cloth(u,'sl','M33,56 Q23,56 22,66 Q23,72 30,71 Q35,66 35,60Z',c.b||c.m,{pat:'sa',po:.6})+cloth(u,'sr',mirror('M33,56 Q23,56 22,66 Q23,72 30,71 Q35,66 35,60Z'),c.b||c.m,{pat:'sa',po:.6}),armY:94}),
+ hanF:(u,f,c)=>({legs:0,shoe:'#fff',body:
+  cloth(u,'ch','M36,70 Q50,75 64,70 Q80,108 88,144 Q50,152 12,144 Q20,108 36,70Z','#2c4f9e',{pat:'sa',po:.7,folds:['M40,78 Q30,112 20,144','M45,80 Q40,114 34,146','M50,80 Q50,114 50,148','M55,80 Q60,114 66,146','M60,78 Q70,112 80,144']})+
+  '<path d="M12,141 Q50,149 88,141" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1"/>'+
+  cloth(u,'jg','M34,55 Q50,50 66,55 L68,64 L66,76 Q50,80 34,76 L32,64Z',c.m,{pat:'sa',po:.7,folds:['M40,64 Q39,72 40,78','M60,64 Q61,72 60,78']})+
+  '<path d="M43,52 L58,72 L55,74 L40,54Z" fill="#fff" stroke="#d6d6d6" stroke-width=".5"/><path d="M57,52 L42,72 L45,74 L60,54Z" fill="'+shade(c.m,-.12)+'" stroke="'+shade(c.m,-.5)+'" stroke-width=".4"/><path d="M43,52 L58,72" stroke="#fff" stroke-width="1.6"/>'+
+  '<path d="M52,70 Q44,66 42,72 Q46,78 52,72 Q58,80 62,86 Q64,92 60,96 M52,72 Q60,66 64,70 Q62,76 56,74" fill="none" stroke="#b81d2c" stroke-width="2.2" stroke-linecap="round"/>',
+  sleeves:cloth(u,'sl','M32,56 Q17,62 14,84 Q18,93 26,90 Q28,76 34,68Z',c.m,{pat:'sa',po:.7,folds:['M24,66 Q18,78 18,88']})+'<path d="M14,84 Q18,93 26,90 L25,87 Q20,89 16,81Z" fill="'+c.e+'" stroke="'+shade(c.e,-.5)+'" stroke-width=".5"/>'+
+   cloth(u,'sr',mirror('M32,56 Q17,62 14,84 Q18,93 26,90 Q28,76 34,68Z'),c.m,{pat:'sa',po:.7,folds:['M76,66 Q82,78 82,88']})+'<path d="'+mirror('M14,84 Q18,93 26,90 L25,87 Q20,89 16,81Z')+'" fill="'+c.e+'" stroke="'+shade(c.e,-.5)+'" stroke-width=".5"/>',armY:90}),
+ hanM:(u,f,c)=>({legs:0,shoe:'#2b2b2b',body:
+  cloth(u,'bj','M36,84 Q50,88 64,84 L69,126 Q68,138 61,141 L51.5,141 L50,104 L48.5,141 L39,141 Q32,138 31,126Z','#6e8a86',{pat:'wv',po:.6,folds:['M40,92 Q37,118 38,138','M60,92 Q63,118 62,138']})+
+  '<path d="M39,136 L50,137 M51,137 L62,136" stroke="#2f3b3a" stroke-width="1.8"/>'+
+  cloth(u,'jg','M33,55 Q50,50 67,55 L70,66 L68,90 Q50,95 32,90 L30,66Z',c.m,{pat:'wv',po:.55,folds:['M40,66 Q38,80 38,92','M60,66 Q62,80 62,92']})+
+  '<path d="M42,52 L60,74 L57,76 L40,54Z" fill="#fff" stroke="#d6d6d6" stroke-width=".5"/><path d="M58,52 L42,74 L45,76 L60,54Z" fill="'+shade(c.m,-.14)+'" stroke="'+shade(c.m,-.5)+'" stroke-width=".4"/>'+
+  '<path d="M53,72 Q45,68 43,74 Q47,80 53,74 Q58,82 62,90" fill="none" stroke="#2c3e50" stroke-width="2.1" stroke-linecap="round"/>'+
+  '<path d="M33,86 Q50,92 67,86 L67,91 Q50,97 33,91Z" fill="#3b4b6b" stroke="#222" stroke-width=".4"/>',
+  sleeves:cloth(u,'sl','M32,56 Q18,62 15,86 Q19,95 27,92 Q28,76 34,68Z',c.m,{pat:'wv',po:.55,folds:['M24,66 Q19,80 19,90']})+'<path d="M15,86 Q19,95 27,92 L26,89 Q21,91 17,83Z" fill="#3b4b6b" stroke="#222" stroke-width=".4"/>'+cloth(u,'sr',mirror('M32,56 Q18,62 15,86 Q19,95 27,92 Q28,76 34,68Z'),c.m,{pat:'wv',po:.55,folds:['M76,66 Q81,80 81,90']})+'<path d="'+mirror('M15,86 Q19,95 27,92 L26,89 Q21,91 17,83Z')+'" fill="#3b4b6b" stroke="#222" stroke-width=".4"/>',armY:92}),
+ armor:(u,f)=>({legs:0,shoe:'#3b3b44',body:
+  cloth(u,'gl','M38,96 L46.5,96 L46,138 L39,138Z M53.5,96 L62,96 L61,138 L54,138Z','#8e9aa8',{pat:'wv',po:.3})+
+  '<ellipse cx="42.5" cy="112" rx="5.5" ry="3.5" fill="url(#'+u+'ag)" stroke="#4a5563" stroke-width=".6"/><ellipse cx="57.5" cy="112" rx="5.5" ry="3.5" fill="url(#'+u+'ag)" stroke="#4a5563" stroke-width=".6"/>'+
+  cloth(u,'ts','M34,86 L66,86 L70,106 L30,106Z','#7c8896',{pat:'wv',po:.3,folds:['M42,88 L40,106','M50,88 L50,106','M58,88 L60,106']})+
+  '<path d="M30,98 Q50,104 70,98 M31,92 Q50,98 69,92" fill="none" stroke="#4a5563" stroke-width=".7"/>'+
+  cloth(u,'bp','M34,56 Q50,50 66,56 L68,70 Q66,82 62,88 Q50,92 38,88 Q34,82 32,70Z','#b9c4d0',{pat:'wv',po:.3,folds:['M50,58 L50,88','M38,72 Q50,78 62,72']})+
+  '<path d="M44,66 Q50,72 56,66 M42,76 Q50,82 58,76" fill="none" stroke="#6b7785" stroke-width=".8"/>'+
+  '<path d="M44,52 L50,60 L56,52" fill="#6b7785"/>',
+  sleeves:'<ellipse cx="30" cy="59" rx="8" ry="6" fill="url(#'+u+'ag)" stroke="#4a5563" stroke-width=".8"/><path d="M24,58 Q30,54 36,58" stroke="#fff" stroke-opacity=".6" fill="none"/><ellipse cx="70" cy="59" rx="8" ry="6" fill="url(#'+u+'ag)" stroke="#4a5563" stroke-width=".8"/><path d="M64,58 Q70,54 76,58" stroke="#fff" stroke-opacity=".6" fill="none"/>'+
+   cloth(u,'vl','M22,70 L31,70 L29,88 L23,88Z','#9aa7b4',{pat:'wv',po:.3})+cloth(u,'vr','M69,70 L78,70 L77,88 L71,88Z','#9aa7b4',{pat:'wv',po:.3}),armY:92}),
+ uniform:(u,f)=>({legs:0,shoe:'#1b1b1b',body:
+  cloth(u,'pt','M38,92 L48.6,92 L48,142 L39.5,142Z M51.4,92 L62,92 L60.5,142 L52,142Z','#eceff3',{pat:'wv',po:.4,folds:['M43,98 Q43,120 44,140','M57,98 Q57,120 56,140']})+
+  '<path d="M39.5,138 L48,138 M52,138 L60.5,138" stroke="#111" stroke-width="3.4"/>'+
+  cloth(u,'ct','M33,55 Q50,49 67,55 L70,64 L69,104 Q50,110 31,104 L30,64Z','#203a72',{pat:'wv',po:.55,folds:['M38,66 Q36,86 35,104','M62,66 Q64,86 65,104']})+
+  '<path d="M50,56 L50,108" stroke="#0f1d3d" stroke-width="1"/>'+[66,76,86,96].map(y=>'<circle cx="44.5" cy="'+y+'" r="1.7" fill="url(#'+u+'au)" stroke="#8a5a00" stroke-width=".4"/><circle cx="55.5" cy="'+y+'" r="1.7" fill="url(#'+u+'au)" stroke="#8a5a00" stroke-width=".4"/>').join('')+
+  '<path d="M36,56 L66,96 L61,99 L31,60Z" fill="#b71c1c" stroke="#6e0f0f" stroke-width=".6" opacity=".95"/><path d="M36,56 L66,96" stroke="#ff8a80" stroke-opacity=".5" stroke-width=".8"/>'+
+  '<path d="M41,52 Q50,58 59,52 L58,56 Q50,62 42,56Z" fill="url(#'+u+'au)" stroke="#8a5a00" stroke-width=".5"/>'+
+  gem(37,74,1.8,'#4cf')+'<path d="M32,70 L44,72" stroke="#ffd84a" stroke-width="1.1"/>',
+  sleeves:cloth(u,'sl','M32,55 L21,60 L20,88 L30,88 L34,66Z','#203a72',{pat:'wv',po:.55,folds:['M26,62 L25,86']})+'<path d="M20,82 L30,82 L30,88 L20,88Z" fill="url(#'+u+'au)" stroke="#8a5a00" stroke-width=".5"/><path d="M26,54 L16,58 L19,64 L33,58Z" fill="url(#'+u+'au)" stroke="#8a5a00" stroke-width=".5"/>'+
+   cloth(u,'sr','M68,55 L79,60 L80,88 L70,88 L66,66Z','#203a72',{pat:'wv',po:.55,folds:['M74,62 L75,86']})+'<path d="M80,82 L70,82 L70,88 L80,88Z" fill="url(#'+u+'au)" stroke="#8a5a00" stroke-width=".5"/><path d="M74,54 L84,58 L81,64 L67,58Z" fill="url(#'+u+'au)" stroke="#8a5a00" stroke-width=".5"/>',armY:90})
 };
-const CAPE={cape_red:'#b71c1c',cape_blue:'#1e4fa8',cape_royal:'#5a2d82',cape_gold:'#c9a100'};
+const BODYMAP={
+ tunic:(u,f)=>OUT.tunic(u,f),
+ robe_blue:(u,f)=>OUT.robe(u,f,{m:'#2f58b5',t:'#e8c25a',b:'#d4a017'}),
+ robe_red:(u,f)=>OUT.robe(u,f,{m:'#b3202a',t:'#e8c25a',b:'#d4a017'}),
+ robe_purple:(u,f)=>OUT.robe(u,f,{m:'#6b3a95',t:'#f0e6ff',b:'#d4a017',pat:'dm',po:.35}),
+ robe_gold:(u,f)=>OUT.robe(u,f,{m:'#d4a017',t:'#fff3b0',b:'#8e1b2a',pat:'dm',po:.7,gems:1}),
+ sundress:(u,f)=>OUT.aline(u,f,{m:'#f6a6c0',t:'#fff',b:'#f6a6c0',sh:'#c0392b'}),
+ gown_pink:(u,f)=>OUT.gown(u,f,{m:'#ff8fb8',under:'#ffb3cf',t:'#fff',bow:'#e0457b'}),
+ gown_blue:(u,f)=>OUT.gown(u,f,{m:'#4a8fe0',under:'#a9cdfa',t:'#fff',bow:'#2a5fb0',gems:1}),
+ gown_royal:(u,f)=>OUT.gown(u,f,{m:'#7d1a4a',t:'#ffd84a',bow:'#ffd84a',pat:'ve',po:.7,long:0,gems:1}),
+ gown_white:(u,f)=>OUT.gown(u,f,{m:'#f4f4fa',under:'#c3cdea',t:'#c9d6ff',bow:'#c9d6ff',pat:'sa',po:.5,gems:1}),
+ hanbok_f:(u,f)=>OUT.hanF(u,f,{m:'#ff9fb2',e:'#fff3b0'}),
+ hanbok_m:(u,f)=>OUT.hanM(u,f,{m:'#f2f0e6'}),
+ armor:(u,f)=>OUT.armor(u,f),
+ uniform:(u,f)=>OUT.uniform(u,f)
+};
+const CAPE={cape_red:['#c62828','#7a1010'],cape_blue:['#2a62c4','#12326a'],cape_royal:['#6b3a95','#34154f'],cape_gold:['#e0b02a','#8a6200']};
+const crown2=(u,pts,x0,x1,yb,yt,gc,gm,big)=>{let d='M'+x0+','+yb,w=(x1-x0)/pts,g='';
+ for(let i=0;i<pts;i++){const px=x0+(i+.5)*w,vx=x0+(i+1)*w;d+=' L'+(x0+i*w).toFixed(1)+','+(yb-5)+' Q'+(px-w*.18).toFixed(1)+','+((yb+yt)/2)+' '+px.toFixed(1)+','+yt+' Q'+(px+w*.18).toFixed(1)+','+((yb+yt)/2)+' '+vx.toFixed(1)+','+(yb-5);g+=gem(px.toFixed(1),yt-.6,big?2.3:1.8,gm)}
+ d+=' L'+x1+','+yb+' Z';const cx=(x0+x1)/2;
+ return '<path d="'+d+'" fill="url(#'+u+gc+')" stroke="#8a5a00" stroke-width=".9" stroke-linejoin="round"/><path d="M'+x0+','+(yb-1)+' L'+x1+','+(yb-1)+' L'+(x1+.4)+','+(yb+4.5)+' Q'+cx+','+(yb+7)+' '+(x0-.4)+','+(yb+4.5)+'Z" fill="url(#'+u+gc+')" stroke="#8a5a00" stroke-width=".9"/><path d="M'+(x0+1)+','+(yb+1.6)+' Q'+cx+','+(yb+4.4)+' '+(x1-1)+','+(yb+1.6)+'" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width=".7"/>'+g+gem(cx,yb+2.4,2,gm)}
 const HEAD={
- straw:f=>'<ellipse cx="50" cy="33" rx="24" ry="5.5" fill="#e6c36a" stroke="#a88a3a" stroke-width="1"/><path d="M36,33 Q36,16 50,16 Q64,16 64,33 Z" fill="#f0d37e" stroke="#a88a3a" stroke-width="1"/><rect x="36" y="27" width="28" height="4" fill="#c0392b"/>',
- laurel:f=>{let g='';for(let i=0;i<9;i++){const a=Math.PI*(1.1+i*.1),x=50+16*Math.cos(a)*1.0,y=39+16*Math.sin(a)*1.0;g+='<ellipse cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" rx="4" ry="2" transform="rotate('+(i*20-80)+' '+x.toFixed(1)+' '+y.toFixed(1)+')" fill="#5aa04a" stroke="#2f6a2a" stroke-width=".6"/>'}return g},
- helmet:f=>'<path d="M34,40 Q34,17 50,17 Q66,17 66,40 Z" fill="#b8c4d0" stroke="#5c6b7a" stroke-width="1.4"/><rect x="48" y="26" width="4" height="14" fill="#8392a1"/><path d="M50,17 q10,-14 20,-6 q-8,0 -12,8" fill="#d33"/>',
- crown_silver:f=>crw(3,33,67,31,17,'#d8dde3','#4aa3ff'),
- tiara:f=>crw(5,36,64,33,23,'#e8eef5','#ff7ac8'),
- crown_gold:f=>crw(4,33,67,31,16,'#ffd84a','#3ccf6a'),
- crown_gem:f=>crw(5,33,67,31,13,'#ffd84a','#ff3b6b'),
- crown_grand:f=>crw(8,29,71,31,7,'#ffd84a','#b04aff',true)+'<circle cx="50" cy="4" r="3.2" fill="#4cf" stroke="#fff" stroke-width=".7"/>'
+ straw:(u,f)=>'<ellipse cx="50" cy="19" rx="25" ry="5.5" fill="#d9b561" stroke="#9a7b34" stroke-width=".8"/><path d="M36,19 Q36,4 50,4 Q64,4 64,19Z" fill="#ecce7c" stroke="#9a7b34" stroke-width=".8"/><path d="M36,19 Q36,4 50,4 Q64,4 64,19Z" fill="url(#'+u+'wv)" opacity=".6"/><path d="M36.5,15 Q50,19 63.5,15 L63.5,18.5 Q50,22.5 36.5,18.5Z" fill="#b8342c"/><ellipse cx="50" cy="19" rx="25" ry="5.5" fill="url(#'+u+'wv)" opacity=".6"/>',
+ laurel:(u,f)=>{let g='';for(let i=0;i<10;i++){const a=Math.PI*(1.05+i*.1),x=50+13.5*Math.cos(a),y=28+14*Math.sin(a);g+='<ellipse cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" rx="3.8" ry="1.7" transform="rotate('+(i*18-90)+' '+x.toFixed(1)+' '+y.toFixed(1)+')" fill="'+(i%2?'#5aa04a':'#79bd62')+'" stroke="#2f6a2a" stroke-width=".5"/>'}return g},
+ helmet:(u,f)=>'<path d="M36,30 Q35,6 50,5 Q65,6 64,30 L61,30 Q61,22 50,22 Q39,22 39,30Z" fill="url(#'+u+'ag)" stroke="#4a5563" stroke-width=".9"/><path d="M39,30 L39,40 Q44,42 46,38 L46,28 M61,30 L61,40 Q56,42 54,38 L54,28" fill="url(#'+u+'ag)" stroke="#4a5563" stroke-width=".8"/><path d="M48.6,6 L51.4,6 L51.4,24 L48.6,24Z" fill="#7a8794" stroke="#4a5563" stroke-width=".5"/><path d="M44,22 L56,22" stroke="#4a5563" stroke-width=".8"/><path d="M50,5 Q60,-6 74,2 Q66,2 62,10 Q56,6 50,8Z" fill="#c62828" stroke="#7a1010" stroke-width=".6"/><path d="M40,12 Q44,8 50,8" stroke="#fff" stroke-opacity=".7" fill="none" stroke-width="1.2"/>',
+ crown_silver:(u,f)=>crown2(u,3,36,64,20,8,'ag','#4aa3ff'),
+ tiara:(u,f)=>crown2(u,5,38,62,20,11,'ag','#ff7ac8'),
+ crown_gold:(u,f)=>crown2(u,4,35,65,20,7,'au','#2fbf5a'),
+ crown_gem:(u,f)=>crown2(u,5,34,66,20,4,'au','#ff3b6b'),
+ crown_grand:(u,f)=>crown2(u,7,32,68,22,4,'au','#b04aff',true)
 };
 const HAND={
- staff:f=>'<rect x="80" y="52" width="3.4" height="66" rx="1.7" fill="#8b5a2b" stroke="#5a3a18" stroke-width=".6"/><circle cx="81.7" cy="50" r="4" fill="#6fcf6a" stroke="#2f6a2a" stroke-width=".8"/>',
- flag:f=>'<rect x="80" y="40" width="2.6" height="78" fill="#8b5a2b"/><path d="M82.6,42 L98,48 L82.6,56 Z" fill="#e53935" stroke="#8a1f1c" stroke-width=".8"/>',
- book:f=>'<rect x="12" y="92" width="20" height="15" rx="1.5" fill="#5b3a8a" stroke="#2f1d4f"/><rect x="14" y="94" width="16" height="2" fill="#ffd84a"/><rect x="14" y="98" width="12" height="1.4" fill="#fff" opacity=".7"/>',
- sword:f=>'<path d="M81.7,24 L84,34 L84,86 L79.4,86 L79.4,34 Z" fill="#dfe6ee" stroke="#6b7785" stroke-width=".8"/><rect x="74" y="86" width="15.4" height="3.4" rx="1.5" fill="#c9a100" stroke="#8a5a00" stroke-width=".6"/><rect x="80.2" y="89" width="3" height="12" fill="#6b3b1d"/><circle cx="81.7" cy="103" r="2.4" fill="#c9a100"/>',
- scepter:f=>'<rect x="80" y="62" width="3" height="56" rx="1.5" fill="#c9a100" stroke="#8a5a00" stroke-width=".6"/><circle cx="81.5" cy="58" r="4.5" fill="#e33" stroke="#ffd84a" stroke-width="1.2"/>',
- scepter_gem:f=>'<rect x="80" y="62" width="3" height="56" rx="1.5" fill="#c9a100" stroke="#8a5a00" stroke-width=".6"/><path d="M81.5,46 L88,54 L81.5,64 L75,54 Z" fill="#4cf" stroke="#ffd84a" stroke-width="1.2"/><path d="M81.5,46 L81.5,64 M75,54 L88,54" stroke="#fff" stroke-width=".6" opacity=".7"/>'
+ staff:(u)=>'<rect x="74.4" y="40" width="3.6" height="112" rx="1.8" fill="#8b5a2b" stroke="#4a2e14" stroke-width=".7"/><path d="M75.4,42 L75.4,150" stroke="#c98a4a" stroke-opacity=".6" stroke-width=".8"/><circle cx="76.2" cy="38" r="5" fill="#6fcf6a" stroke="#2f6a2a" stroke-width=".8"/><circle cx="74.6" cy="36" r="1.6" fill="#fff" opacity=".8"/>',
+ flag:(u)=>'<rect x="74.4" y="26" width="2.8" height="126" fill="#8b5a2b" stroke="#4a2e14" stroke-width=".5"/><path d="M77.2,28 Q88,24 98,30 Q90,36 98,44 Q88,50 77.2,46Z" fill="#e53935" stroke="#8a1f1c" stroke-width=".8"/><path d="M80,31 Q88,29 94,32" stroke="#fff" stroke-opacity=".5" fill="none"/><circle cx="85" cy="38" r="2.4" fill="url(#'+u+'au)"/>',
+ book:(u)=>'<g transform="translate(0 0)"><path d="M12,88 L34,86 L35,106 L13,108Z" fill="#5b3a8a" stroke="#2f1d4f" stroke-width=".8"/><path d="M13,108 L35,106 L35,108 L14,110Z" fill="#f3efe0" stroke="#bbb" stroke-width=".4"/><rect x="17" y="91" width="14" height="2.2" fill="url(#'+u+'au)"/><circle cx="24" cy="99" r="3" fill="none" stroke="#ffd84a" stroke-width=".8"/></g>',
+ sword:(u)=>'<path d="M76.2,26 L79,38 L79,92 L73.4,92 L73.4,38Z" fill="url(#'+u+'ag)" stroke="#5c6b7a" stroke-width=".8"/><path d="M76.2,28 L76.2,92" stroke="#fff" stroke-opacity=".8" stroke-width=".7"/><path d="M67,92 Q76,96 85,92 L85,95.4 Q76,99 67,95.4Z" fill="url(#'+u+'au)" stroke="#8a5a00" stroke-width=".7"/><rect x="74.4" y="96" width="3.6" height="11" rx="1.4" fill="#6b3b1d" stroke="#3b1f0d" stroke-width=".5"/><circle cx="76.2" cy="109" r="2.8" fill="url(#'+u+'au)" stroke="#8a5a00" stroke-width=".6"/>',
+ scepter:(u)=>'<rect x="74.6" y="48" width="3.2" height="104" rx="1.6" fill="url(#'+u+'au)" stroke="#8a5a00" stroke-width=".6"/><circle cx="76.2" cy="43" r="6" fill="#e53935" stroke="#ffd84a" stroke-width="1.5"/><circle cx="74.4" cy="41" r="1.8" fill="#fff" opacity=".85"/><path d="M70,52 Q76,48 82,52" fill="none" stroke="#ffd84a" stroke-width="1.4"/>',
+ scepter_gem:(u)=>'<rect x="74.6" y="50" width="3.2" height="102" rx="1.6" fill="url(#'+u+'au)" stroke="#8a5a00" stroke-width=".6"/><path d="M76.2,24 L83,36 L76.2,52 L69.4,36Z" fill="#46c8ff" stroke="#ffd84a" stroke-width="1.4"/><path d="M76.2,24 L76.2,52 M69.4,36 L83,36 M76.2,24 L72,36 L76.2,52 M76.2,24 L80.4,36 L76.2,52" stroke="#fff" stroke-opacity=".7" stroke-width=".5" fill="none"/><path d="M71,34 L76,26" stroke="#fff" stroke-width="1.3" opacity=".8"/>'
 };
 const NECK={
- necklace:f=>'<path d="M38,66 Q50,84 62,66" fill="none" stroke="#ffd84a" stroke-width="1.8"/><circle cx="50" cy="78" r="3.2" fill="#ff3b6b" stroke="#ffd84a" stroke-width=".8"/>',
- medal:f=>'<path d="M44,62 L50,80 L56,62" fill="#c62828" stroke="#7a1010" stroke-width=".8"/><circle cx="50" cy="84" r="5" fill="#ffd84a" stroke="#8a5a00" stroke-width="1"/><path d="M50,80.5 l1.2,2.6 2.8,.3 -2.1,1.9 .6,2.8 -2.5,-1.4 -2.5,1.4 .6,-2.8 -2.1,-1.9 2.8,-.3z" fill="#fff3b0"/>',
- collar:f=>'<path d="M30,64 Q50,76 70,64 L68,72 Q50,84 32,72 Z" fill="#fff" stroke="#bbb" stroke-width=".8"/>'+[0,1,2,3,4,5].map(i=>'<circle cx="'+(38+i*5)+'" cy="'+(70+(i%2)*2)+'" r="1" fill="#222"/>').join('')
+ necklace:(u)=>{let g='';for(let i=0;i<9;i++){const t=i/8,x=40+20*t,y=57+10*Math.sin(Math.PI*t)*1.1+.5;g+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="1.35" fill="#f8f4ff" stroke="#b9b0cc" stroke-width=".3"/>'}return g+gem(50,69,2.4,'#ff3b6b')},
+ medal:(u)=>'<path d="M43,54 L50,76 L57,54 L53,54 L50,64 L47,54Z" fill="#c62828" stroke="#7a1010" stroke-width=".6"/><circle cx="50" cy="80" r="6" fill="url(#'+u+'au)" stroke="#8a5a00" stroke-width="1"/><circle cx="50" cy="80" r="3.9" fill="none" stroke="#fff3b0" stroke-width=".7"/><path d="M50,76.6 l1.1,2.3 2.5,.3 -1.9,1.7 .5,2.5 -2.2,-1.2 -2.2,1.2 .5,-2.5 -1.9,-1.7 2.5,-.3z" fill="#fff3b0"/>',
+ collar:(u)=>'<path d="M31,56 Q50,72 69,56 L68,63 Q66,74 50,80 Q34,74 32,63Z" fill="#fbfbfb" stroke="#c9c9c9" stroke-width=".7"/><path d="M31,56 Q50,72 69,56 L68,63 Q66,74 50,80 Q34,74 32,63Z" fill="url(#'+u+'ve)" opacity=".5"/>'+[0,1,2,3,4,5].map(i=>'<path d="M'+(37+i*5.2)+','+(66+Math.abs(i-2.5)*-0.6+3.5)+' l.8,3.6 l.9,-3.6z" fill="#222"/>').join('')
 };
 const FACE={
- glasses:f=>'<circle cx="44.5" cy="43" r="5.2" fill="#ffffff55" stroke="#333" stroke-width="1.3"/><circle cx="55.5" cy="43" r="5.2" fill="#ffffff55" stroke="#333" stroke-width="1.3"/><path d="M49.7,43 L50.3,43" stroke="#333" stroke-width="1.3"/><path d="M39.3,42 L36,40 M60.7,42 L64,40" stroke="#333" stroke-width="1.1"/>',
- beard:f=>'<path d="M36,48 Q38,66 50,68 Q62,66 64,48 Q58,56 50,56 Q42,56 36,48 Z" fill="#f4f4f4" stroke="#bbb" stroke-width=".8"/>'
+ glasses:(u)=>'<circle cx="44.5" cy="28" r="5.6" fill="#cfe8ff" fill-opacity=".28" stroke="#3a3a3a" stroke-width="1.2"/><circle cx="55.5" cy="28" r="5.6" fill="#cfe8ff" fill-opacity=".28" stroke="#3a3a3a" stroke-width="1.2"/><path d="M50.1,27.6 Q50,26.8 49.9,27.6" stroke="#3a3a3a" stroke-width="1.2" fill="none"/><path d="M38.9,27 L36.5,25.5 M61.1,27 L63.5,25.5" stroke="#3a3a3a" stroke-width="1"/><path d="M41,25.5 Q43,24 45,24.6" stroke="#fff" stroke-width="1" fill="none" opacity=".9"/><path d="M52,25.5 Q54,24 56,24.6" stroke="#fff" stroke-width="1" fill="none" opacity=".9"/>',
+ beard:(u)=>'<path d="M37.5,30 Q37,48 50,54 Q63,48 62.5,30 Q60,42 50,42 Q40,42 37.5,30Z" fill="#f2f2f2" stroke="#bdbdbd" stroke-width=".6"/><path d="M42,44 Q44,50 47,52 M50,45 L50,53 M58,44 Q56,50 53,52 M40,38 Q41,44 43,47 M60,38 Q59,44 57,47" stroke="#cfcfcf" stroke-width=".5" fill="none"/><path d="M44,39.5 Q50,37.5 56,39.5 Q50,41.6 44,39.5Z" fill="#f7f7f7" stroke="#cfcfcf" stroke-width=".4"/>'
 };
-function auraBack(a){if(a=='glow')return '<defs><radialGradient id="ag"><stop offset="0" stop-color="#fff3b0" stop-opacity=".95"/><stop offset="1" stop-color="#fff3b0" stop-opacity="0"/></radialGradient></defs><circle cx="50" cy="58" r="56" fill="url(#ag)"/>';
- if(a=='rainbow')return ['#ff5a5a','#ffb84a','#ffe94a','#5ad16a','#4aa3ff','#9a5aff'].map((c,i)=>'<circle cx="50" cy="62" r="'+(58-i*4)+'" fill="none" stroke="'+c+'" stroke-width="3.2" opacity=".75"/>').join('');return ''}
-const auraFront=a=>a=='sparkle'||a=='glow'||a=='rainbow'?'<path d="M10,20 l2,5 5,2 -5,2 -2,5 -2,-5 -5,-2 5,-2z M88,30 l1.6,4 4,1.6 -4,1.6 -1.6,4 -1.6,-4 -4,-1.6 4,-1.6z M14,70 l1.4,3.4 3.4,1.4 -3.4,1.4 -1.4,3.4 -1.4,-3.4 -3.4,-1.4 3.4,-1.4z" fill="'+(a=='sparkle'?'#ffe66d':'#fff3b0')+'"/>':'';
-function avatarSVG(av,o){av=av||AV;const e=av.eq||{},f=av.sex=='f',hc=HC(f);
- let s='<svg viewBox="0 0 100 125" xmlns="http://www.w3.org/2000/svg">'+auraBack(e.aura);
- if(e.cape&&CAPE[e.cape])s+='<path d="M30,62 Q14,100 18,121 L82,121 Q86,100 70,62 Z" fill="'+CAPE[e.cape]+'" opacity=".95"/>'+(e.cape=='cape_royal'?'<path d="M18,114 L82,114 L82,121 L18,121Z" fill="#fff"/>':'');
- if(f)s+='<path d="M32,42 Q27,72 35,88 L65,88 Q73,72 68,42 Q66,26 50,26 Q34,26 32,42Z" fill="'+hc+'"/>';
- s+=(BODY[e.body]||BODY.tunic)(f);
- if(e.neck&&NECK[e.neck])s+=NECK[e.neck](f);
- s+='<circle cx="50" cy="44" r="15" fill="#ffd9b0" stroke="#c69060" stroke-width="1"/>';
- s+=f?'<path d="M35,42 Q38,28 50,29 Q62,28 65,42 Q58,35 50,36 Q42,35 35,42Z" fill="'+hc+'"/>':'<path d="M35,41 Q34,26 50,27 Q66,26 65,41 Q60,32 50,33 Q40,32 35,41Z" fill="'+hc+'"/>';
- if(e.face=='beard')s+=FACE.beard(f);
- s+='<circle cx="44.5" cy="43" r="1.8" fill="#222"/><circle cx="55.5" cy="43" r="1.8" fill="#222"/><path d="M45,49 Q50,54 55,49" stroke="#a33" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="41" cy="48" r="2" fill="#f7a" opacity=".45"/><circle cx="59" cy="48" r="2" fill="#f7a" opacity=".45"/>';
- if(e.face=='glasses')s+=FACE.glasses(f);
- if(e.head&&HEAD[e.head])s+=HEAD[e.head](f);
- if(e.hand&&HAND[e.hand])s+=HAND[e.hand](f);
+function auraBack(a){if(a=='glow')return '<defs><radialGradient id="ag2"><stop offset="0" stop-color="#fff3b0" stop-opacity=".95"/><stop offset="1" stop-color="#fff3b0" stop-opacity="0"/></radialGradient></defs><ellipse cx="50" cy="82" rx="60" ry="78" fill="url(#ag2)"/>';
+ if(a=='rainbow')return ['#ff5a5a','#ffb84a','#ffe94a','#5ad16a','#4aa3ff','#9a5aff'].map((c,i)=>'<ellipse cx="50" cy="84" rx="'+(52-i*3.4)+'" ry="'+(74-i*4.4)+'" fill="none" stroke="'+c+'" stroke-width="3" opacity=".7"/>').join('');return ''}
+const auraFront=a=>a=='sparkle'||a=='glow'||a=='rainbow'?'<path d="M10,26 l2,5 5,2 -5,2 -2,5 -2,-5 -5,-2 5,-2z M90,44 l1.6,4 4,1.6 -4,1.6 -1.6,4 -1.6,-4 -4,-1.6 4,-1.6z M12,96 l1.4,3.4 3.4,1.4 -3.4,1.4 -1.4,3.4 -1.4,-3.4 -3.4,-1.4 3.4,-1.4z M86,120 l1.2,3 3,1.2 -3,1.2 -1.2,3 -1.2,-3 -3,-1.2 3,-1.2z" fill="'+(a=='sparkle'?'#ffe66d':'#fff3b0')+'" stroke="#fff" stroke-width=".3"/>':'';
+function avatarSVG(av,o){av=av||AV;const e=av.eq||{},f=av.sex=='f',u='a'+(++UID)+'_',hc=HC(f);
+ const gm=(BODYMAP[e.body]||BODYMAP.tunic)(u,f);
+ let s='<svg viewBox="0 0 100 160" xmlns="http://www.w3.org/2000/svg">'+defsCommon(u,f,e)+auraBack(e.aura);
+ s+='<ellipse cx="50" cy="153" rx="30" ry="3.4" fill="#000" opacity=".28" filter="url(#'+u+'sh)"/>';
+ if(e.cape&&CAPE[e.cape]){const c=CAPE[e.cape];s+='<defs>'+lgd(u+'cp',c[0],shade(c[0],-.15),c[1])+'</defs><path d="M30,56 Q6,100 10,152 Q50,160 90,152 Q94,100 70,56Z" fill="url(#'+u+'cp)" stroke="'+c[1]+'" stroke-width=".8"/><path d="M30,56 Q6,100 10,152 Q50,160 90,152 Q94,100 70,56Z" fill="url(#'+u+'wv)" opacity=".5"/><path d="M22,70 Q16,110 18,150 M34,70 Q30,110 28,152 M78,70 Q84,110 82,150 M66,70 Q70,110 72,152" fill="none" stroke="#000" stroke-opacity=".22" stroke-width="1.2"/>'+(e.cape=='cape_royal'?'<path d="M10,142 Q50,152 90,142 L90,152 Q50,160 10,152Z" fill="#fbfbfb" stroke="#ccc" stroke-width=".5"/>'+[0,1,2,3,4,5,6].map(i=>'<path d="M'+(16+i*11)+','+(148+(i%2?.4:-.2))+' l1,4 l1,-4z" fill="#222"/>').join(''):'')}
+ if(f)s+='<path d="M36,26 C30,8 70,8 64,26 C72,46 66,70 72,84 Q50,92 28,84 C34,70 28,46 36,26Z" fill="url(#'+u+'hr)" stroke="'+hc[1]+'" stroke-width=".6"/>';
+ // 몸
+ if(gm.legs)s+=legs(u,gm.skin?96:92,gm.sock);
+ s+=shoes(u,gm.shoe);
+ // 팔 (맨살)
+ const ay=gm.armY||94;s+=armSkin(u,27,66,23,ay-2,2.6)+armSkin(u,73,66,77,ay-2,2.6);
+ // 목
+ s+='<path d="M44.5,40 L44.5,54 Q50,58 55.5,54 L55.5,40Z" fill="url(#'+u+'sk)" stroke="#c99a74" stroke-width=".5"/><path d="M44.5,45 Q50,49 55.5,45 L55.5,40 L44.5,40Z" fill="#000" opacity=".12"/>';
+ if(gm.skin||e.body=='robe_none')s+='<path d="M40,53 Q50,62 60,53 L62,60 Q50,70 38,60Z" fill="url(#'+u+'sk)" opacity=".95"/>';
+ s+=gm.body;
+ // 소매 아래 손
+ s+=gm.sleeves||'';
+ if(e.hand&&e.hand!='book')s+=HAND[e.hand](u);
+ s+=hand(u,24,ay+3,1);s+=hand(u,76,ay+3,0);
+ if(e.hand=='book')s+=HAND.book(u);
+ if(e.neck&&NECK[e.neck])s+=NECK[e.neck](u);
+ // 머리
+ s+='<ellipse cx="37" cy="29" rx="2.2" ry="3.4" fill="url(#'+u+'sk)" stroke="#c99a74" stroke-width=".5"/><ellipse cx="63" cy="29" rx="2.2" ry="3.4" fill="url(#'+u+'sk)" stroke="#c99a74" stroke-width=".5"/>';
+ s+='<path d="M37.5,26 C37.5,12 62.5,12 62.5,26 C62.5,38 56,45.5 50,46 C44,45.5 37.5,38 37.5,26Z" fill="url(#'+u+'sk)" stroke="#c99a74" stroke-width=".7"/>';
+ s+='<ellipse cx="42" cy="34" rx="3" ry="2" fill="#f58a8a" opacity=".28"/><ellipse cx="58" cy="34" rx="3" ry="2" fill="#f58a8a" opacity=".28"/>';
+ [44.5,55.5].forEach((x,i)=>{s+='<ellipse cx="'+x+'" cy="28" rx="3.2" ry="2.5" fill="#fff" stroke="#8a6a50" stroke-width=".4"/><circle cx="'+x+'" cy="28.1" r="2" fill="url(#'+u+'iris)"/><circle cx="'+x+'" cy="28.1" r=".9" fill="#0a0a0a"/><circle cx="'+(x-.7)+'" cy="27.3" r=".6" fill="#fff"/><path d="M'+(x-3.3)+',27.6 Q'+x+',24.6 '+(x+3.3)+',27.6" fill="none" stroke="#2c1d10" stroke-width=".9" stroke-linecap="round"/>'+(f?'<path d="M'+(x+(i?3.3:-3.3))+',27.4 l'+(i?1.5:-1.5)+',-1.3 M'+(x+(i?2.3:-2.3))+',26.4 l'+(i?1.2:-1.2)+',-1.6" stroke="#2c1d10" stroke-width=".6"/>':'')+'<path d="M'+(x-3.6)+',23.2 Q'+x+','+(f?21.8:22.2)+' '+(x+3.6)+',23.6" fill="none" stroke="'+hc[1]+'" stroke-width="'+(f?.9:1.3)+'" stroke-linecap="round"/>'});
+ s+='<path d="M50,29 Q48.6,34 49.6,35.8 Q50.6,36.4 51.6,35.8" fill="none" stroke="#b9805a" stroke-width=".6" stroke-linecap="round"/><path d="M47.4,36 Q50,37.2 52.6,36" fill="none" stroke="#b9805a" stroke-width=".5" opacity=".7"/>';
+ s+='<path d="M45.6,39.6 Q50,41.6 54.4,39.6 Q50,38.4 45.6,39.6Z" fill="#c4505a"/><path d="M45.8,39.8 Q50,44 54.2,39.8 Q50,41.4 45.8,39.8Z" fill="#e6727a" stroke="#c4505a" stroke-width=".3"/><path d="M47,40.4 Q50,41.4 53,40.4" stroke="#fff" stroke-opacity=".5" fill="none" stroke-width=".4"/>';
+ if(e.face=='beard')s+=FACE.beard(u);
+ // 머리카락 앞
+ s+=f?'<path d="M37,28 C36,12 64,10 63,28 C60,20 54,17 47,19 C42,21 39,24 37,28Z" fill="url(#'+u+'hr)" stroke="'+hc[1]+'" stroke-width=".5"/><path d="M40,19 Q50,13 60,19" stroke="#fff" stroke-opacity=".3" fill="none" stroke-width="1.2"/><path d="M37,28 Q35,40 38,50 M63,28 Q65,40 62,50" fill="none" stroke="'+hc[1]+'" stroke-width="2.4" stroke-linecap="round"/>':
+  '<path d="M36.5,27 C34,11 66,11 63.5,27 C62,22 59,19 55,18 C50,21 42,19 40,22 C38,23 37,25 36.5,27Z" fill="url(#'+u+'hr)" stroke="'+hc[1]+'" stroke-width=".5"/><path d="M41,17 Q50,12 59,17 M44,15 Q50,12 56,14" stroke="#fff" stroke-opacity=".28" fill="none" stroke-width="1.1"/>';
+ if(e.face=='glasses')s+=FACE.glasses(u);
+ if(e.head&&HEAD[e.head])s+=HEAD[e.head](u,f);
  return s+auraFront(e.aura)+'</svg>'}
+
 const SHOP_CATS=[['head','👑 머리 · 왕관'],['body','👘 옷'],['cape','🧣 망토'],['hand','🗡️ 손에 드는 것'],['neck','📿 목 · 가슴'],['face','👓 얼굴'],['aura','✨ 빛 효과']];
 const SHOP={
  head:[['straw','밀짚모자',3],['laurel','월계관',12],['helmet','기사 투구',12],['crown_silver','은 왕관',15],['tiara','티아라',18],['crown_gold','금 왕관',30],['crown_gem','보석 왕관',45],['crown_grand','대왕관',80]],
- body:[['robe_blue','푸른 로브',8],['robe_red','붉은 로브',10],['gown_pink','분홍 드레스',12],['robe_purple','보라 로브',18],['armor','기사 갑옷',20],['gown_royal','왕실 드레스',30],['robe_gold','황금 예복',45]],
+ body:[['robe_blue','푸른 로브',8],['robe_red','붉은 로브',10],['sundress','꽃무늬 원피스',10],['gown_pink','분홍 공주 드레스',14],['hanbok_f','여자 한복',20],['hanbok_m','남자 한복',20],['robe_purple','보라 로브',18],['gown_blue','푸른 공주 드레스',18],['armor','기사 갑옷',22],['uniform','왕실 제복',25],['gown_royal','왕실 벨벳 드레스',32],['robe_gold','황금 예복',45],['gown_white','은빛 웨딩 드레스',48]],
  cape:[['cape_red','붉은 망토',10],['cape_blue','푸른 망토',12],['cape_royal','왕실 망토',30],['cape_gold','황금 망토',40]],
  hand:[['staff','나무 지팡이',5],['flag','깃발',8],['book','책',8],['sword','검',15],['scepter','왕의 홀',25],['scepter_gem','보석 홀',45]],
  neck:[['necklace','목걸이',8],['medal','훈장',12],['collar','흰 털 칼라',18]],
@@ -777,7 +911,7 @@ const RKFN={7:['여왕','드디어 왕관을 썼어요! 여왕이 되었습니�
 const RKMN={};for(let i=7;i<=10;i++)RKMN[i]=[RK[i].n,RK[i].d];
 function applySex(){const f=AV.sex=='f';for(let i=7;i<=10;i++){const t=(f?RKFN:RKMN)[i];RK[i].n=t[0];RK[i].d=t[1]}GRAND.n=f?'엄청난 여왕':'엄청난 왕';GRAND.d='모든 단계를 깬 '+TITLE+'! 전설의 '+(f?'여왕':'왕')+'이 되었어요!'}
 applySex();
-const avBox=(big,av)=>'<div class="kingbox'+(big?' big':'')+'">'+avatarSVG(av||AV)+'</div>';
+const avBox=(big,av)=>'<div class="kingbox av'+(big?' big':'')+'">'+avatarSVG(av||AV)+'</div>';
 const sexName=()=>AV.sex=='f'?'여왕':'왕';
 function avFirst(next){showOv('👑 나만의 왕 만들기','누가 될까요?<br><small>처음에는 평민 옷으로 시작해요.<br>단계를 클리어해 점수를 모아 상점에서 꾸며요!</small>','<div class="kpair"><div class="kcol">'+avBox(0,{sex:'m',eq:{body:'tunic'}})+'<div class="klab">왕</div></div><div class="kcol">'+avBox(0,{sex:'f',eq:{body:'tunic'}})+'<div class="klab">여왕</div></div></div>',
  [['🤴 왕으로 시작',()=>{AV.sex='m';applySex();saveAV();next()}],['👸 여왕으로 시작',()=>{AV.sex='f';applySex();saveAV();next()}]])}
