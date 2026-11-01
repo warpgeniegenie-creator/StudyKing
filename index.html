@@ -48,7 +48,7 @@ html,body{height:100%;margin:0;background:var(--s2);color:var(--ink);font-family
 #pad button{height:44px;font:inherit;font-size:22px;border-radius:10px;border:1px solid var(--line);background:var(--pad);color:var(--pt)}
 #pad button:active{transform:scale(.95)}
 #pad .ok{background:#e8590c;color:#fff;border:0;grid-column:span 3}
-#ov{position:fixed;inset:0;background:rgba(10,20,40,.82);display:flex;flex-direction:column;align-items:center;color:#fff;text-align:center;gap:10px;z-index:9;padding:16px;overflow-y:auto}
+#ov{position:fixed;inset:0;background:rgba(10,20,40,.94);display:flex;flex-direction:column;align-items:center;color:#fff;text-align:center;gap:10px;z-index:9;padding:16px;overflow-y:auto}
 #ov.h{display:none}
 #ov>:first-child{margin-top:auto}#ov>:last-child{margin-bottom:auto}
 #ov h1{margin:0;font-size:30px}
@@ -127,7 +127,7 @@ html,body{height:100%;margin:0;background:var(--s2);color:var(--ink);font-family
 #cv{flex:1;min-height:0;width:100%;touch-action:none;cursor:crosshair}
 #cbt{flex:none;display:flex;gap:4px;padding:4px;justify-content:center;flex-wrap:wrap}#cbt button{font:inherit;font-size:13px;padding:4px 9px;border-radius:8px;border:0;background:#ffffff33;color:#fff}#cbt button.sel{background:#f2b705;color:#222}
 .kpair{display:flex;gap:10px;justify-content:center;align-items:flex-end}.kcol{display:flex;flex-direction:column;align-items:center}.klab{font-size:13px;font-weight:700;margin-top:2px;color:#ffd84a}
-.kpair .kingbox{width:112px;height:140px;margin:0}.kpair.big .kingbox{width:150px;height:187px}.kingbox.av{width:100px;height:160px}.kingbox.av.big{width:130px;height:208px}.kpair .kingbox.av{width:96px;height:154px}.kpair.big .kingbox.av{width:116px;height:186px}
+.kpair .kingbox{width:112px;height:140px;margin:0}.kpair.big .kingbox{width:150px;height:187px}.rlist{width:100%;max-width:360px;margin:8px auto 0;text-align:left;font-size:14px}.rrow{display:flex;align-items:center;gap:8px;padding:4px 8px;margin:4px 0;background:rgba(255,255,255,.08);border-radius:12px}.rrow.me{background:rgba(255,216,74,.22);outline:2px solid #ffd84a}.rno{width:30px;text-align:center;font-weight:800;font-size:17px}.rav{width:44px;height:70px;flex:none}.rav svg{width:100%;height:100%;display:block}.rin{flex:1;min-width:0}.rnk{font-weight:800;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rsc{font-size:12px;opacity:.85}.rpt{font-weight:800;font-size:20px;color:#ffd84a}.rpt small{font-size:11px;margin-left:2px}.kingbox.av{width:100px;height:160px}.kingbox.av.big{width:130px;height:208px}.kpair .kingbox.av{width:96px;height:154px}.kpair.big .kingbox.av{width:116px;height:186px}
 </style>
 </head>
 <body>
@@ -575,7 +575,7 @@ let SESS=cl(SAVED);
 const hasUnsaved=()=>JSON.stringify(SESS)!==JSON.stringify(SAVED);
 function saveGame(){SAVED=cl(SESS);try{localStorage.setItem(SKEY,JSON.stringify(SAVED))}catch(e){}}
 function wipeSave(){SAVED=blank();SESS=blank();try{localStorage.removeItem(SKEY)}catch(e){}}
-function recordClear(m,n,st){SESS[m][n]=Math.max(SESS[m][n],st)}
+function recordClear(m,n,st){SESS[m][n]=Math.max(SESS[m][n],st);setTimeout(()=>{try{rankPush(1)}catch(e){}},0)}
 const allCleared=m=>{for(let i=1;i<=10;i++)if(!SESS[m][i])return false;return true};
 const cnt=(o,m)=>{let c=0;for(let i=1;i<=10;i++)if(o[m][i])c++;return c};
 // ===== 왕의 계급 =====
@@ -706,7 +706,7 @@ if(!AV||typeof AV!='object')AV={sex:null,owned:['tunic'],eq:{body:'tunic'}};
 if(!Array.isArray(AV.owned))AV.owned=['tunic'];if(!AV.owned.includes('tunic'))AV.owned.push('tunic');if(!AV.eq)AV.eq={};if(!AV.eq.body)AV.eq.body='tunic';
 const saveAV=()=>sv(AKEY,AV);
 const HC=f=>f?['#7a4a26','#3e2210']:['#6b4423','#33200f'];
-let UID=0;
+let UID=0,LITE=0;
 const mirror=d=>d.replace(/([MLQCZ])([^MLQCZ]*)/g,(m,c,a)=>{if(c=='Z')return 'Z';const n=a.trim().split(/[ ,]+/).map(Number);const o=[];for(let i=0;i<n.length;i+=2)o.push((100-n[i]).toFixed(1)+','+n[i+1]);return c+o.join(' ')});
 const lgd=(id,a,b,c,v)=>'<linearGradient id="'+id+'" x1="0" y1="0" x2="'+(v?0:1)+'" y2="'+(v?1:0)+'"><stop offset="0" stop-color="'+a+'"/><stop offset=".5" stop-color="'+b+'"/><stop offset="1" stop-color="'+c+'"/></linearGradient>';
 const shade=(h,k)=>{const n=parseInt(h.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255,f=x=>Math.max(0,Math.min(255,Math.round(k>0?x+(255-x)*k:x*(1+k))));return '#'+[f(r),f(g),f(b)].map(x=>x.toString(16).padStart(2,'0')).join('')};
@@ -714,7 +714,7 @@ const shade=(h,k)=>{const n=parseInt(h.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b
 function cloth(u,id,d,col,o){o=o||{};let s='<defs>'+lgd(u+id,shade(col,.28),col,shade(col,-.34))+'</defs>';
  s+='<path d="'+d+'" fill="url(#'+u+id+')" stroke="'+shade(col,-.5)+'" stroke-width=".7" stroke-linejoin="round"/>';
  s+='<path d="'+d+'" fill="url(#'+u+(o.pat||'wv')+')" opacity="'+(o.po||.5)+'"/>';
- s+='<path d="'+d+'" fill="#000" filter="url(#'+u+'gr)" opacity=".5"/>';
+ if(!LITE)s+='<path d="'+d+'" fill="#000" filter="url(#'+u+'gr)" opacity=".5"/>';
  (o.folds||[]).forEach(f=>{s+='<path d="'+f+'" fill="none" stroke="#000" stroke-opacity=".22" stroke-width="1.1" stroke-linecap="round"/><path d="'+f+'" transform="translate(1.4 0)" fill="none" stroke="#fff" stroke-opacity=".18" stroke-width=".8" stroke-linecap="round"/>'});
  return s}
 const stp=(d,c,w)=>'<path d="'+d+'" fill="none" stroke="'+c+'" stroke-width="'+(w||.6)+'" stroke-dasharray="1.6 1.2" opacity=".75"/>';
@@ -860,7 +860,7 @@ const FACE={
 function auraBack(a){if(a=='glow')return '<defs><radialGradient id="ag2"><stop offset="0" stop-color="#fff3b0" stop-opacity=".95"/><stop offset="1" stop-color="#fff3b0" stop-opacity="0"/></radialGradient></defs><ellipse cx="50" cy="82" rx="60" ry="78" fill="url(#ag2)"/>';
  if(a=='rainbow')return ['#ff5a5a','#ffb84a','#ffe94a','#5ad16a','#4aa3ff','#9a5aff'].map((c,i)=>'<ellipse cx="50" cy="84" rx="'+(52-i*3.4)+'" ry="'+(74-i*4.4)+'" fill="none" stroke="'+c+'" stroke-width="3" opacity=".7"/>').join('');return ''}
 const auraFront=a=>a=='sparkle'||a=='glow'||a=='rainbow'?'<path d="M10,26 l2,5 5,2 -5,2 -2,5 -2,-5 -5,-2 5,-2z M90,44 l1.6,4 4,1.6 -4,1.6 -1.6,4 -1.6,-4 -4,-1.6 4,-1.6z M12,96 l1.4,3.4 3.4,1.4 -3.4,1.4 -1.4,3.4 -1.4,-3.4 -3.4,-1.4 3.4,-1.4z M86,120 l1.2,3 3,1.2 -3,1.2 -1.2,3 -1.2,-3 -3,-1.2 3,-1.2z" fill="'+(a=='sparkle'?'#ffe66d':'#fff3b0')+'" stroke="#fff" stroke-width=".3"/>':'';
-function avatarSVG(av,o){av=av||AV;const e=av.eq||{},f=av.sex=='f',u='a'+(++UID)+'_',hc=HC(f);
+function avatarSVG(av,o){av=av||AV;LITE=o&&o.lite?1:0;const e=av.eq||{},f=av.sex=='f',u='a'+(++UID)+'_',hc=HC(f);
  const gm=(BODYMAP[e.body]||BODYMAP.tunic)(u,f);
  let s='<svg viewBox="0 0 100 160" xmlns="http://www.w3.org/2000/svg">'+defsCommon(u,f,e)+auraBack(e.aura);
  s+='<ellipse cx="50" cy="153" rx="30" ry="3.4" fill="#000" opacity=".28" filter="url(#'+u+'sh)"/>';
@@ -941,8 +941,46 @@ function applyFS(){document.documentElement.style.setProperty('--fs',FS[fsi]);tr
 function fontMenu(back){applyFS();const chip=t=>'<span style="display:inline-block;margin:8px 4px 0;padding:5px 11px;background:#2f9e6e;border-radius:4px 20px 20px 20px;font-weight:700;font-size:calc(17px*var(--fs))">'+t+'</span>';
  showOv('🔠 글자 크기','산성비 문제 글자 크기: <b>'+FN[fsi]+'</b> ('+(fsi+1)+'/5)<br>'+chip('12 + 5')+chip('apple')+chip('學校'),'',[['➕ 크게',()=>{fsi=Math.min(4,fsi+1);fontMenu(back)}],['➖ 작게',()=>{fsi=Math.max(0,fsi-1);fontMenu(back)}],['보통으로',()=>{fsi=2;fontMenu(back)}],['← 돌아가기',back]])}
 $('mn').onclick=menu;
+// ===== 랭킹 (Firebase) =====
+// ★ Firebase 콘솔에서 만든 웹앱 설정값을 아래에 붙여 넣으세요 (FIREBASE-SETUP.md 참고)
+const FBCFG={apiKey:'AIzaSyDIgWONPm7UeBQKbDOHLQjZeZ8LAZ7_1K4',authDomain:'studyking-8a461.firebaseapp.com',projectId:'studyking-8a461',appId:'1:1009122076687:web:3d9f0296f3a51227359b7a'};
+const RKEY='castleRank';let RKR=ld(RKEY,{nick:'',on:0});
+const rkEsc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const myStars=()=>{let n=0;for(const m of['math','eng','han'])for(let i=1;i<=10;i++)n+=SESS[m][i]||0;return n};
+const myClears=()=>cnt(SESS,'math')+cnt(SESS,'eng')+cnt(SESS,'han');
+const myScore=()=>myStars()*10;
+function cleanAv(a){const T={head:HEAD,body:BODYMAP,cape:CAPE,hand:HAND,neck:NECK,face:FACE},e={};a=a||{};const q=a.eq||{};
+ for(const k in T)if(typeof q[k]=='string'&&Object.prototype.hasOwnProperty.call(T[k],q[k]))e[k]=q[k];
+ if(['sparkle','glow','rainbow'].includes(q.aura))e.aura=q.aura;if(!e.body)e.body='tunic';
+ return{sex:a.sex=='f'?'f':'m',eq:e}}
+let FB=null;
+async function fbInit(){if(FB)return FB;if(!FBCFG.apiKey)throw new Error('nocfg');
+ const B='https://www.gstatic.com/firebasejs/10.12.2/';
+ const [A,AU,FS]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-auth.js'),import(B+'firebase-firestore.js')]);
+ const app=A.initializeApp(FBCFG),auth=AU.getAuth(app),db=FS.getFirestore(app);
+ const uid=(auth.currentUser||(await AU.signInAnonymously(auth)).user).uid;
+ FB={uid,
+  async put(d){await FS.setDoc(FS.doc(db,'rankings',uid),Object.assign({t:FS.serverTimestamp()},d))},
+  async top(n){const r=await FS.getDocs(FS.query(FS.collection(db,'rankings'),FS.orderBy('score','desc'),FS.limit(n)));return r.docs.map(x=>Object.assign({id:x.id},x.data()))}};
+ return FB}
+const rankDoc=()=>({nick:RKR.nick,score:myScore(),stars:myStars(),cleared:myClears(),sex:AV.sex||'m',eq:cleanAv(AV).eq});
+async function rankPush(quiet){if(!RKR.on)return;try{const f=await fbInit();await f.put(rankDoc());return 1}catch(e){if(!quiet)throw e}}
+function rankRow(r,i,me){const a=cleanAv(r);return '<div class="rrow'+(me?' me':'')+'"><div class="rno">'+(i<3?['🥇','🥈','🥉'][i]:i+1)+'</div><div class="rav">'+avatarSVG(a,{lite:1})+'</div><div class="rin"><div class="rnk">'+rkEsc(String(r.nick||'').slice(0,8))+(me?' <small>(나)</small>':'')+'</div><div class="rsc">⭐ '+(+r.stars||0)+' · 클리어 '+(+r.cleared||0)+'/30</div></div><div class="rpt">'+(+r.score||0)+'<small>점</small></div></div>'}
+async function rankScr(msg){const me=RKR.on;
+ const bs=[];
+ if(!me)bs.push(['🏆 랭킹 등록하기',()=>rankNick()]);
+ else bs.push(['🔄 내 점수 올리기',async()=>{try{await rankPush();rankScr('✅ 점수를 올렸어요!')}catch(e){rankScr(rankErr(e))}}],['✏️ 닉네임 바꾸기',()=>rankNick()]);
+ bs.push(['← 돌아가기',home]);
+ showOv('🏆 랭킹',(msg?'<b style="color:#ffd84a">'+msg+'</b><br>':'')+'내 점수 <b>'+myScore()+'점</b> <small>(별 '+myStars()+'개 × 10)</small><br><small>'+(me?'등록된 닉네임: '+rkEsc(RKR.nick):'등록하면 내 닉네임·점수·아바타가 다른 친구들에게 보여요')+'</small>','<div class="rlist" id="rl">불러오는 중… ⏳</div>',bs);
+ try{const f=await fbInit();const L=await f.top(30);const el=$('rl');if(!el)return;
+  el.innerHTML=L.length?L.map((r,i)=>rankRow(r,i,r.id==f.uid)).join(''):'아직 등록한 친구가 없어요. 첫 번째가 되어 보세요!'}
+ catch(e){const el=$('rl');if(el)el.innerHTML='<small>'+rankErr(e)+'</small>'}}
+const rankErr=e=>e&&e.message=='nocfg'?'랭킹 서버(Firebase)가 아직 설정되지 않았어요.':'인터넷 연결을 확인해 주세요. 랭킹을 불러오지 못했어요.';
+function rankNick(){showOv('🏆 닉네임 정하기','랭킹에 보일 이름이에요 (1~8글자)<br><small>실명·전화번호 등 개인정보는 쓰지 마세요</small>','<div style="margin:6px 0 10px"><div style="width:96px;height:154px;margin:0 auto">'+avatarSVG(AV)+'</div></div><input id="nk" type="text" maxlength="8" value="'+rkEsc(RKR.nick)+'" placeholder="닉네임" style="font-size:20px;text-align:center;padding:8px;border-radius:10px;border:2px solid #ffd84a;background:#102;color:#fff;width:70%">',
+ [['✅ 등록하고 점수 올리기',async()=>{const v=($('nk').value||'').replace(/[<>&"']/g,'').trim().slice(0,8);if(!v){toast('닉네임을 입력해 주세요');return}
+   RKR={nick:v,on:1};sv(RKEY,RKR);try{await rankPush();rankScr('🎉 랭킹에 등록했어요!')}catch(e){rankScr(rankErr(e))}}],['← 취소',()=>rankScr()]])}
 function home(){stopFanfare();setTrack('start');run=false;paused=false;area.style.filter='';$('ta').style.display='none';drops.forEach(d=>d.el.remove());drops=[];done.fill(0);lastT=null;
-showOv('👑 '+TITLE,'하늘에서 내려오는 💧산성비 문제를<br>풀면 벽돌 +1 🧱, 땅에 닿으면 −1 💥<br>4번 넘게 놓치면 👹괴물이 벽돌을 부숴요!<br>벽돌을 다 채우면 다음 단계로!<br>벽돌이 없는데 또 깨지면 게임 오버 💀<br>사칙연산·영어·한자 중에서 골라요 (영어·한자는 보기 5개 중 정답 고르기, 두 번 틀리면 틀린 것으로 처리)<br>단계를 깰 때마다 왕의 계급이 올라가요! 10단계를 모두 깨면 엄청난 왕 👑<br><small>⏸ 잠깐정지: 60초 · 처음 10번 · 3연속 정답마다 +1<br>⏸ 정지 중에도 답을 입력할 수 있고, 맞히면 바로 다시 시작돼요!</small>','<div style="font-size:60px">🏰</div>',[['➕ 사칙연산 시작',()=>subjectScr('math')],['🔤 영어 시작',()=>subjectScr('eng')],['🈶 한자 시작',()=>subjectScr('han')],['👤 나의 '+sexName()+' · 상점 ⭐'+RW.pts,()=>avScr()],['📒 오답 노트'+(WR.length?' ('+WR.length+')':''),()=>{noteBack=home;noteScr()}],['📅 출석부 · '+title(),()=>attScr(false)],['⚙️ 옵션',()=>optMenu(home)]]);atHome=true}
+showOv('👑 '+TITLE,'하늘에서 내려오는 💧산성비 문제를<br>풀면 벽돌 +1 🧱, 땅에 닿으면 −1 💥<br>4번 넘게 놓치면 👹괴물이 벽돌을 부숴요!<br>벽돌을 다 채우면 다음 단계로!<br>벽돌이 없는데 또 깨지면 게임 오버 💀<br>사칙연산·영어·한자 중에서 골라요 (영어·한자는 보기 5개 중 정답 고르기, 두 번 틀리면 틀린 것으로 처리)<br>단계를 깰 때마다 왕의 계급이 올라가요! 10단계를 모두 깨면 엄청난 왕 👑<br><small>⏸ 잠깐정지: 60초 · 처음 10번 · 3연속 정답마다 +1<br>⏸ 정지 중에도 답을 입력할 수 있고, 맞히면 바로 다시 시작돼요!</small>','<div style="font-size:60px">🏰</div>',[['➕ 사칙연산 시작',()=>subjectScr('math')],['🔤 영어 시작',()=>subjectScr('eng')],['🈶 한자 시작',()=>subjectScr('han')],['👤 나의 '+sexName()+' · 상점 ⭐'+RW.pts,()=>avScr()],['🏆 랭킹 · 친구와 겨루기',()=>rankScr()],['📒 오답 노트'+(WR.length?' ('+WR.length+')':''),()=>{noteBack=home;noteScr()}],['📅 출석부 · '+title(),()=>attScr(false)],['⚙️ 옵션',()=>optMenu(home)]]);atHome=true}
 applyFS();const goStart=()=>{if(checkin())attScr(true);else home()};
 if(!AV.sex)avFirst(goStart);else goStart();
 </script>
