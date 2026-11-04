@@ -56,7 +56,7 @@ html,body{height:100%;margin:0;background:var(--s2);color:var(--ink);font-family
 @keyframes glow{to{filter:drop-shadow(0 0 10px #f2b705)}}
 #ov p{margin:0;font-size:16px;line-height:1.5}
 #btns{display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px}
-#btns button{font:inherit;font-size:18px;padding:11px 20px;border:0;border-radius:14px;background:#e8590c;color:#fff}
+#btns button{font:inherit;font-size:18px;padding:11px 20px;border:0;border-radius:14px;background:#e8590c;color:#fff}#btns.grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-width:360px}#btns.grid button{font-size:14px;padding:7px 5px;border-radius:10px;line-height:1.25;min-height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center}#btns.grid button.wide{grid-column:1/-1;font-size:15px;padding:8px}#btns.grid button small{font-size:11px!important;margin-top:1px!important}
 .cf{position:fixed;top:-30px;font-size:24px;animation:fall linear infinite;pointer-events:none;z-index:10}
 @keyframes fall{to{transform:translateY(115vh) rotate(360deg)}}
 #castle{position:relative}
@@ -1242,7 +1242,7 @@ const ok=document.createElement('button');ok.textContent='확인';ok.className='
 // ---- 화면 전환 ----
 function showOv(h,p,c,btns,fin){stopFw();stopRW();atHome=false;if(typeof cb!=='undefined')cb.classList.remove('on');
  const t=ov.querySelector('h1');t.textContent=h;t.className=fin?'gold':'';ov.querySelector('p').innerHTML=p;$('oc').innerHTML=c;
- const w=$('btns');w.innerHTML='';btns.forEach(([x,f,sub])=>{const b=document.createElement('button');const H=(el,t)=>{if(String(t).includes('class="cn"'))el.innerHTML=t;else el.textContent=t};if(sub){const d=document.createElement('div');H(d,x);const sm=document.createElement('small');H(sm,sub);sm.style.cssText='display:block;font-size:12px;opacity:.9;margin-top:2px;font-weight:400';b.append(d,sm)}else H(b,x);b.onclick=f;w.appendChild(b)});
+ const w=$('btns');w.innerHTML='';w.className='';btns.forEach(([x,f,sub])=>{const b=document.createElement('button');const H=(el,t)=>{if(String(t).includes('class="cn"'))el.innerHTML=t;else el.textContent=t};if(sub){const d=document.createElement('div');H(d,x);const sm=document.createElement('small');H(sm,sub);sm.style.cssText='display:block;font-size:12px;opacity:.9;margin-top:2px;font-weight:400';b.append(d,sm)}else H(b,x);b.onclick=f;w.appendChild(b)});
  ov.querySelectorAll('.cf').forEach(e=>e.remove());
  if(fin)for(let i=0;i<40;i++){const e=document.createElement('span');e.className='cf';e.textContent=pick(['🎉','⭐','✨','🎊','👑','🏰']);e.style.cssText='left:'+rnd(0,98)+'%;animation-duration:'+(3+Math.random()*4)+'s;animation-delay:-'+Math.random()*6+'s';ov.appendChild(e)}
  ov.classList.remove('h');ov.scrollTop=0;
@@ -2545,7 +2545,7 @@ function avFirst(next){showOv('👑 나만의 왕 만들기','누가 될까요?<
  [['🤴 왕으로 시작',()=>{AV.sex='m';saveAV();next()}],['👸 여왕으로 시작',()=>{AV.sex='f';saveAV();next()}]])}
 function avScr(msg){const bs=[['📸 내 얼굴을 만화로! (사진 변환)'+(AV.face?' ✅':''),()=>faceScr()]].concat(SHOP_CATS.map(([k,n])=>[n+(AV.eq[k]&&!(k=='body'&&AV.eq.body=='tunic')?' ✅':''),()=>shopCat(k)]));
  bs.push(['🔁 '+(AV.sex=='f'?'왕으로 바꾸기':'여왕으로 바꾸기'),()=>{AV.sex=AV.sex=='f'?'m':'f';saveAV();avScr('모습을 바꿨어요!')}],['← 돌아가기',home]);
- showOv('👤 나의 '+sexName(),(msg?'<b style="color:#ffd84a">'+msg+'</b><br>':'')+'<i class="cn">C</i> 보유 코인 <b>'+RW.pts+'개</b><br><small>단계를 클리어하면 코인을 받아요 · 상점에서 꾸며 보세요</small>',avBox(1),bs)}
+ showOv('👤 나의 '+sexName(),(msg?'<b style="color:#ffd84a">'+msg+'</b><br>':'')+'<i class="cn">C</i> 보유 코인 <b>'+RW.pts+'개</b><br><small>단계를 클리어하면 코인을 받아요 · 상점에서 꾸며 보세요</small>',avBox(1),bs);gridBtns()}
 function shopCat(cat,msg,sc){const nm=SHOP_CATS.find(x=>x[0]==cat)[1],bs=[];
  SHOP[cat].forEach(([id,n,p])=>{const own=AV.owned.includes(id),on=AV.eq[cat]==id;
   bs.push([(on?'✅ ':'')+emoOf(cat,id)+' '+n,()=>{const keep=ov.scrollTop;
@@ -2556,13 +2556,14 @@ function shopCat(cat,msg,sc){const nm=SHOP_CATS.find(x=>x[0]==cat)[1],bs=[];
  if(SHOP[cat].some(x=>AV.owned.includes(x[0])))bs.push(['💰 되팔기 (산 가격의 절반)',()=>sellList(cat)]);
  if(cat=='body')bs.push(['평민 옷으로 되돌리기',()=>{AV.eq.body='tunic';saveAV();shopCat(cat,'평민 옷으로 돌아왔어요')}]);
  bs.push(['← 다른 분류',()=>avScr()]);
- showOv('🛍️ 상점 · '+nm,(msg?'<b style="color:#ffd84a">'+msg+'</b><br>':'')+'<i class="cn">C</i> 보유 코인 <b>'+RW.pts+'개</b>',avBox(0),bs);
+ showOv('🛍️ 상점 · '+nm,(msg?'<b style="color:#ffd84a">'+msg+'</b><br>':'')+'<i class="cn">C</i> 보유 코인 <b>'+RW.pts+'개</b>',avBox(0),bs);gridBtns();
  if(sc)ov.scrollTop=sc}
+function gridBtns(){const w=$('btns');w.classList.add('grid');[...w.children].forEach((b,i,a)=>{const t=b.textContent;if(/^(←|💰|🔁|평민|📸|취소)/.test(t.trim())||i==a.length-1)b.classList.add('wide')})}
 const sellPrice=(id,p)=>Math.max(1,Math.floor(((AV.paid&&AV.paid[id]!=null)?AV.paid[id]:Math.round(p/5))/2));
 function sellList(cat,msg){const nm=SHOP_CATS.find(x=>x[0]==cat)[1],bs=[];
  SHOP[cat].forEach(([id,n,p])=>{if(!AV.owned.includes(id))return;const g=sellPrice(id,p);bs.push([(AV.eq[cat]==id?'✅ ':'')+emoOf(cat,id)+' '+n,()=>sellAsk(cat,id,n,p),'되팔면 <i class="cn">C</i> +'+g])});
  bs.push(['← 상점으로',()=>shopCat(cat)]);
- showOv('💰 되팔기 · '+nm,(msg?'<b style="color:#ffd84a">'+msg+'</b><br>':'')+'산 가격의 절반을 돌려받아요<br><i class="cn">C</i> 보유 코인 <b>'+RW.pts+'개</b>',avBox(0),bs)}
+ showOv('💰 되팔기 · '+nm,(msg?'<b style="color:#ffd84a">'+msg+'</b><br>':'')+'산 가격의 절반을 돌려받아요<br><i class="cn">C</i> 보유 코인 <b>'+RW.pts+'개</b>',avBox(0),bs);gridBtns()}
 function sellAsk(cat,id,n,p){const g=sellPrice(id,p);
  showOv('💰 되팔기','<b>'+n+'</b>을(를) 되팔까요?<br><i class="cn">C</i> <b>+'+g+'</b> 코인을 받아요<br><small>되팔면 다시 사야 해요</small>',avBox(0),
  [['💰 되팔기 (+'+g+')',()=>{AV.owned=AV.owned.filter(x=>x!=id);if(AV.paid)delete AV.paid[id];if(AV.eq[cat]==id){if(cat=='body')AV.eq.body='tunic';else delete AV.eq[cat]}
