@@ -2524,6 +2524,20 @@ SHOP.face.push(['sunglasses','선글라스',80],['eyepatch','해적 안대',90],
 SHOP.aura.push(['petals','벚꽃 날림',400],['snow','눈꽃 요정',700],['flame','불꽃 오라',900],['galaxy','은하수 후광',2500],['wings','천사의 날개',2500],['wings_dark','용의 날개',3000],['phoenix','불사조 날개',5000]);
 Object.values(SHOP).forEach(l=>l.sort((a,b)=>a[2]-b[2]));
 const DEFBACK={height:'보통 키로',build:'보통 체격으로',hair:'원래 머리색으로',skin:'원래 피부색으로'};
+
+const CATEMO={head:'👑',hair:'💇',face:'👓',body:'👘',cape:'🧣',shoe:'👟',hand:'🗡️',neck:'📿',aura:'✨',height:'📏',build:'💪',skin:'🎨'};
+const SEMO={straw:'👒',laurel:'🌿',helmet:'⛑️',crown_silver:'🥈',tiara:'👸',crown_gold:'👑',crown_gem:'💎',crown_grand:'🏆',beret:'🎨',flowerwreath:'🌸',tophat:'🎩',wizard:'🧙',helmet_plume:'🪖',crown_ruby:'❤️',crown_emerald:'💚',crown_sapphire:'💙',crown_diamond:'💠',halo:'😇',crown_imperial:'🤴',crown_celestial:'🌟',
+ h_black:'🖤',h_blond:'💛',h_red:'❤️',h_silver:'🤍',h_pink:'🩷',h_blue:'💙',h_purple:'💜',h_mint:'🩵',h_gold:'🥇',h_galaxy:'🌌',
+ glasses:'👓',beard:'🧔',sunglasses:'🕶️',eyepatch:'🏴‍☠️',mustache:'👨',beard_black:'🧔‍♂️',round_gold:'🤓',heart_glasses:'😍',monocle:'🧐',mask:'🎭',
+ tunic:'👕',robe_blue:'🥼',robe_red:'🧥',robe_purple:'🔮',robe_gold:'🏅',sundress:'🌼',sundress_blue:'🩱',sundress_yellow:'🌻',gown_pink:'🎀',gown_blue:'👗',gown_royal:'💃',gown_white:'👰',hanbok_f:'🎎',hanbok_m:'🏮',armor:'🛡️',uniform:'🎖️',robe_emerald:'🍀',robe_black:'🖤',hanbok_royal_f:'🌺',hanbok_royal_m:'🐉',gown_red:'🌹',gown_emerald:'🦚',armor_dark:'🦇',gown_black:'🦢',uniform_white:'🕊️',uniform_black:'🎩',armor_gold:'⚜️',robe_ermine:'❄️',gown_starry:'🌠',robe_sapphire:'🔷',armor_dragon:'🐲',robe_imperial:'🏯',gown_diamond:'💎',gown_empress:'👑',
+ cape_red:'🟥',cape_blue:'🟦',cape_royal:'🟪',cape_gold:'🟨',cape_black:'⬛',cape_emerald:'🟩',cape_ermine:'🤍',cape_flame:'🔥',cape_starry:'🌌',cape_imperial:'🏰',
+ shoe_white:'👟',shoe_red:'👠',shoe_black:'👞',shoe_blue:'🥾',shoe_pink:'🩰',shoe_royal:'👢',shoe_silver:'🥈',shoe_gold:'🥇',shoe_glass:'🥿',shoe_diamond:'💎',
+ staff:'🪄',flag:'🚩',book:'📖',sword:'🗡️',scepter:'🔱',scepter_gem:'💠',rose:'🌹',wand:'⭐',trident:'🔱',sword_gold:'⚔️',sword_ice:'🧊',sword_dark:'🌑',scepter_emperor:'👑',
+ necklace:'📿',medal:'🏅',collar:'🧶',scarf_red:'🧣',chain_gold:'⛓️',pearl_blue:'🔵',star_order:'🎖️',fur_stole:'🦊',diamond_pendant:'💎',gold_collar:'🏵️',
+ sparkle:'✨',glow:'🌞',rainbow:'🌈',petals:'🌸',snow:'❄️',flame:'🔥',galaxy:'🌌',wings:'🪽',wings_dark:'🐉',phoenix:'🦅',
+ h_xs:'🐣',h_s:'🐥',h_l:'🦒',h_xl:'🏀',h_xxl:'🗼',b_slim:'🎋',b_str:'💪',b_big:'🦍',b_giant:'🏔️',
+ sk_pale:'🥚',sk_tan:'🌴',sk_brown:'🍫',sk_dark:'🌰'};
+const emoOf=(cat,id)=>SEMO[id]||CATEMO[cat]||'🎁';
 const itemInfo=id=>{for(const c in SHOP){const x=SHOP[c].find(i=>i[0]==id);if(x)return{c,id,n:x[1],p:x[2]}}return null};
 const avBox=(big,av)=>{av=av||AV;const hs=hscale(av),m=hs>1?Math.round(152*(hs-1)*(big?1.64:1.0125)):0;return '<div class="kingbox av'+(big?' big':'')+'" style="margin-top:'+(m+2)+'px">'+avatarSVG(av)+'</div>'};
 const sexName=()=>AV.sex=='f'?'여왕':'왕';
@@ -2534,7 +2548,7 @@ function avScr(msg){const bs=[['📸 내 얼굴을 만화로! (사진 변환)'+(
  showOv('👤 나의 '+sexName(),(msg?'<b style="color:#ffd84a">'+msg+'</b><br>':'')+'<i class="cn">C</i> 보유 코인 <b>'+RW.pts+'개</b><br><small>단계를 클리어하면 코인을 받아요 · 상점에서 꾸며 보세요</small>',avBox(1),bs)}
 function shopCat(cat,msg,sc){const nm=SHOP_CATS.find(x=>x[0]==cat)[1],bs=[];
  SHOP[cat].forEach(([id,n,p])=>{const own=AV.owned.includes(id),on=AV.eq[cat]==id;
-  bs.push([(on?'✅ ':own?'':'🛒 ')+n,()=>{const keep=ov.scrollTop;
+  bs.push([(on?'✅ ':'')+emoOf(cat,id)+' '+n,()=>{const keep=ov.scrollTop;
     if(own){if(on)delete AV.eq[cat];else AV.eq[cat]=id;saveAV();shopCat(cat,on?'벗었어요':n+' 착용!',keep)}
     else if(RW.pts>=p){RW.pts-=p;sv('castleRew',RW);AV.owned.push(id);(AV.paid=AV.paid||{})[id]=p;AV.eq[cat]=id;saveAV();shopCat(cat,'🎉 '+n+' 구매 완료! 착용했어요',keep)}
     else{toast('<i class="cn">C</i> 코인이 부족해요 ('+RW.pts+'/'+p+'개)')}},
@@ -2546,7 +2560,7 @@ function shopCat(cat,msg,sc){const nm=SHOP_CATS.find(x=>x[0]==cat)[1],bs=[];
  if(sc)ov.scrollTop=sc}
 const sellPrice=(id,p)=>Math.max(1,Math.floor(((AV.paid&&AV.paid[id]!=null)?AV.paid[id]:Math.round(p/5))/2));
 function sellList(cat,msg){const nm=SHOP_CATS.find(x=>x[0]==cat)[1],bs=[];
- SHOP[cat].forEach(([id,n,p])=>{if(!AV.owned.includes(id))return;const g=sellPrice(id,p);bs.push([(AV.eq[cat]==id?'✅ ':'')+n,()=>sellAsk(cat,id,n,p),'되팔면 <i class="cn">C</i> +'+g])});
+ SHOP[cat].forEach(([id,n,p])=>{if(!AV.owned.includes(id))return;const g=sellPrice(id,p);bs.push([(AV.eq[cat]==id?'✅ ':'')+emoOf(cat,id)+' '+n,()=>sellAsk(cat,id,n,p),'되팔면 <i class="cn">C</i> +'+g])});
  bs.push(['← 상점으로',()=>shopCat(cat)]);
  showOv('💰 되팔기 · '+nm,(msg?'<b style="color:#ffd84a">'+msg+'</b><br>':'')+'산 가격의 절반을 돌려받아요<br><i class="cn">C</i> 보유 코인 <b>'+RW.pts+'개</b>',avBox(0),bs)}
 function sellAsk(cat,id,n,p){const g=sellPrice(id,p);
