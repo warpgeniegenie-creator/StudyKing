@@ -93,6 +93,7 @@ html,body{height:100%;margin:0;background:var(--s2);color:var(--ink);font-family
 #ch button:nth-child(5){grid-column:span 2}
 #ch button{min-height:42px;line-height:1.15;padding:4px 6px;font:inherit;font-size:17px;border-radius:12px;border:1px solid var(--line);background:var(--pad);color:var(--pt)}
 #ch button.x{opacity:.4;text-decoration:line-through}
+@media (max-height:760px){#castle{height:84px}#ctl{padding:3px 8px 0}#disp{font-size:22px;min-height:36px;padding:2px}#disp.q{font-size:16px}#pbtn{font-size:12px;padding:0 8px}#ch{gap:5px;padding:5px 8px 8px}#ch button{min-height:36px;font-size:15px;padding:3px 5px}.drop{font-size:calc(15px*var(--fs,1));padding:4px 9px}}
 #ch button:active{transform:scale(.97);background:#f2c94c}
 #disp.q{font-size:22px}
 /* 벽돌 성 */
@@ -1020,7 +1021,7 @@ function quiz(){
  return[rev?it[1]+' → ?':it[0],ans,shuf(o),it]}
 let lastT=null;
 function showTarget(t){if(t===lastT)return;lastT=t;disp.textContent=t?t.q:'\u00a0';const c=$('ch');c.innerHTML='';
- if(t&&t.ch)t.ch.forEach(x=>{const b=document.createElement('button');b.textContent=x;if(mode=='han'&&x.length==1)b.style.fontSize='30px';b.onclick=()=>choose(x,b);c.appendChild(b)})}
+ if(t&&t.ch)t.ch.forEach(x=>{const b=document.createElement('button');b.textContent=x;if(mode=='han'&&x.length==1)b.style.fontSize='30px';else if(x.length>12)b.style.fontSize='13px';b.onclick=()=>choose(x,b);c.appendChild(b)})}
 // ---- 성 그리기 (실감나는 SVG 성: 단계가 올라갈수록 커지고 화려해져요) ----
 const CW=460,CH=330,CGY=288,CTOP={};
 const CPAL=[0,
@@ -1165,7 +1166,9 @@ function attack(){const m=$('mon');if(!m)return;m.classList.remove('walk','hit')
  setTimeout(()=>{if(run&&mon){lose(1);if(!run)return;say('💥 쾅!');beep(110,.3);updInfo()}},380)}
 function spawn(){
  const[q,ans,ch,it]=mode=='math'?mathQ():quiz(),el=document.createElement('div');el.className='drop';const h=vert(q);el.innerHTML=h;if(h!=q)el.classList.add('v');if(mode=='han'&&q.length<=2)el.style.fontSize='calc(26px*var(--fs,1))';area.appendChild(el);
- drops.push({q,ans,ch,it,el,y:0,x:4+Math.random()*Math.max(0,area.clientWidth-el.offsetWidth-8),pauses:0});spawned++;updInfo();
+ const w=el.offsetWidth,hh=el.offsetHeight,AW=area.clientWidth,near=drops.filter(d=>d.y<hh+10);let bx=4,by=-1e9;
+ for(let i=0;i<8&&by<0;i++){const c=4+Math.random()*Math.max(0,AW-w-8);let y0=0;near.forEach(d=>{if(!(c+w+6<d.x||c>d.x+d.el.offsetWidth+6))y0=Math.min(y0,d.y-hh-10)});if(y0>by){by=y0;bx=c}}
+ drops.push({q,ans,ch,it,el,y:by,x:bx,pauses:0});spawned++;updInfo();
 }
 const lowest=()=>drops.reduce((m,d)=>!m||d.y>m.y?d:m,null);
 function updInfo(){
